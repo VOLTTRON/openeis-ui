@@ -1,6 +1,5 @@
 /.sass-cache/
 /bower_components/
 /node_modules/
-/build/js/
-!/build/js/app.min.js
+/build/
 /karma-results.xml
