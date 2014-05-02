@@ -1,12 +1,13 @@
 describe('openeis-ui.auth', function () {
-    var LOGIN_PAGE = '/path/to/login/page',
+    var API_URL = '/api',
+        LOGIN_PAGE = '/path/to/login/page',
         AUTH_HOME = '/path/to/auth/home';
 
     beforeEach(function () {
         module('openeis-ui.auth');
 
         module(function($provide) {
-            $provide.constant('API_URL', '/api');
+            $provide.constant('API_URL', API_URL);
             $provide.constant('LOGIN_PAGE', LOGIN_PAGE);
             $provide.constant('AUTH_HOME', AUTH_HOME);
         });
@@ -84,12 +85,15 @@ describe('openeis-ui.auth', function () {
     });
 
     describe('Auth service', function () {
-        var Auth, $httpBackend;
+        var Auth, $httpBackend, $location,
+            resourceUrl = API_URL + '/account',
+            loginResourceUrl = API_URL + '/account/login';
 
         beforeEach(function () {
-            inject(function (_Auth_, _$httpBackend_) {
+            inject(function (_Auth_, _$httpBackend_, _$location_) {
                 Auth = _Auth_;
                 $httpBackend = _$httpBackend_;
+                $location = _$location_;
             });
         });
 
@@ -98,115 +102,156 @@ describe('openeis-ui.auth', function () {
         });
 
         describe('init method', function () {
-            it('should update the username property', function () {
-                $httpBackend.expectGET('/api/auth').respond('{"username":"TestUser"}');
+            it('should update the account variable', function () {
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.init();
 
-                expect(Auth.username()).toEqual('Anonymous');
+                expect(Auth.account()).toEqual(null);
                 $httpBackend.flush();
-                expect(Auth.username()).toEqual('TestUser');
+                expect(Auth.account().username).toEqual('TestUser');
+
+                $httpBackend.expectGET(resourceUrl).respond(403, '');
+                Auth.init();
+
+                expect(Auth.account().username).toEqual('TestUser');
+                $httpBackend.flush();
+                expect(Auth.account()).toEqual(false);
             });
         });
 
-        describe('logIn and logOut methods', function () {
-            it('should update the username property if successful', function () {
-                $httpBackend.expectPOST('/api/auth').respond('{"username":"TestUser"}');
+        describe('logIn method', function () {
+            it('should only call the init method if successful', function () {
+                spyOn(Auth, 'init').andCallThrough();
+
+                $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-
-                expect(Auth.username()).toEqual('Anonymous');
                 $httpBackend.flush();
-                expect(Auth.username()).toEqual('TestUser');
 
-                $httpBackend.expectDELETE('/api/auth').respond(204, '');
-                Auth.logOut();
+                expect(Auth.init).not.toHaveBeenCalled();
 
-                expect(Auth.username()).toEqual('TestUser');
+                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
-                expect(Auth.username()).toEqual('Anonymous');
+
+                expect(Auth.init).toHaveBeenCalled();
             });
 
-            it('should not update the username property if unsuccessful', function () {
-                $httpBackend.expectPOST('/api/auth').respond(403, '');
+            it('should redirect to AUTH_HOME if successful', function () {
+                $location.url(LOGIN_PAGE);
+                expect($location.url()).toEqual(LOGIN_PAGE);
+
+                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-
-                expect(Auth.username()).toEqual('Anonymous');
                 $httpBackend.flush();
-                expect(Auth.username()).toEqual('Anonymous');
 
-                $httpBackend.expectGET('/api/auth').respond('{"username":"TestUser"}');
+                expect($location.url()).toEqual(AUTH_HOME);
+            });
+        });
+
+        describe('logOut method', function () {
+            it('should update the username property if successful', function () {
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.init();
                 $httpBackend.flush();
 
-                $httpBackend.expectDELETE('/api/auth').respond(500, '');
+                $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
                 Auth.logOut();
 
-                expect(Auth.username()).toEqual('TestUser');
+                expect(Auth.account().username).toEqual('TestUser');
                 $httpBackend.flush();
-                expect(Auth.username()).toEqual('TestUser');
+                expect(Auth.account()).toEqual(false);
+            });
+
+            it('should not update the username property if unsuccessful', function () {
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                Auth.init();
+                $httpBackend.flush();
+
+                $httpBackend.expectDELETE(loginResourceUrl).respond(500, '');
+                Auth.logOut();
+
+                expect(Auth.account().username).toEqual('TestUser');
+                $httpBackend.flush();
+                expect(Auth.account().username).toEqual('TestUser');
+            });
+
+            it('should redirect to LOGIN_PAGE if successful', function () {
+                $location.url(AUTH_HOME);
+                expect($location.url()).toEqual(AUTH_HOME);
+
+                $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
+                Auth.logOut();
+                $httpBackend.flush();
+
+                expect($location.url()).toEqual(LOGIN_PAGE);
             });
         });
 
         describe('requireAnon method', function () {
             var ANONYMOUS_PAGE = '/path/to/anonymous/page';
 
-            it('should redirect authenticated users to AUTH_HOME', inject(function ($location) {
+            it('should redirect authenticated users to AUTH_HOME', function () {
                 $location.url(ANONYMOUS_PAGE);
                 expect($location.url()).toEqual(ANONYMOUS_PAGE);
 
-                $httpBackend.expectGET('/api/auth').respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.requireAnon();
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(AUTH_HOME);
-            }));
+            });
 
-            it('should not redirect anonymous users', inject(function ($location) {
+            it('should not redirect anonymous users', function () {
                 $location.url(ANONYMOUS_PAGE);
                 expect($location.url()).toEqual(ANONYMOUS_PAGE);
 
-                $httpBackend.expectGET('/api/auth').respond(403, '');
+                $httpBackend.expectGET(resourceUrl).respond(403, '');
                 Auth.requireAnon();
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(ANONYMOUS_PAGE);
-            }));
+            });
         });
 
         describe('requireAuth method', function () {
             var RESTRICTED_PAGE = '/path/to/restricted/page';
 
-            it('should redirect anonymous users to LOGIN_PAGE and redirect back after login', inject(function ($location) {
+            it('should redirect anonymous users to LOGIN_PAGE and redirect back after login', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET('/api/auth').respond(403, '');
+                $httpBackend.expectGET(resourceUrl).respond(403, '');
                 Auth.requireAuth();
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(LOGIN_PAGE);
 
-                $httpBackend.expectPOST('/api/auth').respond('{"username":"TestUser"}');
+                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
-            }));
+            });
 
-            it('should not redirect authenticated users', inject(function ($location) {
+            it('should not redirect authenticated users', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET('/api/auth').respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
                 Auth.requireAuth();
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
-            }));
+            });
         });
     });
 
     describe('LoginCtrl controller', function () {
-        var controller, scope, $httpBackend, $location;
+        var controller, scope, $httpBackend, $location,
+            loginResourceUrl = API_URL + '/account/login';
 
         beforeEach(function () {
             inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
@@ -221,23 +266,7 @@ describe('openeis-ui.auth', function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
-        it('should redirect to AUTH_HOME on successful login', function () {
-            scope.form = {
-                username: 'TestUser',
-                password: 'testpassword',
-            };
-
-            $location.url(LOGIN_PAGE);
-            expect($location.url()).toEqual(LOGIN_PAGE);
-
-            $httpBackend.expectPOST('/api/auth').respond('{"username":"TestUser"}');
-            scope.logIn();
-            $httpBackend.flush();
-
-            expect($location.url()).toEqual(AUTH_HOME);
-        });
-
-        it('should assign error statuses to form.error', function () {
+        it('should pass error status to view and not update the location on error', function () {
             scope.form = {
                 username: 'TestUser',
                 password: 'testpassword',
@@ -245,14 +274,14 @@ describe('openeis-ui.auth', function () {
 
             spyOn($location, 'url');
 
-            $httpBackend.expectPOST('/api/auth').respond(403, '');
+            $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
             scope.logIn();
             $httpBackend.flush();
 
             expect($location.url).not.toHaveBeenCalled();
             expect(scope.form.error).toEqual(403);
 
-            $httpBackend.expectPOST('/api/auth').respond(500, '');
+            $httpBackend.expectPOST(loginResourceUrl).respond(500, '');
             scope.logIn();
             $httpBackend.flush();
 
@@ -262,30 +291,13 @@ describe('openeis-ui.auth', function () {
     });
 
     describe('TopBarCtrl controller', function () {
-        var controller, scope, $httpBackend, $location;
+        var controller, scope;
 
         beforeEach(function () {
-            inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
+            inject(function($controller, $rootScope) {
                 scope = $rootScope.$new();
                 controller = $controller('TopBarCtrl', { $scope: scope });
-                $httpBackend = _$httpBackend_;
-                $location = _$location_;
             });
-        });
-
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        it('should redirect to LOGIN_PAGE on successful logout', function () {
-            $location.url(AUTH_HOME);
-            expect($location.url()).toEqual(AUTH_HOME);
-
-            $httpBackend.expectDELETE('/api/auth').respond(204, '');
-            scope.logOut();
-            $httpBackend.flush();
-
-            expect($location.url()).toEqual(LOGIN_PAGE);
         });
     });
 });

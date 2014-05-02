@@ -8,10 +8,12 @@
             <div class="form__group">
                 <input type="password" placeholder="Password" required ng-model="form.password" ng-change="clearError()">
             </div>
-            <button type="submit">Log in</button>
-            <div class="links">
-                <a href="sign-up">Need an account?</a><br>
-                <a href="recovery">Can't log in?</a>
+            <div class="form__group">
+                <button type="submit">Log in</button>
+                <div class="links">
+                    <a href="sign-up">Need an account?</a><br>
+                    <a href="recovery">Can't log in?</a>
+                </div>
             </div>
             <div class="alert alert--error" ng-if="form.error" ng-switch="form.error">
                 <span ng-switch-when="403">Authentication failed.</span>
