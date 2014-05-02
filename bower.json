@@ -1,5 +1,6 @@
 {
   "name": "openeis-ui",
+  "private": true,
   "dependencies": {
     "angular": "~1.2.16",
     "angular-cookies": "~1.2.16",
@@ -33,8 +34,10 @@
     "inuit-ui-list": "~0.2.0",
     "inuit-widths": "~0.1.0"
   },
-  "private": true,
   "devDependencies": {
     "angular-mocks": "~1.2.16"
+  },
+  "resolutions": {
+    "inuit-functions": "~0.2.0"
   }
 }

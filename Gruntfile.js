@@ -20,7 +20,6 @@ module.exports = function(grunt) {
             'bower_components/angular/angular.min.js',
             'bower_components/angular-*/angular-*.min.js',
             'bower_components/ng-file-upload/angular-file-upload.min.js',
-            'bower_components/angular-foundation/mm-foundation-tpls.min.js',
             '<%= buildDir %>/js/app.min.js',
           ],
         }
@@ -28,9 +27,18 @@ module.exports = function(grunt) {
     },
 
     karma: {
-      build: {
+      options: {
         configFile: 'karma.conf.js',
+      },
+      dev: {
         background: true,
+        reporters: 'progress',
+        singleRun: false,
+      },
+      ci: {
+        background: false,
+        reporters: 'junit',
+        singleRun: true,
       },
     },
 
@@ -131,7 +139,7 @@ module.exports = function(grunt) {
 
       karma: {
         files: ['js/*.js'],
-        tasks: ['karma:build:run'],
+        tasks: ['karma:dev:run'],
       },
 
       sass: {
@@ -154,5 +162,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', ['clean', 'sass', 'sync', 'ngmin', 'ngtemplates', 'uglify', 'concat']);
   grunt.registerTask('notest', ['build', 'focus:notest']);
-  grunt.registerTask('default', ['karma:build:start', 'build', 'watch']);
+  grunt.registerTask('default', ['karma:dev:start', 'build', 'watch']);
 };
