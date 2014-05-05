@@ -48,6 +48,12 @@ $inuit-btn-background: $primary-action-color;
     @extend %panel;
     @extend %animated;
 
+    &--success {
+        background-color: #43AC6A;
+        border-color: #3A945B;
+        color: #FFF;
+    }
+
     &--error {
         background-color: #F08A24;
         border-color: #DE770F;
@@ -245,7 +251,7 @@ nav {
     }
 
     &--recovery {
-        padding: 60px 300px 0;
+        padding: 60px 250px 0;
 
         form {
             @extend %box;

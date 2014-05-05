@@ -1,12 +1,21 @@
 <div class="container">
     <div class="view view--recovery">
         <h1>OpenEIS</h1>
-        <form class="panel radius" ng-submit="submit()">
+        <form class="panel" ng-submit="submit()">
             <h2>Recover account</h2>
             <div class="form__group">
-                <input id="name" type="text" placeholder="Username or email address" required ng-model="form.id">
+                <input id="name" type="text" placeholder="Username or email address" required ng-change="clearError()" ng-model="form.id">
             </div>
-            <button type="submit">Submit</button>
+            <div class="form__group">
+                <button type="submit">Submit</button>
+            </div>
+            <div class="alert alert--success" ng-if="form.success">
+                Email sent.
+            </div>
+            <div class="alert alert--error" ng-if="form.error" ng-switch="form.error">
+                <span ng-switch-when="404">Couldn't found account with that username or email address.</span>
+                <span ng-switch-default>Unknown error occurred. ({{form.error}})</span>
+            </div>
         </form>
     </div>
 </div>

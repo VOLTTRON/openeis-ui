@@ -87,7 +87,8 @@ describe('openeis-ui.auth', function () {
     describe('Auth service', function () {
         var Auth, $httpBackend, $location,
             resourceUrl = API_URL + '/account',
-            loginResourceUrl = API_URL + '/account/login';
+            loginResourceUrl = API_URL + '/account/login',
+            resetResourceUrl = API_URL + '/account/password_reset';
 
         beforeEach(function () {
             inject(function (_Auth_, _$httpBackend_, _$location_) {
@@ -116,6 +117,14 @@ describe('openeis-ui.auth', function () {
                 expect(Auth.account().username).toEqual('TestUser');
                 $httpBackend.flush();
                 expect(Auth.account()).toEqual(false);
+            });
+        });
+
+        describe('accountRecover method', function () {
+            it('should POST account ID', function () {
+                $httpBackend.expectPOST(resetResourceUrl, '{"username_or_email":"TestUser"}').respond(204, '');
+                Auth.accountRecover('TestUser');
+                $httpBackend.flush();
             });
         });
 
@@ -266,27 +275,70 @@ describe('openeis-ui.auth', function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
-        it('should pass error status to view and not update the location on error', function () {
-            scope.form = {
-                username: 'TestUser',
-                password: 'testpassword',
-            };
+        describe('logIn method', function () {
+            it('should pass error status to view and not update the location on error', function () {
+                scope.form = {
+                    username: 'TestUser',
+                    password: 'testpassword',
+                };
 
-            spyOn($location, 'url');
+                spyOn($location, 'url');
 
-            $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
-            scope.logIn();
-            $httpBackend.flush();
+                $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
+                scope.logIn();
+                $httpBackend.flush();
 
-            expect($location.url).not.toHaveBeenCalled();
-            expect(scope.form.error).toEqual(403);
+                expect($location.url).not.toHaveBeenCalled();
+                expect(scope.form.error).toEqual(403);
 
-            $httpBackend.expectPOST(loginResourceUrl).respond(500, '');
-            scope.logIn();
-            $httpBackend.flush();
+                $httpBackend.expectPOST(loginResourceUrl).respond(500, '');
+                scope.logIn();
+                $httpBackend.flush();
 
-            expect($location.url).not.toHaveBeenCalled();
-            expect(scope.form.error).toEqual(500);
+                expect($location.url).not.toHaveBeenCalled();
+                expect(scope.form.error).toEqual(500);
+            });
+        });
+    });
+
+    describe('RecoveryCtrl controller', function () {
+        var controller, scope, $httpBackend,
+            resetResourceUrl = API_URL + '/account/password_reset';
+
+        beforeEach(function () {
+            inject(function($controller, $rootScope, _$httpBackend_) {
+                scope = $rootScope.$new();
+                controller = $controller('RecoveryCtrl', { $scope: scope });
+                $httpBackend = _$httpBackend_;
+            });
+        });
+
+        describe('submit method', function () {
+            it('should pass success and error responses to view', function () {
+                scope.form = {
+                    id: 'TestUser',
+                };
+
+                expect(scope.form.error).not.toBeDefined();
+
+                $httpBackend.expectPOST(resetResourceUrl).respond(204, '');
+                scope.submit();
+                $httpBackend.flush();
+
+                expect(scope.form.success).toEqual(true);
+
+                $httpBackend.expectPOST(resetResourceUrl).respond(404, '');
+                scope.submit();
+                $httpBackend.flush();
+
+                expect(scope.form.error).toEqual(404);
+
+                $httpBackend.expectPOST(resetResourceUrl).respond(500, '');
+                scope.submit();
+                $httpBackend.flush();
+
+                expect(scope.form.error).toEqual(500);
+            });
         });
     });
 

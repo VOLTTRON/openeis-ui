@@ -42,10 +42,15 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         account = null,
         resource = $resource(API_URL + '/account'),
         loginResource = $resource(API_URL + '/account/login'),
+        resetResource = $resource(API_URL + '/account/password_reset'),
         loginRedirect = null;
 
     Auth.account = function () {
         return account;
+    };
+
+    Auth.accountRecover = function (id) {
+        return resetResource.save({ username_or_email: id }).$promise;
     };
 
     Auth.init = function () {
@@ -163,9 +168,15 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
     };
 })
 .controller('RecoveryCtrl', function ($scope, $location, Auth) {
-    $scope.form = {};
     $scope.submit = function () {
-        console.log($scope.form);
+        Auth.accountRecover($scope.form.id).then(function () {
+            $scope.form.success = true;
+        }, function (rejection) {
+            $scope.form.error = rejection.status;
+        });
+    };
+    $scope.clearError = function () {
+        $scope.form.error = null;
     };
 })
 .controller('AccountCtrl', function ($scope, Auth) {
