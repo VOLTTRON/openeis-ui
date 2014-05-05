@@ -124,10 +124,10 @@ nav {
             @extend %layout__item;
             width: auto;
             position: relative;
+            border-left: 1px solid #555;
 
-            &.divider {
+            &:last-child {
                 border-right: 1px solid #555;
-                height: 2 * $inuit-base-spacing-unit;
             }
 
             a {
