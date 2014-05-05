@@ -40,17 +40,29 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
 .service('Auth', function ($resource, API_URL, $q, LOGIN_PAGE, AUTH_HOME, $location) {
     var Auth = this,
         account = null,
-        resource = $resource(API_URL + '/account'),
+        resource = $resource(API_URL + '/account', null, {
+            create: { method: 'POST' },
+            update: { method: 'PATCH' },
+        }),
         loginResource = $resource(API_URL + '/account/login'),
-        resetResource = $resource(API_URL + '/account/password_reset'),
+        pwChangeResource = $resource(API_URL + '/account/change_password'),
+        pwResetResource = $resource(API_URL + '/account/password_reset'),
         loginRedirect = null;
 
     Auth.account = function () {
         return account;
     };
 
+    Auth.accountUpdate = function (account) {
+        return resource.update(account).$promise;
+    };
+
+    Auth.accountPassword = function (password) {
+        return pwChangeResource.save(password).$promise;
+    };
+
     Auth.accountRecover = function (id) {
-        return resetResource.save({ username_or_email: id }).$promise;
+        return pwResetResource.save({ username_or_email: id }).$promise;
     };
 
     Auth.init = function () {
@@ -179,21 +191,65 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         $scope.form.error = null;
     };
 })
-.controller('AccountCtrl', function ($scope, Auth) {
-    $scope.form = {
-        changed: false,
-        submit: function () {
-            console.log($scope.account);
+.controller('AccountCtrl', function ($scope, Auth, $timeout) {
+    $scope.account = Auth.account();
+
+    $scope.profile = {
+        clearAlerts: function () {
+            $scope.profile.success = false;
+            $scope.profile.error = false;
+        },
+        update: function () {
+            $scope.profile.clearAlerts();
+
+            Auth.accountUpdate({
+                first_name: $scope.account.first_name,
+                last_name: $scope.account.last_name,
+                email: $scope.account.email,
+            }).then(function (response) {
+                $scope.profile.success = true;
+                $timeout($scope.profile.clearAlerts, 2000);
+            }, function (rejection) {
+                $scope.profile.error = rejection.status;
+            });
         },
     };
 
-    $scope.account = Auth.account();
+    $scope.password = {
+        clearAlerts: function () {
+            $scope.password.mismatch = false;
+            $scope.password.success = false;
+            $scope.password.error = false;
+        },
+        update: function () {
+            $scope.password.clearAlerts();
 
-    $scope.$watchCollection('account', function (newValue, oldValue) {
-        if (newValue !== oldValue) {
-            $scope.form.changed = true;
-        }
-    });
+            if ($scope.password.new !== $scope.password.newConfirm) {
+                $scope.password.mismatch = true;
+                return;
+            }
+
+            Auth.accountPassword({
+                old_password: $scope.password.current,
+                new_password: $scope.password.new,
+            }).then(function (response) {
+                $scope.password.success = true;
+                $scope.password.current = '';
+                $scope.password.new = '';
+                $scope.password.newConfirm = '';
+                $timeout($scope.password.clearAlerts, 2000);
+            }, function (rejection) {
+                if (rejection.status === 400) {
+                    angular.forEach(rejection.data, function (v, k) {
+                        if (angular.isArray(v)) {
+                            rejection.data[k] = v.join('<br>');
+                        }
+                    });
+                }
+                $scope.password.error = rejection;
+            });
+        },
+    };
 })
 .controller('TopBarCtrl', function ($scope, Auth) {
     $scope.account = Auth.account();

@@ -88,7 +88,7 @@ describe('openeis-ui.auth', function () {
         var Auth, $httpBackend, $location,
             resourceUrl = API_URL + '/account',
             loginResourceUrl = API_URL + '/account/login',
-            resetResourceUrl = API_URL + '/account/password_reset';
+            pwResetResourceUrl = API_URL + '/account/password_reset';
 
         beforeEach(function () {
             inject(function (_Auth_, _$httpBackend_, _$location_) {
@@ -122,7 +122,7 @@ describe('openeis-ui.auth', function () {
 
         describe('accountRecover method', function () {
             it('should POST account ID', function () {
-                $httpBackend.expectPOST(resetResourceUrl, '{"username_or_email":"TestUser"}').respond(204, '');
+                $httpBackend.expectPOST(pwResetResourceUrl, '{"username_or_email":"TestUser"}').respond(204, '');
                 Auth.accountRecover('TestUser');
                 $httpBackend.flush();
             });
@@ -303,7 +303,7 @@ describe('openeis-ui.auth', function () {
 
     describe('RecoveryCtrl controller', function () {
         var controller, scope, $httpBackend,
-            resetResourceUrl = API_URL + '/account/password_reset';
+            pwResetResourceUrl = API_URL + '/account/password_reset';
 
         beforeEach(function () {
             inject(function($controller, $rootScope, _$httpBackend_) {
@@ -321,19 +321,19 @@ describe('openeis-ui.auth', function () {
 
                 expect(scope.form.error).not.toBeDefined();
 
-                $httpBackend.expectPOST(resetResourceUrl).respond(204, '');
+                $httpBackend.expectPOST(pwResetResourceUrl).respond(204, '');
                 scope.submit();
                 $httpBackend.flush();
 
                 expect(scope.form.success).toEqual(true);
 
-                $httpBackend.expectPOST(resetResourceUrl).respond(404, '');
+                $httpBackend.expectPOST(pwResetResourceUrl).respond(404, '');
                 scope.submit();
                 $httpBackend.flush();
 
                 expect(scope.form.error).toEqual(404);
 
-                $httpBackend.expectPOST(resetResourceUrl).respond(500, '');
+                $httpBackend.expectPOST(pwResetResourceUrl).respond(500, '');
                 scope.submit();
                 $httpBackend.flush();
 
