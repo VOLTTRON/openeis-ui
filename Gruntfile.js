@@ -2,7 +2,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    buildDir: 'build',
+    buildDir: 'openeis_ui/static/openeis_ui',
+    oldBuildDir: '../openeis/openeis-ui/build', // Assumes working tree of openeis is a sibling of current working tree
 
     clean: {
       build: ['<%= buildDir %>'],
@@ -90,7 +91,12 @@ module.exports = function(grunt) {
         files: [
           { src: 'index.html', dest: '<%= buildDir %>/' },
         ]
-      }
+      },
+      oldBuild: {
+        files: [
+          { cwd: '<%= buildDir %>', src: '**/*', dest: '<%= oldBuildDir %>' },
+        ],
+      },
     },
 
     uglify: {
@@ -120,11 +126,12 @@ module.exports = function(grunt) {
           '<%= buildDir %>/css/app.css',
           '<%= buildDir %>/js/app.min.js',
         ],
+        tasks: ['sync:oldBuild'],
       },
 
       index: {
         files: ['index.html'],
-        tasks: ['sync'],
+        tasks: ['sync:build'],
       },
 
       partials: {
@@ -160,7 +167,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-sync');
 
-  grunt.registerTask('build', ['clean', 'sass', 'sync', 'ngmin', 'ngtemplates', 'uglify', 'concat']);
+  grunt.registerTask('build', ['clean', 'sass', 'sync:build', 'ngmin', 'ngtemplates', 'uglify', 'concat', 'sync:oldBuild']);
   grunt.registerTask('notest', ['build', 'focus:notest']);
   grunt.registerTask('default', ['karma:dev:start', 'build', 'watch']);
 };

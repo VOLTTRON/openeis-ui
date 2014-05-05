@@ -1,0 +1,3 @@
+include openeis_ui/static/openeis_ui/index.html
+include openeis_ui/static/openeis_ui/css/app.css
+include openeis_ui/static/openeis_ui/js/app.min.js

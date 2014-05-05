@@ -1,5 +1,5 @@
 /.sass-cache/
 /bower_components/
 /node_modules/
-/build/
 /karma-results.xml
+/openeis_ui/static/openeis_ui/
