@@ -46,7 +46,9 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         }),
         loginResource = $resource(API_URL + '/account/login'),
         pwChangeResource = $resource(API_URL + '/account/change_password'),
-        pwResetResource = $resource(API_URL + '/account/password_reset'),
+        pwResetResource = $resource(API_URL + '/account/password_reset', null, {
+            put: { method: 'PUT' },
+        }),
         loginRedirect = null;
 
     Auth.account = function () {
@@ -65,8 +67,12 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         return pwChangeResource.save(password).$promise;
     };
 
-    Auth.accountRecover = function (id) {
+    Auth.accountRecover1 = function (id) {
         return pwResetResource.save({ username_or_email: id }).$promise;
+    };
+
+    Auth.accountRecover2 = function (params) {
+        return pwResetResource.put(params).$promise;
     };
 
     Auth.init = function () {
@@ -203,16 +209,61 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         $scope.form.error = null;
     };
 })
-.controller('RecoveryCtrl', function ($scope, $location, Auth) {
+.controller('RecoveryCtrl', function ($scope, Auth, $routeParams) {
+    $scope.form = {
+        stage: 1,
+    };
+
+    if ($routeParams.username && $routeParams.code) {
+        $scope.form.stage = 2;
+
+        $scope.recovery = {
+            username: $routeParams.username,
+            code: $routeParams.code,
+        };
+    } else {
+        $scope.recovery = {};
+    }
+
     $scope.submit = function () {
-        Auth.accountRecover($scope.form.id).then(function () {
-            $scope.form.success = true;
-        }, function (rejection) {
-            $scope.form.error = rejection.status;
-        });
+        switch ($scope.form.stage) {
+            case 1:
+                Auth.accountRecover1($scope.recovery.id).then(function () {
+                    $scope.form.success = 'Email with temporary password reset link sent.';
+                    $scope.form.stage = false;
+                    $scope.clearError();
+                }, function (rejection) {
+                    if (rejection.status === 404) {
+                        rejection.data = 'Account with specified username or email address not found.';
+                    }
+                    $scope.form.error = rejection;
+                });
+                return;
+
+            case 2:
+                if ($scope.recovery.password !== $scope.recovery.passwordConfirm) {
+                    $scope.form.error = {
+                        status: 400,
+                        data: 'Passwords do not match.',
+                    };
+                    return;
+                }
+
+                Auth.accountRecover2($scope.recovery).then(function () {
+                    $scope.form.success = 'Password updated.';
+                    $scope.form.stage = false;
+                    $scope.clearError();
+                }, function (rejection) {
+                    if (rejection.status === 404) {
+                        rejection.data = 'Invalid password reset link.';
+                    }
+                    $scope.form.error = rejection;
+                });
+                return;
+        }
     };
     $scope.clearError = function () {
-        $scope.form.error = null;
+        $scope.form.error = false;
     };
 })
 .controller('AccountCtrl', function ($scope, Auth, $timeout) {

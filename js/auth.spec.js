@@ -120,10 +120,10 @@ describe('openeis-ui.auth', function () {
             });
         });
 
-        describe('accountRecover method', function () {
+        describe('accountRecover1 method', function () {
             it('should POST account ID', function () {
                 $httpBackend.expectPOST(pwResetResourceUrl, '{"username_or_email":"TestUser"}').respond(204, '');
-                Auth.accountRecover('TestUser');
+                Auth.accountRecover1('TestUser');
                 $httpBackend.flush();
             });
         });
@@ -313,31 +313,31 @@ describe('openeis-ui.auth', function () {
             });
         });
 
-        describe('submit method', function () {
+        describe('submit method stage 1', function () {
             it('should pass success and error responses to view', function () {
-                scope.form = {
+                scope.recovery = {
                     id: 'TestUser',
                 };
 
                 expect(scope.form.error).not.toBeDefined();
 
-                $httpBackend.expectPOST(pwResetResourceUrl).respond(204, '');
-                scope.submit();
-                $httpBackend.flush();
-
-                expect(scope.form.success).toEqual(true);
-
                 $httpBackend.expectPOST(pwResetResourceUrl).respond(404, '');
                 scope.submit();
                 $httpBackend.flush();
 
-                expect(scope.form.error).toEqual(404);
+                expect(scope.form.error.status).toEqual(404);
 
                 $httpBackend.expectPOST(pwResetResourceUrl).respond(500, '');
                 scope.submit();
                 $httpBackend.flush();
 
-                expect(scope.form.error).toEqual(500);
+                expect(scope.form.error.status).toEqual(500);
+
+                $httpBackend.expectPOST(pwResetResourceUrl).respond(204, '');
+                scope.submit();
+                $httpBackend.flush();
+
+                expect(scope.form.success).toBeTruthy();
             });
         });
     });

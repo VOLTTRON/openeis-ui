@@ -1,19 +1,31 @@
 <div class="container">
     <div class="view view--recovery">
-        <h1>OpenEIS</h1>
+        <h1><a href="/">OpenEIS</a></h1>
         <form class="panel" ng-submit="submit()">
             <h2>Recover account</h2>
-            <div class="form__group">
-                <input id="name" type="text" placeholder="Username or email address" required ng-change="clearError()" ng-model="form.id">
+            <div class="form__group" ng-if="form.stage === 1">
+                <label for="recoveryId">Username or email address</label>
+                <input id="recoveryId" type="text" required ng-change="clearError()" ng-trim="false" ng-model="recovery.id">
             </div>
-            <div class="form__group">
+            <div class="form__group" ng-if="form.stage === 2">
+                <label>Username</label>
+                <input type="text" disabled ng-model="recovery.username">
+            </div>
+            <div class="form__group" ng-if="form.stage === 2">
+                <label for="password">New password</label>
+                <input id="password" type="password" required ng-trim="false" ng-model="recovery.password"><br>
+                <label for="password">Confirm new password</label>
+                <input type="password" required ng-trim="false" ng-model="recovery.passwordConfirm">
+            </div>
+            <div class="form__group" ng-if="form.stage">
                 <button type="submit">Submit</button>
             </div>
             <div class="alert alert--success" ng-if="form.success">
-                Email sent.
+                {{form.success}}
             </div>
-            <div class="alert alert--error" ng-if="form.error" ng-switch="form.error">
-                <span ng-switch-when="404">Couldn't found account with that username or email address.</span>
+            <div class="alert alert--error" ng-if="form.error" ng-switch="form.error.status">
+                <span ng-switch-when="400">{{form.error.data}}</span>
+                <span ng-switch-when="404">{{form.error.data}}</span>
                 <span ng-switch-default>Unknown error occurred. ({{form.error}})</span>
             </div>
         </form>
