@@ -53,6 +53,10 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         return account;
     };
 
+    Auth.accountCreate = function (account) {
+        return resource.create(account).$promise;
+    };
+
     Auth.accountUpdate = function (account) {
         return resource.update(account).$promise;
     };
@@ -175,8 +179,28 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
 })
 .controller('SignUpCtrl', function ($scope, $location, Auth, AUTH_HOME) {
     $scope.form = {};
-    $scope.signUp = function () {
-        console.log($scope.form);
+
+    $scope.submit = function () {
+        Auth.accountCreate($scope.account).then(function (response) {
+            Auth.logIn({
+                username: $scope.account.username,
+                password: $scope.account.password,
+            }).catch(function (rejection) {
+                $scope.form.error = rejection.status;
+            });
+        }, function (rejection) {
+            if (rejection.status === 400) {
+                angular.forEach(rejection.data, function (v, k) {
+                    if (angular.isArray(v)) {
+                        rejection.data[k] = v.join('<br>');
+                    }
+                });
+            }
+            $scope.form.error = rejection;
+        });
+    };
+    $scope.clearError = function () {
+        $scope.form.error = null;
     };
 })
 .controller('RecoveryCtrl', function ($scope, $location, Auth) {

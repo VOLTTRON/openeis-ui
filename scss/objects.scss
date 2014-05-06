@@ -133,6 +133,7 @@
 
 .help,
 %help {
+    @extend %animated;
     @include inuit-font-size(12px);
 
     &--error {

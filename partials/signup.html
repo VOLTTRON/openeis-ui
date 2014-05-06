@@ -1,26 +1,34 @@
 <div class="container">
     <div class="view view--signup">
         <h1>OpenEIS</h1>
-        <form class="panel radius" ng-submit="signUp()">
+        <form class="panel" ng-submit="submit()">
             <h2>Get an account</h2>
             <div class="form__group">
                 <label for="name">Name</label>
-                <input id="name" type="text" required ng-model="form.name">
+                <input id="name" type="text" ng-model="account.first_name">
+                <small class="help help--error" ng-if="form.error.data.first_name">{{form.error.data.first_name}}</small>
             </div>
             <div class="form__group">
                 <label for="email">Email address</label>
-                <input id="email" type="email" required ng-model="form.email">
+                <input id="email" type="email" required ng-change="form.error.data.email = false" ng-model="account.email">
+                <small class="help help--error" ng-if="form.error.data.email">{{form.error.data.email}}</small>
             </div>
             <div class="form__group">
                 <label for="username">Username</label>
-                <input id="username" type="text" autocomplete="off" required ng-model="form.username">
+                <input id="username" type="text" autocomplete="off" required ng-change="form.error.data.username = false" ng-model="account.username">
+                <small class="help help--error" ng-if="form.error.data.username">{{form.error.data.username}}</small>
             </div>
             <div class="form__group">
                 <label for="password">Password</label>
-                <input id="password" type="password" autocomplete="off" placeholder="Enter password" required ng-model="form.password">
-                <input type="password" autocomplete="off" placeholder="Re-enter password" required ng-model="form.passwordconfirm">
+                <input id="password" type="password" autocomplete="off" required ng-trim="false" ng-change="form.error.data.password = false" ng-model="account.password">
+                <small class="help help--error" ng-if="form.error.data.password">{{form.error.data.password}}</small>
             </div>
-            <button type="submit">Sign up</button>
+            <div class="form__group">
+                <button type="submit">Sign up</button>
+            </div>
+            <div class="alert alert--error" ng-if="form.error.status && form.error.status !== 400">
+                Unknown error occurred. ({{form.error.status}})
+            </div>
         </form>
     </div>
 </div>
