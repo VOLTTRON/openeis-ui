@@ -49,13 +49,13 @@
     left: 0;
     background-color: rgba(0,0,0,0.2);
     z-index: 100;
+    overflow: scroll;
 
     &__dialog {
         @extend %box;
-        position: absolute;
+        position: relative;
         width: 800px;
-        top: 100px;
-        margin-left: -400px;
+        margin: 100px 0 100px -400px;
         left: 50%;
         background-color: #fff;
         box-shadow: 0 0 11px rgba(0,0,0,0.5);
