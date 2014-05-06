@@ -19,33 +19,34 @@
             </div>
             <div class="form__group">
                 <label for="email">Email address</label>
-                <input id="email" type="email" ng-model="account.email">
+                <input id="email" type="email" ng-change="profile.error.data.email = false" ng-model="account.email">
+                <small class="help help--error" ng-if="profile.error.data.email">{{profile.error.data.email}}</small>
             </div>
             <div class="form__group">
-                <button>Update profile</button>
+                <button ng-disabled="!profile.changed">Update profile</button>
             </div>
             <div class="alert alert--success animated--slow-out" ng-if="profile.success">
                 Profile updated.
             </div>
-            <div class="alert alert--error" ng-if="profile.error" ng-switch="profile.error">
-                <span ng-switch-default>Unknown error occurred. ({{profile.error}})</span>
+             <div class="alert alert--error" ng-if="profile.error.status && profile.error.status !== 400">
+                Unknown error occurred. ({{profile.error.status}})
             </div>
         </form>
         <h3>Password</h3>
         <form ng-submit="password.update()">
             <div class="form__group">
                 <label for="current-password">Current password</label>
-                <input id="current-password" type="password" autocomplete="off" ng-trim="false" ng-change="password.clearAlerts()" required ng-model="password.current">
+                <input id="current-password" type="password" autocomplete="off" ng-trim="false" ng-change="password.error.data.old_password = false" required ng-model="password.current">
                 <small class="help help--error" ng-if="password.error.data.old_password">{{password.error.data.old_password}}</small><br>
                 <label for="new-password">New password</label>
-                <input id="new-password" type="password" autocomplete="off" required ng-trim="false" ng-change="password.clearAlerts()" ng-model="password.new">
+                <input id="new-password" type="password" autocomplete="off" required ng-trim="false" ng-change="password.mismatch = false; password.error.data.new_password = false" ng-model="password.new">
                 <small class="help help--error" ng-if="password.error.data.new_password">{{password.error.data.new_password}}</small><br>
                 <label for="confirm-new-password">Confirm new password</label>
-                <input id="confirm-new-password" type="password" autocomplete="off" required ng-trim="false" ng-change="password.clearAlerts()" ng-model="password.newConfirm">
+                <input id="confirm-new-password" type="password" autocomplete="off" required ng-trim="false" ng-change="password.mismatch = false" ng-model="password.newConfirm">
                 <small class="help help--error" ng-if="password.mismatch">New passwords do not match.</small><br>
             </div>
             <div class="form__group">
-                <button ng-click="updatePassword()">Update password</button>
+                <button ng-disabled="!(password.current && password.new && password.newConfirm)" ng-click="updatePassword()">Update password</button>
             </div>
             <div class="alert alert--success animated--slow-out" ng-if="password.success">
                 Password updated.

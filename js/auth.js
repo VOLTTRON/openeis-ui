@@ -269,6 +269,17 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
 .controller('AccountCtrl', function ($scope, Auth, $timeout) {
     $scope.account = Auth.account();
 
+    var accountOrig = angular.copy(Auth.account());
+
+    $scope.$watchCollection('account', function (newValue) {
+        if (newValue.first_name !== accountOrig.first_name ||
+            newValue.email != accountOrig.email) {
+            $scope.profile.changed = true;
+        } else {
+            $scope.profile.changed = false;
+        }
+    });
+
     $scope.profile = {
         clearAlerts: function () {
             $scope.profile.success = false;
@@ -279,13 +290,22 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
 
             Auth.accountUpdate({
                 first_name: $scope.account.first_name,
-                last_name: $scope.account.last_name,
                 email: $scope.account.email,
             }).then(function (response) {
                 $scope.profile.success = true;
+                $scope.profile.changed = false;
+                accountOrig = angular.copy(Auth.account());
                 $timeout($scope.profile.clearAlerts, 2000);
             }, function (rejection) {
-                $scope.profile.error = rejection.status;
+                if (rejection.status === 400) {
+                    angular.forEach(rejection.data, function (v, k) {
+                        if (angular.isArray(v)) {
+                            rejection.data[k] = v.join('<br>');
+                        }
+                    });
+                }
+
+                $scope.profile.error = rejection;
             });
         },
     };
