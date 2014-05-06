@@ -6,7 +6,7 @@
                 <input type="text" placeholder="Username" required ng-model="form.username" ng-change="clearError()">
             </div>
             <div class="form__group">
-                <input type="password" placeholder="Password" required ng-model="form.password" ng-change="clearError()">
+                <input type="password" placeholder="Password" required ng-model="form.password" ng-trim="false" ng-change="clearError()">
             </div>
             <div class="form__group">
                 <button type="submit">Log in</button>
