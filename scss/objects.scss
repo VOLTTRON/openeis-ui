@@ -93,14 +93,20 @@
 
 .form--stacked,
 %form--stacked {
-    label, input {
+    label {
         display: block;
         width: 100%;
         line-height: 1.5 * $inuit-base-spacing-unit;
     }
 
+    input {
+        display: block;
+        width: 100%;
+    }
+
     .help {
         display: block;
+        width: 100%;
         line-height: 1.5 * $inuit-base-spacing-unit;
     }
 
