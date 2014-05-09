@@ -5,7 +5,7 @@ import sys
 from setuptools import setup
 
 
-__version__ = '0.0'
+__version__ = '0.1'
 
 
 def make_version():
