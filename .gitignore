@@ -4,4 +4,4 @@ __pycache__
 /bower_components/
 /node_modules/
 /karma-results.xml
-/openeis_ui/static/openeis_ui/
+/openeis/ui/static/

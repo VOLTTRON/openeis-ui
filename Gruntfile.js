@@ -2,7 +2,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    buildDir: 'openeis_ui/static/openeis_ui',
+    buildDir: 'openeis/ui/static/openeis-ui',
     oldBuildDir: '../openeis/openeis-ui/build', // Assumes working tree of openeis is a sibling of current working tree
 
     clean: {
