@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from setuptools import setup
@@ -8,28 +9,17 @@ __version__ = '0.0'
 
 
 def make_version():
-    build_num = os.environ.get('BUILD_NUMBER', '')
-    hash_num = ''
+    version = [__version__]
     try:
-        file = open('.git/HEAD')
-    except FileNotFoundError:
+        version.extend(['.dev', os.environ['BUILD_NUMBER']])
+    except KeyError:
         pass
-    else:
-        with file:
-            for line in file:
-                if line.startswith('ref:'):
-                    ref = line[4:].strip()
-                    try:
-                        hash_num = open('.git/' + ref).read()
-                    except FileNotFoundError:
-                        pass
-                    break
-    version = __version__
-    if build_num:
-        version += 'dev' + build_num
-    if hash_num:
-        version += '+' + hash_num[:10]
-    return version
+    try:
+        version.extend(['.r', subprocess.check_output(
+            ['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').strip()])
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass
+    return ''.join(version)
 
 
 setup(
