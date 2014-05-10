@@ -9,7 +9,7 @@ if not settings.DEBUG:
                                "served by Django in production.")
 
 UI_STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             'static/openeis_ui'))
+                                             'static/openeis-ui'))
 
 urlpatterns = [
     url(r'^(?P<path>(?:css|js)/.+)$', 'django.views.static.serve',
