@@ -7,7 +7,7 @@ Requirements
 ------------------
 
 * [Node.js](http://nodejs.org/)
-* [npm](https://www.npmjs.org/)
+* [npm](https://www.npmjs.org/) (often included with Node.js)
 * npm modules [bower](http://bower.io/) and [grunt-cli](http://gruntjs.com/)
 
 
@@ -28,3 +28,7 @@ Single build:
 Continuous build (watch for changes and build automatically):
 
     [openeis-ui]$ grunt
+
+Continuous build without tests:
+
+    [openeis-ui]$ grunt notest
