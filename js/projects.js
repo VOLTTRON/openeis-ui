@@ -57,7 +57,7 @@ angular.module('openeis-ui.projects', [
         head: function (fileId) {
             return $http({
                 method: 'GET',
-                url: API_URL + '/files/' + fileId + '/top?rows=5',
+                url: API_URL + '/files/' + fileId + '/head?rows=5',
                 transformResponse: angular.fromJson,
             });
         },

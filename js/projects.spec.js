@@ -89,7 +89,7 @@ describe('openeis-ui.projects', function () {
 
     describe('ProjectFiles service', function () {
         var ProjectFiles,
-            headUrlPattern = new RegExp('^' + API_URL + '\\/files\\/\\d+/top(\\?rows=\\d+)?$'),
+            headUrlPattern = new RegExp('^' + API_URL + '\\/files\\/\\d+/head(\\?rows=\\d+)?$'),
             testFiles = [
                 { id: 1, file: 'File 1' },
                 { id: 2, file: 'File 2' },
