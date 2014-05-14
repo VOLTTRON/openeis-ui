@@ -89,6 +89,7 @@ describe('openeis-ui.projects', function () {
 
     describe('ProjectFiles service', function () {
         var ProjectFiles,
+            headUrlPattern = new RegExp('^' + API_URL + '\\/files\\/\\d+/top(\\?rows=\\d+)?$'),
             testFiles = [
                 { id: 1, file: 'File 1' },
                 { id: 2, file: 'File 2' },
@@ -151,7 +152,7 @@ describe('openeis-ui.projects', function () {
 
             expect(ProjectFiles.head).toBeDefined();
 
-            $httpBackend.expectGET(API_URL + '/files/1/top').respond(angular.toJson(testHead));
+            $httpBackend.expectGET(headUrlPattern).respond(angular.toJson(testHead));
             ProjectFiles.head(1).then(function (response) {
                 head = response.data;
             });

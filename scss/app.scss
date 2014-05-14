@@ -195,16 +195,17 @@ nav {
         }
     }
 
-    &--projects,
+    &--projects {
+        @extend %box;
+    }
+
     &--project {
         @extend %box;
 
-        label {
-            @extend %label--inline;
-        }
-
-        input {
-            @extend %input--inline;
+        file-upload {
+            input {
+                @extend %input--inline;
+            }
         }
     }
 
@@ -229,5 +230,24 @@ nav {
             @extend %box;
             @extend %form--aligned;
         }
+    }
+}
+
+table.file-preview {
+    label:after {
+        content: "";
+    }
+
+    thead tr:nth-child(2) th {
+        text-align: center;
+
+        input {
+            height: $inuit-base-spacing-unit;
+        }
+    }
+
+    thead tr:not(:first-child) th,
+    td {
+        border-right: 1px solid #ddd;
     }
 }

@@ -1,5 +1,5 @@
 angular.module('openeis-ui.projects', [
-    'openeis-ui.auth', 'openeis-ui.file',
+    'openeis-ui.auth', 'openeis-ui.file', 'openeis-ui.modal',
     'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
@@ -57,7 +57,7 @@ angular.module('openeis-ui.projects', [
         head: function (fileId) {
             return $http({
                 method: 'GET',
-                url: API_URL + '/files/' + fileId + '/top',
+                url: API_URL + '/files/' + fileId + '/top?rows=5',
                 transformResponse: angular.fromJson,
             });
         },
@@ -99,12 +99,28 @@ angular.module('openeis-ui.projects', [
     $scope.project = project;
     $scope.projectFiles = projectFiles;
 
-    function openModal (file) {
-        $scope.modal = {
-            show: true,
-            file: file,
-        };
+    function openModal(file) {
+        ProjectFiles.head(file.id).then(function (headResponse) {
+            if (headResponse.data.has_header) {
+                headResponse.data.header = headResponse.data.rows.shift();
+            }
+
+            file.head = headResponse.data;
+            file.cols = [];
+            angular.forEach(file.head.rows[0], function (v, k) {
+                file.cols.push(k);
+            });
+
+            $scope.modal = {
+                show: true,
+                file: file,
+            };
+        });
     }
+
+    $scope.viewFile = function ($index) {
+        openModal($scope.projectFiles[$index]);
+    };
 
     $scope.upload = function (fileInput) {
         angular.forEach(fileInput[0].files, function(file) {
@@ -112,16 +128,10 @@ angular.module('openeis-ui.projects', [
                 url: API_URL + '/projects/' + project.id + '/add_file',
                 file: file,
             }).then(function (response) {
-                ProjectFiles.head(response.data.id).then(function (headResponse) {
-                    if (headResponse.data.has_header) {
-                        headResponse.data.header = headResponse.data.rows.shift();
-                    }
-                    response.data.head = headResponse.data;
-                    openModal(response.data);
-                });
-
-                ProjectFiles.get(response.data.id).then(function (response) {
-                    $scope.projectFiles.push(response);
+                // Perform a 'get' so that the file object has $save and $delete methods
+                ProjectFiles.get(response.data.id).then(function (getResponse) {
+                    openModal(getResponse);
+                    $scope.projectFiles.push(getResponse);
                 });
 
                 fileInput.val('').triggerHandler('change');

@@ -21,7 +21,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="file in projectFiles">
-                        <td>{{file.file}}</td>
+                        <td><a ng-click="viewFile($index)">{{file.file}}</a></td>
                         <td>{{file.size | bytes}}</td>
                         <td><a href="{{file.download_url}}" target="_self">Download</a></td>
                         <td><a ng-click="deleteFile($index)">Delete</a></td>
@@ -29,26 +29,30 @@
                 </tbody>
             </table>
         </div>
-        <label>Upload file</label>
+        <label class="label--inline">Upload file</label>
         <file-upload file-upload-click="upload(fileInput)"></file-upload>
-    </div>
-</div>
-
-<div class="modal" ng-show="modal.show">
-    <div class="modal__dialog">
-        <h4>{{modal.file.file}}</h4>
-        <table>
-            <thead ng-if="modal.file.head.header.length">
-                <tr>
-                    <th ng-repeat="header in modal.file.head.header">{{header}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="row in modal.file.head.rows">
-                    <td ng-repeat="col in row">{{col}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <button ng-click="modal.show = false">Close</button>
+        <modal ng-if="modal.show">
+            <h4>{{modal.file.file}}</h4>
+            <table class="file-preview">
+                <thead>
+                    <tr>
+                        <th colspan="{{modal.file.cols.length}}">Select columns that comprise timestamp:</th>
+                    <tr>
+                        <th ng-repeat="col in modal.file.cols">
+                            <input type="checkbox" id="{{col}}" value="{{col}}">
+                        </th>
+                    </tr>
+                    <tr ng-if="modal.file.head.header.length">
+                        <th ng-repeat="header in modal.file.head.header"><label for="{{$index}}">{{header}}</label></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in modal.file.head.rows">
+                        <td ng-repeat="col in row">{{col}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button ng-click="modal.show = false">Continue</button>
+        </modal>
     </div>
 </div>
