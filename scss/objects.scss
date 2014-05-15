@@ -95,14 +95,11 @@ modal {
 .form--stacked,
 %form--stacked {
     label {
-        display: block;
-        width: 100%;
-        line-height: 1.5 * $inuit-base-spacing-unit;
+        @extend %label--block;
     }
 
     input {
-        display: block;
-        width: 100%;
+        @extend %input--block;
     }
 
     .help {
@@ -125,12 +122,25 @@ modal {
     margin: 0 0 $inuit-base-spacing-unit;
 }
 
+.label--block,
+%label--block {
+    display: block;
+    width: 100%;
+    line-height: 1.5 * $inuit-base-spacing-unit;
+}
+
 .label--inline,
 %label--inline {
     display: inline-block;
     line-height: 2 * $inuit-base-spacing-unit;
     margin-right: halve($inuit-base-spacing-unit);
     vertical-align: middle;
+}
+
+.input--block,
+%input--block {
+    display: block;
+    width: 100%;
 }
 
 .input--inline,

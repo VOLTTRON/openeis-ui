@@ -6,51 +6,70 @@
 
     <div class="view view--project">
         <h2>{{project.name}}</h2>
-        <div ng-if="dataFiles.length">
-            <h3>Project files</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Size</th>
-                        <th>Download</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="file in dataFiles">
-                        <td><a ng-click="viewFile($index)">{{file.file}}</a></td>
-                        <td>{{file.size | bytes}}</td>
-                        <td><a href="{{file.download_url}}" target="_self">Download</a></td>
-                        <td><a ng-click="deleteFile($index)">Delete</a></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="layout">
+            <div class="data-files">
+                <h3>Data files</h3>
+                <table ng-if="dataFiles.length">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Download</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="file in dataFiles">
+                            <td><a ng-click="viewFile($index)">{{file.file}}</a></td>
+                            <td>{{file.size | bytes}}</td>
+                            <td><a href="{{file.download_url}}" target="_self">Download</a></td>
+                            <td><a ng-click="deleteFile($index)">Delete</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <label class="label--block">Upload file</label>
+                <file-upload file-upload-click="upload(fileInput)"></file-upload>
+                <modal ng-if="modal.show">
+                    <h4>{{modal.file.file}}</h4>
+                    <table class="file-preview">
+                        <thead>
+                            <tr>
+                                <th colspan="{{modal.file.cols.length}}">Select columns that comprise timestamp:</th>
+                            <tr>
+                                <th ng-repeat="col in modal.file.cols">
+                                    <input type="checkbox" id="{{col}}" value="{{col}}">
+                                </th>
+                            </tr>
+                            <tr ng-if="modal.file.head.header.length">
+                                <th ng-repeat="header in modal.file.head.header"><label for="{{$index}}">{{header}}</label></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in modal.file.head.rows">
+                                <td ng-repeat="col in row">{{col}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button ng-click="modal.show = false">Continue</button>
+                </modal>
+            </div>
+            <div class="data-sets">
+                <h3>Data sets</h3>
+                <table ng-if="dataSets.length">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="dataSet in dataSets">
+                            <td>{{dataSet.name}}</td>
+                            <td>{{dataSet.status}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <label class="label--inline">Upload file</label>
-        <file-upload file-upload-click="upload(fileInput)"></file-upload>
-        <modal ng-if="modal.show">
-            <h4>{{modal.file.file}}</h4>
-            <table class="file-preview">
-                <thead>
-                    <tr>
-                        <th colspan="{{modal.file.cols.length}}">Select columns that comprise timestamp:</th>
-                    <tr>
-                        <th ng-repeat="col in modal.file.cols">
-                            <input type="checkbox" id="{{col}}" value="{{col}}">
-                        </th>
-                    </tr>
-                    <tr ng-if="modal.file.head.header.length">
-                        <th ng-repeat="header in modal.file.head.header"><label for="{{$index}}">{{header}}</label></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="row in modal.file.head.rows">
-                        <td ng-repeat="col in row">{{col}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button ng-click="modal.show = false">Continue</button>
-        </modal>
     </div>
 </div>

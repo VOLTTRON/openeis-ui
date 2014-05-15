@@ -11,6 +11,14 @@ $inuit-base-font-size: 14px;
 $inuit-base-line-height: 20px;
 $primary-action-color: #58b;
 $error-color: #f04124;
+$inuit-enable-block-list--small: true;
+$inuit-enable-box--small: true;
+$inuit-enable-layout--flush: true;
+$inuit-enable-layout--right: true;
+$inuit-btn-radius: 3px;
+$inuit-btn-background: $primary-action-color;
+$inuit-btn-border-width: 0;
+
 @import "inuit-defaults/settings.defaults";
 
 @import "inuit-functions/tools.functions";
@@ -23,14 +31,6 @@ $error-color: #f04124;
 @import "inuit-headings/base.headings";
 @import "inuit-lists/base.lists";
 @import "base";
-
-$inuit-enable-block-list--small: true;
-$inuit-enable-box--small: true;
-$inuit-enable-layout--flush: true;
-$inuit-enable-layout--right: true;
-$inuit-btn-radius: 3px;
-$inuit-btn-background: $primary-action-color;
-$inuit-btn-border-width: 0;
 
 @import "inuit-bare-list/objects.bare-list";
 @import "inuit-block-list/objects.block-list";
@@ -202,9 +202,31 @@ nav {
     &--project {
         @extend %box;
 
+        .data-files {
+            @extend %box;
+            @extend %layout__item;
+            width: 50%;
+            border-right: 1px solid #ddd;
+
+            > table {
+                width: 100%;
+            }
+        }
+
+        .data-sets {
+            @extend %box;
+            @extend %layout__item;
+            width: 50%;
+
+            > table {
+                width: 100%;
+            }
+        }
+
         file-upload {
             input {
-                @extend %input--inline;
+                @extend %input--block;
+                margin-bottom: halve($inuit-base-spacing-unit);
             }
         }
     }

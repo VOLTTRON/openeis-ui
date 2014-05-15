@@ -98,6 +98,11 @@ angular.module('openeis-ui.projects', [
 .controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, API_URL, Files) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
+    $scope.dataSets = [
+        { name: 'Data set 1', status: 'Ready' },
+        { name: 'Data set 2', status: 'Importing' },
+        { name: 'Data set 3', status: 'Queued' },
+    ];
 
     function openModal(file) {
         Files.head(file.id).then(function (headResponse) {
