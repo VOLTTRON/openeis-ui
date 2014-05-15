@@ -86,7 +86,7 @@ describe('openeis-ui.auth', function () {
 
     describe('Auth service', function () {
         var Auth, $httpBackend, $location,
-            resourceUrl = API_URL + '/account',
+            accountResourceUrl = API_URL + '/account',
             loginResourceUrl = API_URL + '/account/login',
             pwResetResourceUrl = API_URL + '/account/password_reset';
 
@@ -102,21 +102,18 @@ describe('openeis-ui.auth', function () {
             $httpBackend.verifyNoOutstandingExpectation();
         });
 
-        describe('init method', function () {
-            it('should update the account variable', function () {
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
-                Auth.init();
-
-                expect(Auth.account()).toEqual(null);
+        describe('account method', function () {
+            it('should only call the API once', function () {
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
+                Auth.account(function () {
+                    expect(account.username).toEqual('TestUser');
+                });
                 $httpBackend.flush();
-                expect(Auth.account().username).toEqual('TestUser');
 
-                $httpBackend.expectGET(resourceUrl).respond(403, '');
-                Auth.init();
-
-                expect(Auth.account().username).toEqual('TestUser');
-                $httpBackend.flush();
-                expect(Auth.account()).toEqual(false);
+                // No API call second time around
+                Auth.account(function () {
+                    expect(account.username).toEqual('TestUser');
+                });
             });
         });
 
@@ -129,21 +126,17 @@ describe('openeis-ui.auth', function () {
         });
 
         describe('logIn method', function () {
-            it('should only call the init method if successful', function () {
-                spyOn(Auth, 'init').andCallThrough();
-
+            it('should only try to update the account property if successful', function () {
                 $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
+                // No API call to retrieve account details
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
-
-                expect(Auth.init).not.toHaveBeenCalled();
 
                 $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                // API call to retrieve account details
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
-
-                expect(Auth.init).toHaveBeenCalled();
             });
 
             it('should redirect to AUTH_HOME if successful', function () {
@@ -151,7 +144,7 @@ describe('openeis-ui.auth', function () {
                 expect($location.url()).toEqual(LOGIN_PAGE);
 
                 $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
 
@@ -161,29 +154,35 @@ describe('openeis-ui.auth', function () {
 
         describe('logOut method', function () {
             it('should update the username property if successful', function () {
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
-                Auth.init();
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
+                Auth.account().then(function (account) {
+                    expect(account.username).toEqual('TestUser');
+                });
                 $httpBackend.flush();
 
                 $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
                 Auth.logOut();
-
-                expect(Auth.account().username).toEqual('TestUser');
                 $httpBackend.flush();
-                expect(Auth.account()).toEqual(false);
+
+                Auth.account().then(function (account) {
+                    expect(account).toEqual(false);
+                });
             });
 
             it('should not update the username property if unsuccessful', function () {
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
-                Auth.init();
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
+                Auth.account().then(function (account) {
+                    expect(account.username).toEqual('TestUser');
+                });
                 $httpBackend.flush();
 
                 $httpBackend.expectDELETE(loginResourceUrl).respond(500, '');
                 Auth.logOut();
-
-                expect(Auth.account().username).toEqual('TestUser');
                 $httpBackend.flush();
-                expect(Auth.account().username).toEqual('TestUser');
+
+                Auth.account().then(function (account) {
+                    expect(account.username).toEqual('TestUser');
+                });
             });
 
             it('should redirect to LOGIN_PAGE if successful', function () {
@@ -205,7 +204,7 @@ describe('openeis-ui.auth', function () {
                 $location.url(ANONYMOUS_PAGE);
                 expect($location.url()).toEqual(ANONYMOUS_PAGE);
 
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.requireAnon();
                 $httpBackend.flush();
 
@@ -216,7 +215,7 @@ describe('openeis-ui.auth', function () {
                 $location.url(ANONYMOUS_PAGE);
                 expect($location.url()).toEqual(ANONYMOUS_PAGE);
 
-                $httpBackend.expectGET(resourceUrl).respond(403, '');
+                $httpBackend.expectGET(accountResourceUrl).respond(403, '');
                 Auth.requireAnon();
                 $httpBackend.flush();
 
@@ -231,14 +230,14 @@ describe('openeis-ui.auth', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET(resourceUrl).respond(403, '');
+                $httpBackend.expectGET(accountResourceUrl).respond(403, '');
                 Auth.requireAuth();
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(LOGIN_PAGE);
 
                 $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
 
@@ -249,7 +248,7 @@ describe('openeis-ui.auth', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET(resourceUrl).respond('{"username":"TestUser"}');
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.requireAuth();
                 $httpBackend.flush();
 

@@ -37,7 +37,7 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
             templateUrl: 'partials/account.html',
         });
 })
-.service('Auth', function ($resource, API_URL, $q, LOGIN_PAGE, AUTH_HOME, $location) {
+.service('Auth', function ($resource, API_URL, $q, LOGIN_PAGE, AUTH_HOME, $location, $rootScope) {
     var Auth = this,
         account = null,
         resource = $resource(API_URL + '/account', null, {
@@ -51,8 +51,31 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         }),
         loginRedirect = null;
 
+    function updateAccount() {
+        var deferred = $q.defer();
+
+        resource.get().$promise
+            .then(function (response) {
+                account = response;
+            }, function () {
+                account = false;
+            })
+            .finally(function () {
+                $rootScope.$emit('accountChange');
+                deferred.resolve(account);
+            });
+
+        return deferred.promise;
+    }
+
     Auth.account = function () {
-        return account;
+        if (account === null) {
+            return updateAccount();
+        }
+
+        var deferred = $q.defer();
+        deferred.resolve(account);
+        return deferred.promise;
     };
 
     Auth.accountCreate = function (account) {
@@ -75,25 +98,11 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         return pwResetResource.put(params).$promise;
     };
 
-    Auth.init = function () {
-        var deferred = $q.defer();
-
-        resource.get(function (response) {
-            account = response;
-            deferred.resolve();
-        }, function () {
-            account = false;
-            deferred.resolve();
-        });
-
-        return deferred.promise;
-    };
-
     Auth.logIn = function(credentials) {
         var deferred = $q.defer();
 
         loginResource.save(credentials, function () {
-            Auth.init().then(function () {
+            updateAccount().then(function () {
                 if (loginRedirect !== null) {
                     $location.url(loginRedirect);
                     loginRedirect = null;
@@ -114,6 +123,7 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
 
         loginResource.delete(function () {
             account = false;
+            $rootScope.$emit('accountChange');
             $location.url(LOGIN_PAGE);
             deferred.resolve();
         }, function (rejection) {
@@ -126,22 +136,14 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
     Auth.requireAnon = function () {
         var deferred = $q.defer();
 
-        function check() {
+        Auth.account().then(function (account) {
             if (account) {
                 $location.url(AUTH_HOME);
                 deferred.reject();
             } else {
                 deferred.resolve();
             }
-        }
-
-        if (account === null) {
-            Auth.init().then(function () {
-                check();
-            });
-        } else {
-            check();
-        }
+        });
 
         return deferred.promise;
     };
@@ -149,23 +151,15 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
     Auth.requireAuth = function () {
         var deferred = $q.defer();
 
-        function check() {
-            if (!account) {
+        Auth.account().then(function (account) {
+            if (account) {
+                deferred.resolve();
+            } else {
                 loginRedirect = $location.url();
                 $location.url(LOGIN_PAGE);
                 deferred.reject();
-            } else {
-                deferred.resolve();
             }
-        }
-
-        if (account === null) {
-            Auth.init().then(function () {
-                check();
-            });
-        } else {
-            check();
-        }
+        });
 
         return deferred.promise;
     };
@@ -267,9 +261,12 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
     };
 })
 .controller('AccountCtrl', function ($scope, Auth, $timeout) {
-    $scope.account = Auth.account();
+    var accountOrig;
 
-    var accountOrig = angular.copy(Auth.account());
+    Auth.account().then(function (account) {
+        $scope.account = account;
+        accountOrig = angular.copy(account);
+    });
 
     $scope.$watchCollection('account', function (newValue) {
         if (newValue.first_name !== accountOrig.first_name ||
@@ -294,7 +291,7 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
             }).then(function (response) {
                 $scope.profile.success = true;
                 $scope.profile.changed = false;
-                accountOrig = angular.copy(Auth.account());
+                accountOrig = angular.copy($scope.account);
                 $timeout($scope.profile.clearAlerts, 2000);
             }, function (rejection) {
                 if (rejection.status === 400) {
@@ -346,8 +343,12 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         },
     };
 })
-.controller('TopBarCtrl', function ($scope, Auth) {
-    $scope.account = Auth.account();
+.controller('TopBarCtrl', function ($scope, Auth, $rootScope) {
+    $rootScope.$on('accountChange', function () {
+        Auth.account().then(function (account) {
+            $scope.account = account;
+        });
+    });
 
     $scope.logOut = function () {
         Auth.logOut();
