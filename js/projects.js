@@ -20,8 +20,8 @@ angular.module('openeis-ui.projects', [
                 project: ['Projects', '$route', function(Projects, $route) {
                     return Projects.get($route.current.params.projectId);
                 }],
-                projectFiles: ['ProjectFiles', '$route', function(ProjectFiles, $route) {
-                    return ProjectFiles.query($route.current.params.projectId);
+                dataFiles: ['Files', '$route', function(Files, $route) {
+                    return Files.query($route.current.params.projectId);
                 }],
             },
         });
@@ -44,7 +44,7 @@ angular.module('openeis-ui.projects', [
         },
     };
 })
-.factory('ProjectFiles', function ($resource, API_URL, $http) {
+.factory('Files', function ($resource, API_URL, $http) {
     var resource = $resource(API_URL + '/files/:fileId', { fileId: '@id' });
 
     return {
@@ -95,12 +95,12 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, projectFiles, $upload, API_URL, ProjectFiles) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, API_URL, Files) {
     $scope.project = project;
-    $scope.projectFiles = projectFiles;
+    $scope.dataFiles = dataFiles;
 
     function openModal(file) {
-        ProjectFiles.head(file.id).then(function (headResponse) {
+        Files.head(file.id).then(function (headResponse) {
             if (headResponse.data.has_header) {
                 headResponse.data.header = headResponse.data.rows.shift();
             }
@@ -119,7 +119,7 @@ angular.module('openeis-ui.projects', [
     }
 
     $scope.viewFile = function ($index) {
-        openModal($scope.projectFiles[$index]);
+        openModal($scope.dataFiles[$index]);
     };
 
     $scope.upload = function (fileInput) {
@@ -129,9 +129,9 @@ angular.module('openeis-ui.projects', [
                 file: file,
             }).then(function (response) {
                 // Perform a 'get' so that the file object has $save and $delete methods
-                ProjectFiles.get(response.data.id).then(function (getResponse) {
+                Files.get(response.data.id).then(function (getResponse) {
                     openModal(getResponse);
-                    $scope.projectFiles.push(getResponse);
+                    $scope.dataFiles.push(getResponse);
                 });
 
                 fileInput.val('').triggerHandler('change');
@@ -140,8 +140,8 @@ angular.module('openeis-ui.projects', [
     };
 
     $scope.deleteFile = function ($index) {
-        $scope.projectFiles[$index].$delete(function () {
-            $scope.projectFiles.splice($index, 1);
+        $scope.dataFiles[$index].$delete(function () {
+            $scope.dataFiles.splice($index, 1);
         });
     };
 });

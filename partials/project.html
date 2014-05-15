@@ -6,7 +6,7 @@
 
     <div class="view view--project">
         <h2>{{project.name}}</h2>
-        <div ng-if="projectFiles.length">
+        <div ng-if="dataFiles.length">
             <h3>Project files</h3>
             <table>
                 <thead>
@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="file in projectFiles">
+                    <tr ng-repeat="file in dataFiles">
                         <td><a ng-click="viewFile($index)">{{file.file}}</a></td>
                         <td>{{file.size | bytes}}</td>
                         <td><a href="{{file.download_url}}" target="_self">Download</a></td>

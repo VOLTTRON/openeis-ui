@@ -9,7 +9,7 @@ describe('openeis-ui.projects', function () {
             $provide.constant('API_URL', API_URL);
             $provide.value('projects', []);
             $provide.value('project', {});
-            $provide.value('projectFiles', []);
+            $provide.value('dataFiles', []);
         });
 
         inject(function (_$httpBackend_) {
@@ -87,8 +87,8 @@ describe('openeis-ui.projects', function () {
         });
     });
 
-    describe('ProjectFiles service', function () {
-        var ProjectFiles,
+    describe('Files service', function () {
+        var Files,
             headUrlPattern = new RegExp('^' + API_URL + '\\/files\\/\\d+/head(\\?rows=\\d+)?$'),
             testFiles = [
                 { id: 1, file: 'File 1' },
@@ -97,18 +97,18 @@ describe('openeis-ui.projects', function () {
             ];
 
         beforeEach(function () {
-            inject(function (_ProjectFiles_) {
-                ProjectFiles = _ProjectFiles_;
+            inject(function (_Files_) {
+                Files = _Files_;
             });
         });
 
         it('should get files by file ID that can be saved and deleted', function () {
             var file;
 
-            expect(ProjectFiles.get).toBeDefined();
+            expect(Files.get).toBeDefined();
 
             $httpBackend.expectGET(API_URL + '/files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
-            ProjectFiles.get(testFiles[0].id).then(function (response) {
+            Files.get(testFiles[0].id).then(function (response) {
                 file = response;
             });
             $httpBackend.flush();
@@ -122,10 +122,10 @@ describe('openeis-ui.projects', function () {
         it('should query for all files in a project by project ID', function () {
             var files;
 
-            expect(ProjectFiles.query).toBeDefined();
+            expect(Files.query).toBeDefined();
 
             $httpBackend.expectGET(API_URL + '/files?project=1').respond(angular.toJson(testFiles));
-            ProjectFiles.query(1).then(function (response) {
+            Files.query(1).then(function (response) {
                 files = response;
             });
             $httpBackend.flush();
@@ -150,10 +150,10 @@ describe('openeis-ui.projects', function () {
                     ],
                 };
 
-            expect(ProjectFiles.head).toBeDefined();
+            expect(Files.head).toBeDefined();
 
             $httpBackend.expectGET(headUrlPattern).respond(angular.toJson(testHead));
-            ProjectFiles.head(1).then(function (response) {
+            Files.head(1).then(function (response) {
                 head = response.data;
             });
             $httpBackend.flush();
@@ -257,27 +257,27 @@ describe('openeis-ui.projects', function () {
             // TODO: refactor $scope.upload to make it more testable
         });
 
-        it('should define a function for deleting files by array index', inject(function (ProjectFiles) {
+        it('should define a function for deleting files by array index', inject(function (Files) {
             var testFile = { id: 1, file: 'test_file.csv' };
 
             expect(scope.deleteFile).toBeDefined();
 
-            // Setup: populate scope.projectFiles
+            // Setup: populate scope.dataFiles
             $httpBackend.expectGET(API_URL + '/files?project=1').respond(angular.toJson([testFile]));
-            ProjectFiles.query(1).then(function (response) {
-                scope.projectFiles = response;
+            Files.query(1).then(function (response) {
+                scope.dataFiles = response;
             });
             $httpBackend.flush();
 
             // Assert project file exists
-            expect(scope.projectFiles.length).toEqual(1);
+            expect(scope.dataFiles.length).toEqual(1);
 
             $httpBackend.expectDELETE(API_URL + '/files/' + testFile.id).respond(204, '');
             scope.deleteFile(0);
             $httpBackend.flush();
 
             // Assert project file deleted
-            expect(scope.projectFiles.length).toEqual(0);
+            expect(scope.dataFiles.length).toEqual(0);
         }));
     });
 });
