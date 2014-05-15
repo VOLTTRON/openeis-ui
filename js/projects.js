@@ -26,41 +26,43 @@ angular.module('openeis-ui.projects', [
             },
         });
 })
-.factory('Projects', function ($resource, API_URL) {
-    var resource = $resource(API_URL + '/projects/:projectId', { projectId: '@id' }, {
-        create: { method: 'POST' },
-        save: { method: 'PUT' },
-    });
+.service('Projects', function ($resource, API_URL) {
+    var Projects = this,
+        resource = $resource(API_URL + '/projects/:projectId', { projectId: '@id' }, {
+            create: { method: 'POST' },
+            save: { method: 'PUT' },
+        });
 
-    return {
-        get: function (projectId) {
-            return resource.get({ projectId: projectId}).$promise;
-        },
-        query: function () {
-            return resource.query().$promise;
-        },
-        create: function (project) {
-            return resource.create(project).$promise;
-        },
+    Projects.get = function (projectId) {
+        return resource.get({ projectId: projectId}).$promise;
+    };
+
+    Projects.query = function () {
+        return resource.query().$promise;
+    };
+
+    Projects.create = function (project) {
+        return resource.create(project).$promise;
     };
 })
-.factory('Files', function ($resource, API_URL, $http) {
-    var resource = $resource(API_URL + '/files/:fileId', { fileId: '@id' });
+.service('Files', function ($resource, API_URL, $http) {
+    var Files = this,
+        resource = $resource(API_URL + '/files/:fileId', { fileId: '@id' });
 
-    return {
-        get: function (fileId) {
-            return resource.get({ fileId: fileId }).$promise;
-        },
-        query: function (projectId) {
-            return resource.query({ project: projectId }).$promise;
-        },
-        head: function (fileId) {
-            return $http({
-                method: 'GET',
-                url: API_URL + '/files/' + fileId + '/head?rows=5',
-                transformResponse: angular.fromJson,
-            });
-        },
+    Files.get = function (fileId) {
+        return resource.get({ fileId: fileId }).$promise;
+    };
+
+    Files.query = function (projectId) {
+        return resource.query({ project: projectId }).$promise;
+    };
+
+    Files.head = function (fileId) {
+        return $http({
+            method: 'GET',
+            url: API_URL + '/files/' + fileId + '/head?rows=5',
+            transformResponse: angular.fromJson,
+        });
     };
 })
 .controller('ProjectsCtrl', function ($scope, projects, Projects) {
