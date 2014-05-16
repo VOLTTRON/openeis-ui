@@ -1,5 +1,5 @@
 angular.module('openeis-ui.projects', [
-    'openeis-ui.auth', 'openeis-ui.file', 'openeis-ui.modal',
+    'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.file', 'openeis-ui.modal',
     'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
@@ -25,45 +25,6 @@ angular.module('openeis-ui.projects', [
                 }],
             },
         });
-})
-.service('Projects', function ($resource, API_URL) {
-    var Projects = this,
-        resource = $resource(API_URL + '/projects/:projectId', { projectId: '@id' }, {
-            create: { method: 'POST' },
-            save: { method: 'PUT' },
-        });
-
-    Projects.get = function (projectId) {
-        return resource.get({ projectId: projectId}).$promise;
-    };
-
-    Projects.query = function () {
-        return resource.query().$promise;
-    };
-
-    Projects.create = function (project) {
-        return resource.create(project).$promise;
-    };
-})
-.service('Files', function ($resource, API_URL, $http) {
-    var Files = this,
-        resource = $resource(API_URL + '/files/:fileId', { fileId: '@id' });
-
-    Files.get = function (fileId) {
-        return resource.get({ fileId: fileId }).$promise;
-    };
-
-    Files.query = function (projectId) {
-        return resource.query({ project: projectId }).$promise;
-    };
-
-    Files.head = function (fileId) {
-        return $http({
-            method: 'GET',
-            url: API_URL + '/files/' + fileId + '/head?rows=5',
-            transformResponse: angular.fromJson,
-        });
-    };
 })
 .controller('ProjectsCtrl', function ($scope, projects, Projects) {
     $scope.projects = projects;

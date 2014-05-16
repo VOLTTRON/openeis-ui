@@ -1,256 +1,140 @@
 describe('openeis-ui.auth', function () {
-    var API_URL = '/api',
-        LOGIN_PAGE = '/path/to/login/page',
-        AUTH_HOME = '/path/to/auth/home';
+    var Auth = {
+            account: function () { return {
+                then: function () {} };
+            },
+        };
 
     beforeEach(function () {
         module('openeis-ui.auth');
 
-        module(function($provide) {
-            $provide.constant('API_URL', API_URL);
-            $provide.constant('LOGIN_PAGE', LOGIN_PAGE);
-            $provide.constant('AUTH_HOME', AUTH_HOME);
+        module(function ($provide) {
+            $provide.constant('Auth', Auth);
         });
     });
 
     describe('authRoute provider', function () {
-        var authRouteProvider;
+        var authRouteProvider, $route;
 
-        beforeEach(module(function ($provide, _authRouteProvider_) {
-            $provide.value('Auth', {
-                requireAnon: function () {},
-                requireAuth: function () {},
+        beforeEach(function () {
+            module(function (_authRouteProvider_) {
+                authRouteProvider = _authRouteProvider_;
             });
 
-            authRouteProvider = _authRouteProvider_;
-        }));
+            inject(function (_$route_) {
+                $route = _$route_;
+            });
+        });
 
         describe('whenAnon method', function () {
             it('should add an anon resolve', function () {
-                inject(function (authRoute) {
-                    expect(authRoute.routes['/anon-test']).not.toBeDefined();
+                expect($route.routes['/anon-test']).not.toBeDefined();
 
-                    authRouteProvider.whenAnon('/anon-test', {});
+                authRouteProvider.whenAnon('/anon-test', {});
 
-                    expect(authRoute.routes['/anon-test'].resolve.anon).toBeDefined();
-                });
+                expect($route.routes['/anon-test'].resolve.anon).toBeDefined();
             });
 
             it('should be chainable', function () {
-                inject(function (authRoute) {
-                    expect(authRoute.routes['/anon-test']).not.toBeDefined();
-                    expect(authRoute.routes['/anon-test-2']).not.toBeDefined();
-                    expect(authRoute.routes['/auth-test']).not.toBeDefined();
+                expect($route.routes['/anon-test']).not.toBeDefined();
+                expect($route.routes['/anon-test-2']).not.toBeDefined();
+                expect($route.routes['/auth-test']).not.toBeDefined();
 
-                    authRouteProvider
-                        .whenAnon('/anon-test', {})
-                        .whenAnon('/anon-test-2', {})
-                        .whenAuth('/auth-test', {});
+                authRouteProvider
+                    .whenAnon('/anon-test', {})
+                    .whenAnon('/anon-test-2', {})
+                    .whenAuth('/auth-test', {});
 
-                    expect(authRoute.routes['/anon-test']).toBeDefined();
-                    expect(authRoute.routes['/anon-test-2']).toBeDefined();
-                    expect(authRoute.routes['/auth-test']).toBeDefined();
-                });
+                expect($route.routes['/anon-test']).toBeDefined();
+                expect($route.routes['/anon-test-2']).toBeDefined();
+                expect($route.routes['/auth-test']).toBeDefined();
             });
         });
 
          describe('whenAuth method', function () {
             it('should add an auth resolve', function () {
-                inject(function (authRoute) {
-                    expect(authRoute.routes['/auth-test']).not.toBeDefined();
+                expect($route.routes['/auth-test']).not.toBeDefined();
 
-                    authRouteProvider.whenAuth('/auth-test', {});
+                authRouteProvider.whenAuth('/auth-test', {});
 
-                    expect(authRoute.routes['/auth-test'].resolve.auth).toBeDefined();
-                });
+                expect($route.routes['/auth-test'].resolve.auth).toBeDefined();
             });
 
             it('should be chainable', function () {
-                inject(function (authRoute) {
-                    expect(authRoute.routes['/auth-test']).not.toBeDefined();
-                    expect(authRoute.routes['/auth-test-2']).not.toBeDefined();
-                    expect(authRoute.routes['/anon-test']).not.toBeDefined();
+                expect($route.routes['/auth-test']).not.toBeDefined();
+                expect($route.routes['/auth-test-2']).not.toBeDefined();
+                expect($route.routes['/anon-test']).not.toBeDefined();
 
-                    authRouteProvider
-                        .whenAuth('/auth-test', {})
-                        .whenAuth('/auth-test-2', {})
-                        .whenAnon('/anon-test', {});
+                authRouteProvider
+                    .whenAuth('/auth-test', {})
+                    .whenAuth('/auth-test-2', {})
+                    .whenAnon('/anon-test', {});
 
-                    expect(authRoute.routes['/auth-test']).toBeDefined();
-                    expect(authRoute.routes['/auth-test-2']).toBeDefined();
-                    expect(authRoute.routes['/anon-test']).toBeDefined();
-                });
+                expect($route.routes['/auth-test']).toBeDefined();
+                expect($route.routes['/auth-test-2']).toBeDefined();
+                expect($route.routes['/anon-test']).toBeDefined();
             });
         });
     });
 
-    describe('Auth service', function () {
-        var Auth, $httpBackend, $location,
-            accountResourceUrl = API_URL + '/account',
-            loginResourceUrl = API_URL + '/account/login',
-            pwResetResourceUrl = API_URL + '/account/password_reset';
+    describe('authRoute service', function () {
+        var authRoute, $httpBackend, $location, account;
 
         beforeEach(function () {
-            inject(function (_Auth_, _$httpBackend_, _$location_) {
-                Auth = _Auth_;
+            spyOn(Auth, 'account').andCallFake(function () {
+                return { then: function (callback) { callback(account); } };
+            });
+
+            inject(function (_authRoute_, _$httpBackend_, _$location_) {
+                authRoute = _authRoute_;
                 $httpBackend = _$httpBackend_;
                 $location = _$location_;
-            });
-        });
-
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
-        describe('account method', function () {
-            it('should only call the API once', function () {
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.account(function () {
-                    expect(account.username).toEqual('TestUser');
-                });
-                $httpBackend.flush();
-
-                // No API call second time around
-                Auth.account(function () {
-                    expect(account.username).toEqual('TestUser');
-                });
-            });
-        });
-
-        describe('accountRecover1 method', function () {
-            it('should POST account ID', function () {
-                $httpBackend.expectPOST(pwResetResourceUrl, '{"username_or_email":"TestUser"}').respond(204, '');
-                Auth.accountRecover1('TestUser');
-                $httpBackend.flush();
-            });
-        });
-
-        describe('logIn method', function () {
-            it('should only try to update the account property if successful', function () {
-                $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
-                // No API call to retrieve account details
-                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-                $httpBackend.flush();
-
-                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                // API call to retrieve account details
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-                $httpBackend.flush();
-            });
-
-            it('should redirect to AUTH_HOME if successful', function () {
-                $location.url(LOGIN_PAGE);
-                expect($location.url()).toEqual(LOGIN_PAGE);
-
-                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-                $httpBackend.flush();
-
-                expect($location.url()).toEqual(AUTH_HOME);
-            });
-        });
-
-        describe('logOut method', function () {
-            it('should update the username property if successful', function () {
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.account().then(function (account) {
-                    expect(account.username).toEqual('TestUser');
-                });
-                $httpBackend.flush();
-
-                $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
-                Auth.logOut();
-                $httpBackend.flush();
-
-                Auth.account().then(function (account) {
-                    expect(account).toEqual(false);
-                });
-            });
-
-            it('should not update the username property if unsuccessful', function () {
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.account().then(function (account) {
-                    expect(account.username).toEqual('TestUser');
-                });
-                $httpBackend.flush();
-
-                $httpBackend.expectDELETE(loginResourceUrl).respond(500, '');
-                Auth.logOut();
-                $httpBackend.flush();
-
-                Auth.account().then(function (account) {
-                    expect(account.username).toEqual('TestUser');
-                });
-            });
-
-            it('should redirect to LOGIN_PAGE if successful', function () {
-                $location.url(AUTH_HOME);
-                expect($location.url()).toEqual(AUTH_HOME);
-
-                $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
-                Auth.logOut();
-                $httpBackend.flush();
-
-                expect($location.url()).toEqual(LOGIN_PAGE);
             });
         });
 
         describe('requireAnon method', function () {
             var ANONYMOUS_PAGE = '/path/to/anonymous/page';
 
-            it('should redirect authenticated users to AUTH_HOME', function () {
-                $location.url(ANONYMOUS_PAGE);
-                expect($location.url()).toEqual(ANONYMOUS_PAGE);
+            it('should call Auth.authHome if user is logged in', function () {
+                account = true;
+                Auth.authHome = jasmine.createSpy('Auth.authHome');
 
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.requireAnon();
-                $httpBackend.flush();
+                authRoute.requireAnon();
 
-                expect($location.url()).toEqual(AUTH_HOME);
+                expect(Auth.account).toHaveBeenCalled();
+                expect(Auth.authHome).toHaveBeenCalled();
             });
 
             it('should not redirect anonymous users', function () {
-                $location.url(ANONYMOUS_PAGE);
-                expect($location.url()).toEqual(ANONYMOUS_PAGE);
+                account = false;
+                Auth.authHome = jasmine.createSpy('Auth.authHome');
 
-                $httpBackend.expectGET(accountResourceUrl).respond(403, '');
-                Auth.requireAnon();
-                $httpBackend.flush();
+                authRoute.requireAnon();
 
-                expect($location.url()).toEqual(ANONYMOUS_PAGE);
+                expect(Auth.account).toHaveBeenCalled();
+                expect(Auth.authHome).not.toHaveBeenCalled();
             });
         });
 
         describe('requireAuth method', function () {
             var RESTRICTED_PAGE = '/path/to/restricted/page';
 
-            it('should redirect anonymous users to LOGIN_PAGE and redirect back after login', function () {
+            it('should call Auth.afterLogin()', function () {
+                Auth.afterLogin = jasmine.createSpy('afterLogin');
+
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET(accountResourceUrl).respond(403, '');
-                Auth.requireAuth();
-                $httpBackend.flush();
+                authRoute.requireAuth();
 
-                expect($location.url()).toEqual(LOGIN_PAGE);
-
-                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
-                $httpBackend.flush();
-
-                expect($location.url()).toEqual(RESTRICTED_PAGE);
+                expect(Auth.afterLogin).toHaveBeenCalledWith(RESTRICTED_PAGE);
             });
 
             it('should not redirect authenticated users', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
 
-                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.requireAuth();
-                $httpBackend.flush();
+                authRoute.requireAuth();
 
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
             });
@@ -258,85 +142,135 @@ describe('openeis-ui.auth', function () {
     });
 
     describe('LoginCtrl controller', function () {
-        var controller, scope, $httpBackend, $location,
-            loginResourceUrl = API_URL + '/account/login';
+        var controller, scope, status;
 
         beforeEach(function () {
-            inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
+            Auth.logIn = function () {
+                return {
+                    catch: function (callback) {
+                        callback({ status: status });
+                    },
+                };
+            };
+
+            inject(function ($controller, $rootScope) {
                 scope = $rootScope.$new();
                 controller = $controller('LoginCtrl', { $scope: scope });
-                $httpBackend = _$httpBackend_;
-                $location = _$location_;
             });
         });
 
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
-        });
-
         describe('logIn method', function () {
-            it('should pass error status to view and not update the location on error', function () {
+            it('should pass error status to view', function () {
                 scope.form = {
                     username: 'TestUser',
                     password: 'testpassword',
                 };
 
-                spyOn($location, 'url');
+                expect(scope.form.error).not.toBeDefined();
 
-                $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
+                status = 403;
                 scope.logIn();
-                $httpBackend.flush();
 
-                expect($location.url).not.toHaveBeenCalled();
                 expect(scope.form.error).toEqual(403);
 
-                $httpBackend.expectPOST(loginResourceUrl).respond(500, '');
+                status = 500;
                 scope.logIn();
-                $httpBackend.flush();
 
-                expect($location.url).not.toHaveBeenCalled();
                 expect(scope.form.error).toEqual(500);
             });
         });
     });
 
     describe('RecoveryCtrl controller', function () {
-        var controller, scope, $httpBackend,
-            pwResetResourceUrl = API_URL + '/account/password_reset';
+        var controller, scope, resolve, reject;
 
         beforeEach(function () {
-            inject(function($controller, $rootScope, _$httpBackend_) {
+            Auth.accountRecover1 = function () {
+                return {
+                    then: function (successCallback, errorCallback) {
+                        resolve = successCallback;
+                        reject = errorCallback;
+                    },
+                };
+            };
+
+            Auth.accountRecover2 = function () {
+                return {
+                    then: function (successCallback, errorCallback) {
+                        resolve = successCallback;
+                        reject = errorCallback;
+                    },
+                };
+            };
+
+            inject(function ($controller, $rootScope) {
                 scope = $rootScope.$new();
                 controller = $controller('RecoveryCtrl', { $scope: scope });
-                $httpBackend = _$httpBackend_;
             });
+        });
+
+        it('should default to stage 1', function () {
+            expect(scope.form.stage).toEqual(1);
         });
 
         describe('submit method stage 1', function () {
             it('should pass success and error responses to view', function () {
+                expect(scope.form.success).not.toBeDefined();
+                expect(scope.form.error).not.toBeDefined();
+
+                scope.submit();
+                resolve();
+
+                expect(scope.form.success).toBeTruthy();
+
+                scope.submit();
+                reject({ status: 404 });
+
+                expect(scope.form.error.status).toEqual(404);
+
+                scope.submit();
+                reject({ status: 500 });
+
+                expect(scope.form.error.status).toEqual(500);
+            });
+        });
+
+        describe('submit method stage 2', function () {
+            beforeEach(function () {
+                scope.form.stage = 2;
+            });
+
+            it('should detect non-matching passwords', function () {
                 scope.recovery = {
-                    id: 'TestUser',
+                    password: 'password',
+                    passwordConfirm: 'differentpassword',
                 };
 
                 expect(scope.form.error).not.toBeDefined();
 
-                $httpBackend.expectPOST(pwResetResourceUrl).respond(404, '');
                 scope.submit();
-                $httpBackend.flush();
+
+                expect(scope.form.error.status).toEqual(400);
+            });
+
+            it('should pass success and error responses to view', function () {
+                expect(scope.form.success).not.toBeDefined();
+                expect(scope.form.error).not.toBeDefined();
+
+                scope.submit();
+                resolve();
+
+                expect(scope.form.success).toBeTruthy();
+
+                scope.submit();
+                reject({ status: 404 });
 
                 expect(scope.form.error.status).toEqual(404);
 
-                $httpBackend.expectPOST(pwResetResourceUrl).respond(500, '');
                 scope.submit();
-                $httpBackend.flush();
+                reject({ status: 500 });
 
                 expect(scope.form.error.status).toEqual(500);
-
-                $httpBackend.expectPOST(pwResetResourceUrl).respond(204, '');
-                scope.submit();
-                $httpBackend.flush();
-
-                expect(scope.form.success).toBeTruthy();
             });
         });
     });
@@ -345,7 +279,7 @@ describe('openeis-ui.auth', function () {
         var controller, scope;
 
         beforeEach(function () {
-            inject(function($controller, $rootScope) {
+            inject(function ($controller, $rootScope) {
                 scope = $rootScope.$new();
                 controller = $controller('TopBarCtrl', { $scope: scope });
             });

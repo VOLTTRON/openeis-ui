@@ -1,22 +1,53 @@
-angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
+angular.module('openeis-ui.auth', ['openeis-ui.api', 'ngRoute'])
 .provider('authRoute', function ($routeProvider) {
     // Wrapper around $routeProvider to add check for auth status
 
     this.whenAnon = function (path, route) {
         route.resolve = route.resolve || {};
-        angular.extend(route.resolve, { anon: ['Auth', function(Auth) { return Auth.requireAnon(); }] });
+        angular.extend(route.resolve, { anon: ['authRoute', function(authRoute) { return authRoute.requireAnon(); }] });
         $routeProvider.when(path, route);
         return this;
     };
 
     this.whenAuth = function (path, route) {
         route.resolve = route.resolve || {};
-        angular.extend(route.resolve, { auth: ['Auth', function(Auth) { return Auth.requireAuth(); }] });
+        angular.extend(route.resolve, { auth: ['authRoute', function(authRoute) { return authRoute.requireAuth(); }] });
         $routeProvider.when(path, route);
         return this;
     };
 
-    this.$get = $routeProvider.$get;
+    this.$get = function (Auth, $q, $location) {
+        return {
+            requireAnon: function () {
+                var deferred = $q.defer();
+
+                Auth.account().then(function (account) {
+                    if (account) {
+                        Auth.authHome();
+                        deferred.reject();
+                    } else {
+                        deferred.resolve();
+                    }
+                });
+
+                return deferred.promise;
+            },
+            requireAuth: function () {
+                var deferred = $q.defer();
+
+                Auth.account().then(function (account) {
+                    if (account) {
+                        deferred.resolve();
+                    } else {
+                        Auth.afterLogin($location.url());
+                        deferred.reject();
+                    }
+                });
+
+                return deferred.promise;
+            },
+        };
+    };
 })
 .config(function (authRouteProvider) {
     authRouteProvider
@@ -37,133 +68,6 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
             templateUrl: 'partials/account.html',
         });
 })
-.service('Auth', function ($resource, API_URL, $q, LOGIN_PAGE, AUTH_HOME, $location, $rootScope) {
-    var Auth = this,
-        account = null,
-        resource = $resource(API_URL + '/account', null, {
-            create: { method: 'POST' },
-            update: { method: 'PATCH' },
-        }),
-        loginResource = $resource(API_URL + '/account/login'),
-        pwChangeResource = $resource(API_URL + '/account/change_password'),
-        pwResetResource = $resource(API_URL + '/account/password_reset', null, {
-            put: { method: 'PUT' },
-        }),
-        loginRedirect = null;
-
-    function updateAccount() {
-        var deferred = $q.defer();
-
-        resource.get().$promise
-            .then(function (response) {
-                account = response;
-            }, function () {
-                account = false;
-            })
-            .finally(function () {
-                $rootScope.$emit('accountChange');
-                deferred.resolve(account);
-            });
-
-        return deferred.promise;
-    }
-
-    Auth.account = function () {
-        if (account === null) {
-            return updateAccount();
-        }
-
-        var deferred = $q.defer();
-        deferred.resolve(account);
-        return deferred.promise;
-    };
-
-    Auth.accountCreate = function (account) {
-        return resource.create(account).$promise;
-    };
-
-    Auth.accountUpdate = function (account) {
-        return resource.update(account).$promise;
-    };
-
-    Auth.accountPassword = function (password) {
-        return pwChangeResource.save(password).$promise;
-    };
-
-    Auth.accountRecover1 = function (id) {
-        return pwResetResource.save({ username_or_email: id }).$promise;
-    };
-
-    Auth.accountRecover2 = function (params) {
-        return pwResetResource.put(params).$promise;
-    };
-
-    Auth.logIn = function(credentials) {
-        var deferred = $q.defer();
-
-        loginResource.save(credentials, function () {
-            updateAccount().then(function () {
-                if (loginRedirect !== null) {
-                    $location.url(loginRedirect);
-                    loginRedirect = null;
-                } else {
-                    $location.url(AUTH_HOME);
-                }
-                deferred.resolve();
-            });
-        }, function (rejection) {
-            deferred.reject(rejection);
-        });
-
-        return deferred.promise;
-    };
-
-    Auth.logOut = function() {
-        var deferred = $q.defer();
-
-        loginResource.delete(function () {
-            account = false;
-            $rootScope.$emit('accountChange');
-            $location.url(LOGIN_PAGE);
-            deferred.resolve();
-        }, function (rejection) {
-            deferred.reject(rejection);
-        });
-
-        return deferred.promise;
-    };
-
-    Auth.requireAnon = function () {
-        var deferred = $q.defer();
-
-        Auth.account().then(function (account) {
-            if (account) {
-                $location.url(AUTH_HOME);
-                deferred.reject();
-            } else {
-                deferred.resolve();
-            }
-        });
-
-        return deferred.promise;
-    };
-
-    Auth.requireAuth = function () {
-        var deferred = $q.defer();
-
-        Auth.account().then(function (account) {
-            if (account) {
-                deferred.resolve();
-            } else {
-                loginRedirect = $location.url();
-                $location.url(LOGIN_PAGE);
-                deferred.reject();
-            }
-        });
-
-        return deferred.promise;
-    };
-})
 .controller('LoginCtrl', function ($scope, Auth) {
     $scope.logIn = function () {
         Auth.logIn({
@@ -177,7 +81,7 @@ angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
         $scope.form.error = null;
     };
 })
-.controller('SignUpCtrl', function ($scope, $location, Auth, AUTH_HOME) {
+.controller('SignUpCtrl', function ($scope, $location, Auth) {
     $scope.form = {};
 
     $scope.submit = function () {
