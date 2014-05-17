@@ -95,47 +95,58 @@ describe('openeis-ui.auth', function () {
         describe('requireAnon method', function () {
             var ANONYMOUS_PAGE = '/path/to/anonymous/page';
 
-            it('should call Auth.authHome if user is logged in', function () {
-                account = true;
-                Auth.authHome = jasmine.createSpy('Auth.authHome');
+            it('should redirect authenticated users to AUTH_HOME', function () {
+                $location.url(ANONYMOUS_PAGE);
+                expect($location.url()).toEqual(ANONYMOUS_PAGE);
+                expect(Auth.account).not.toHaveBeenCalled();
 
+                account = true;
                 authRoute.requireAnon();
 
                 expect(Auth.account).toHaveBeenCalled();
-                expect(Auth.authHome).toHaveBeenCalled();
+                expect($location.url()).toEqual(settings.AUTH_HOME);
             });
 
             it('should not redirect anonymous users', function () {
-                account = false;
-                Auth.authHome = jasmine.createSpy('Auth.authHome');
+                $location.url(ANONYMOUS_PAGE);
+                expect($location.url()).toEqual(ANONYMOUS_PAGE);
+                expect(Auth.account).not.toHaveBeenCalled();
 
+                account = false;
                 authRoute.requireAnon();
 
                 expect(Auth.account).toHaveBeenCalled();
-                expect(Auth.authHome).not.toHaveBeenCalled();
+                expect($location.url()).toEqual(ANONYMOUS_PAGE);
             });
         });
 
         describe('requireAuth method', function () {
             var RESTRICTED_PAGE = '/path/to/restricted/page';
 
-            it('should call Auth.afterLogin()', function () {
-                Auth.afterLogin = jasmine.createSpy('afterLogin');
+            it('should call Auth.loginRedirect and redirect anonymous users to LOGIN_PAGE', function () {
+                Auth.loginRedirect = jasmine.createSpy('loginRedirect');
 
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
+                expect(Auth.account).not.toHaveBeenCalled();
 
+                account = false;
                 authRoute.requireAuth();
 
-                expect(Auth.afterLogin).toHaveBeenCalledWith(RESTRICTED_PAGE);
+                expect(Auth.account).toHaveBeenCalled();
+                expect(Auth.loginRedirect).toHaveBeenCalledWith(RESTRICTED_PAGE);
+                expect($location.url()).toEqual(settings.LOGIN_PAGE);
             });
 
             it('should not redirect authenticated users', function () {
                 $location.url(RESTRICTED_PAGE);
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
+                expect(Auth.account).not.toHaveBeenCalled();
 
+                account = true;
                 authRoute.requireAuth();
 
+                expect(Auth.account).toHaveBeenCalled();
                 expect($location.url()).toEqual(RESTRICTED_PAGE);
             });
         });

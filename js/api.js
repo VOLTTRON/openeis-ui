@@ -23,7 +23,7 @@ angular.module('openeis-ui.api', ['ngResource'])
                 account = false;
             })
             .finally(function () {
-                $rootScope.$emit('accountChange');
+                $rootScope.$broadcast('accountChange');
                 deferred.resolve(account);
             });
 
@@ -69,7 +69,7 @@ angular.module('openeis-ui.api', ['ngResource'])
                     $location.url(loginRedirect);
                     loginRedirect = null;
                 } else {
-                    $location.url(AUTH_HOME);
+                    $location.url(settings.AUTH_HOME);
                 }
                 deferred.resolve();
             });
@@ -80,13 +80,8 @@ angular.module('openeis-ui.api', ['ngResource'])
         return deferred.promise;
     };
 
-    Auth.authHome = function () {
-        $location.url(settings.AUTH_HOME);
-    };
-
-    Auth.afterLogin = function (url) {
+    Auth.loginRedirect = function (url) {
         loginRedirect = url;
-        $location.url(settings.LOGIN_PAGE);
     };
 
     Auth.logOut = function () {
@@ -94,7 +89,7 @@ angular.module('openeis-ui.api', ['ngResource'])
 
         loginResource.delete(function () {
             account = false;
-            $rootScope.$emit('accountChange');
+            $rootScope.$broadcast('accountChange');
             $location.url(settings.LOGIN_PAGE);
             deferred.resolve();
         }, function (rejection) {

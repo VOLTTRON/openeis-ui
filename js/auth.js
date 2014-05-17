@@ -23,7 +23,7 @@ angular.module('openeis-ui.auth', ['openeis-ui.api', 'ngRoute'])
 
                 Auth.account().then(function (account) {
                     if (account) {
-                        Auth.authHome();
+                        $location.url(settings.AUTH_HOME);
                         deferred.reject();
                     } else {
                         deferred.resolve();
@@ -39,7 +39,8 @@ angular.module('openeis-ui.auth', ['openeis-ui.api', 'ngRoute'])
                     if (account) {
                         deferred.resolve();
                     } else {
-                        Auth.afterLogin($location.url());
+                        Auth.loginRedirect($location.url());
+                        $location.url(settings.LOGIN_PAGE);
                         deferred.reject();
                     }
                 });
@@ -247,8 +248,8 @@ angular.module('openeis-ui.auth', ['openeis-ui.api', 'ngRoute'])
         },
     };
 })
-.controller('TopBarCtrl', function ($scope, Auth, $rootScope) {
-    $rootScope.$on('accountChange', function () {
+.controller('TopBarCtrl', function ($scope, Auth) {
+    $scope.$on('accountChange', function () {
         Auth.account().then(function (account) {
             $scope.account = account;
         });

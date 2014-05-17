@@ -45,6 +45,12 @@ describe('openeis-ui.api', function () {
             });
         });
 
+        describe('loginRedirect method', function () {
+            it('should exist', function () {
+                expect(Auth.loginRedirect).toBeDefined();
+            });
+        });
+
         describe('logIn method', function () {
             it('should only try to update the account property if successful', function () {
                 $httpBackend.expectPOST(loginResourceUrl).respond(403, '');
@@ -69,6 +75,22 @@ describe('openeis-ui.api', function () {
                 $httpBackend.flush();
 
                 expect($location.url()).toEqual(settings.AUTH_HOME);
+            });
+
+            it('should redirect to loginRedirect if set', function () {
+                var LOGIN_REDIRECT = '/after/login/path';
+
+                Auth.loginRedirect(LOGIN_REDIRECT);
+
+                $location.url(settings.LOGIN_PAGE);
+                expect($location.url()).toEqual(settings.LOGIN_PAGE);
+
+                $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
+                $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
+                Auth.logIn({ username: 'TestUser', password: 'testpassword' });
+                $httpBackend.flush();
+
+                expect($location.url()).toEqual(LOGIN_REDIRECT);
             });
         });
 
