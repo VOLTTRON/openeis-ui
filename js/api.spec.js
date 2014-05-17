@@ -1,7 +1,7 @@
 describe('openeis-ui.api', function () {
-    var accountResourceUrl = settings.API_URL + '/account',
-        loginResourceUrl = settings.API_URL + '/account/login',
-        pwResetResourceUrl = settings.API_URL + '/account/password_reset';
+    var accountResourceUrl = settings.API_URL + 'account',
+        loginResourceUrl = settings.API_URL + 'account/login',
+        pwResetResourceUrl = settings.API_URL + 'account/password_reset';
 
     beforeEach(function () {
         module('openeis-ui.api');
@@ -160,7 +160,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.get).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + '/projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
+            $httpBackend.expectGET(settings.API_URL + 'projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
             Projects.get(testProjects[0].id).then(function (response) {
                 project = response;
             });
@@ -177,7 +177,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.query).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + '/projects').respond(angular.toJson(testProjects));
+            $httpBackend.expectGET(settings.API_URL + 'projects').respond(angular.toJson(testProjects));
             Projects.query().then(function (response) {
                 projects = response;
             });
@@ -197,7 +197,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.create).toBeDefined();
 
-            $httpBackend.expectPOST(settings.API_URL + '/projects').respond(angular.toJson(newProject));
+            $httpBackend.expectPOST(settings.API_URL + 'projects').respond(angular.toJson(newProject));
             Projects.create(newProject).then(function (response) {
                 project = response;
             });
@@ -209,7 +209,7 @@ describe('openeis-ui.api', function () {
 
     describe('Files service', function () {
         var Files, $httpBackend,
-            headUrlPattern = new RegExp('^' + settings.API_URL + '\\/files\\/\\d+/head(\\?rows=\\d+)?$'),
+            headUrlPattern = new RegExp('^' + settings.API_URL + 'files/\\d+/head(\\?rows=\\d+)?$'),
             testFiles = [
                 { id: 1, file: 'File 1' },
                 { id: 2, file: 'File 2' },
@@ -228,7 +228,7 @@ describe('openeis-ui.api', function () {
 
             expect(Files.get).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + '/files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
+            $httpBackend.expectGET(settings.API_URL + 'files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
             Files.get(testFiles[0].id).then(function (response) {
                 file = response;
             });
@@ -245,7 +245,7 @@ describe('openeis-ui.api', function () {
 
             expect(Files.query).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + '/files?project=1').respond(angular.toJson(testFiles));
+            $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson(testFiles));
             Files.query(1).then(function (response) {
                 files = response;
             });

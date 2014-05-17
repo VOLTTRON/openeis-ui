@@ -2,13 +2,13 @@ angular.module('openeis-ui.api', ['ngResource'])
 .service('Auth', function ($resource, $q, $location, $rootScope) {
     var Auth = this,
         account = null,
-        resource = $resource(settings.API_URL + '/account', null, {
+        resource = $resource(settings.API_URL + 'account', null, {
             create: { method: 'POST' },
             update: { method: 'PATCH' },
         }),
-        loginResource = $resource(settings.API_URL + '/account/login'),
-        pwChangeResource = $resource(settings.API_URL + '/account/change_password'),
-        pwResetResource = $resource(settings.API_URL + '/account/password_reset', null, {
+        loginResource = $resource(settings.API_URL + 'account/login'),
+        pwChangeResource = $resource(settings.API_URL + 'account/change_password'),
+        pwResetResource = $resource(settings.API_URL + 'account/password_reset', null, {
             put: { method: 'PUT' },
         }),
         loginRedirect = null;
@@ -101,7 +101,7 @@ angular.module('openeis-ui.api', ['ngResource'])
 })
 .service('Projects', function ($resource) {
     var Projects = this,
-        resource = $resource(settings.API_URL + '/projects/:projectId', { projectId: '@id' }, {
+        resource = $resource(settings.API_URL + 'projects/:projectId', { projectId: '@id' }, {
             create: { method: 'POST' },
             save: { method: 'PUT' },
         });
@@ -120,7 +120,7 @@ angular.module('openeis-ui.api', ['ngResource'])
 })
 .service('Files', function ($resource, $http) {
     var Files = this,
-        resource = $resource(settings.API_URL + '/files/:fileId', { fileId: '@id' });
+        resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' });
 
     Files.get = function (fileId) {
         return resource.get({ fileId: fileId }).$promise;
@@ -133,7 +133,7 @@ angular.module('openeis-ui.api', ['ngResource'])
     Files.head = function (fileId) {
         return $http({
             method: 'GET',
-            url: settings.API_URL + '/files/' + fileId + '/head?rows=5',
+            url: settings.API_URL + 'files/' + fileId + '/head?rows=5',
             transformResponse: angular.fromJson,
         });
     };

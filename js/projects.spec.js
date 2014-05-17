@@ -36,7 +36,7 @@ describe('openeis-ui.projects', function () {
             expect(scope.projects.length).toEqual(0);
 
             scope.newProject.name = newProject.name;
-            $httpBackend.expectPOST(settings.API_URL + '/projects').respond(angular.toJson(newProject));
+            $httpBackend.expectPOST(settings.API_URL + 'projects').respond(angular.toJson(newProject));
             scope.newProject.create();
             $httpBackend.flush();
 
@@ -50,7 +50,7 @@ describe('openeis-ui.projects', function () {
             expect(scope.renameProject).toBeDefined();
 
             // Setup: populate scope.projects
-            $httpBackend.expectGET(settings.API_URL + '/projects/' + testProject.id).respond(angular.toJson(testProject));
+            $httpBackend.expectGET(settings.API_URL + 'projects/' + testProject.id).respond(angular.toJson(testProject));
             Projects.get(testProject.id).then(function (response) {
                 scope.projects = [response];
             });
@@ -62,7 +62,7 @@ describe('openeis-ui.projects', function () {
             testProject.name = 'Test project new';
             spyOn(window, 'prompt').andReturn(testProject.name);
 
-            $httpBackend.expectPUT(settings.API_URL + '/projects/' + testProject.id).respond(angular.toJson(testProject));
+            $httpBackend.expectPUT(settings.API_URL + 'projects/' + testProject.id).respond(angular.toJson(testProject));
             scope.renameProject(0);
             $httpBackend.flush();
 
@@ -76,7 +76,7 @@ describe('openeis-ui.projects', function () {
             expect(scope.deleteProject).toBeDefined();
 
             // Setup: populate scope.projects
-            $httpBackend.expectGET(settings.API_URL + '/projects/' + testProject.id).respond(angular.toJson(testProject));
+            $httpBackend.expectGET(settings.API_URL + 'projects/' + testProject.id).respond(angular.toJson(testProject));
             Projects.get(testProject.id).then(function (response) {
                 scope.projects = [response];
             });
@@ -85,7 +85,7 @@ describe('openeis-ui.projects', function () {
             // Assert project exists
             expect(scope.projects[0]).toBeDefined();
 
-            $httpBackend.expectDELETE(settings.API_URL + '/projects/' + testProject.id).respond(204, '');
+            $httpBackend.expectDELETE(settings.API_URL + 'projects/' + testProject.id).respond(204, '');
             scope.deleteProject(0);
             $httpBackend.flush();
 
@@ -116,7 +116,7 @@ describe('openeis-ui.projects', function () {
             expect(scope.deleteFile).toBeDefined();
 
             // Setup: populate scope.dataFiles
-            $httpBackend.expectGET(settings.API_URL + '/files?project=1').respond(angular.toJson([testFile]));
+            $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson([testFile]));
             Files.query(1).then(function (response) {
                 scope.dataFiles = response;
             });
@@ -125,7 +125,7 @@ describe('openeis-ui.projects', function () {
             // Assert project file exists
             expect(scope.dataFiles.length).toEqual(1);
 
-            $httpBackend.expectDELETE(settings.API_URL + '/files/' + testFile.id).respond(204, '');
+            $httpBackend.expectDELETE(settings.API_URL + 'files/' + testFile.id).respond(204, '');
             scope.deleteFile(0);
             $httpBackend.flush();
 

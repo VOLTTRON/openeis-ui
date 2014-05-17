@@ -6,8 +6,8 @@ var settings = {
      */
     BASE_HREF: '/',
 
-    // URL of OpenEIS API, without trailing slash
-    API_URL: '/api',
+    // URL of OpenEIS API
+    API_URL: '/api/',
 
     // Route redirect for anonymous users (root-relative to HTML base)
     LOGIN_PAGE: '/',
