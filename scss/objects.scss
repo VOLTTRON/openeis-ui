@@ -50,13 +50,13 @@ modal {
         background-color: rgba(0,0,0,0.2);
         z-index: 100;
         overflow: scroll;
+        text-align: center;
 
         .modal__dialog {
             @extend %box;
-            position: relative;
-            width: 800px;
-            margin: 100px 0 100px -400px;
-            left: 50%;
+            text-align: left;
+            display: inline-block;
+            margin: 100px 0;
             background-color: #fff;
             box-shadow: 0 0 11px rgba(0,0,0,0.5);
         }
