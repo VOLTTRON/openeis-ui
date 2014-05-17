@@ -112,11 +112,76 @@ angular.module('openeis-ui.projects', [
     };
 
     $scope.createSensorMap = function () {
-        $scope.modal.sensorMap = {};
+        $scope.modal.sensorMap = { version: 1 };
+
+        $scope.modal.sensorMap.files = {
+            foofile: {
+                signature: { headers: ['foo', 'bar'] },
+                timestamp: { columns: ['foo', 'bar'], format: '' },
+            },
+        };
+
+        $scope.modal.sensorMap.sensors = {
+            site1: {
+                attributes: {
+                    address: {
+                        address: '123 Anystreet',
+                        city: 'Richland',
+                        state: 'WA',
+                        zip_code: '99352',
+                    },
+                },
+            },
+            'site2/building1': {
+                attributes: {
+                    address: {
+                        address: '321 Anystreet',
+                        city: 'Richland',
+                        state: 'WA',
+                        zip_code: '99352',
+                    },
+                },
+            },
+        };
     };
 })
-.controller('SensorMapCtrl', function ($scope) {
-    $scope.modal.sensorMap.save = function () {
+.service('SensorMapValidator', function ($http, $q) {
+    var Validator = this,
+        schema;
+
+    function loadSchema() {
+        if (!schema) {
+            return $http.get('/static/projects/json/sensormap-schema.json')
+                .then(function (response) {
+                    schema = response.data;
+                    return schema;
+                });
+        }
+
+        var deferred = $q.defer();
+        deferred.resolve(schema);
+        return deferred.$promise;
+    };
+
+    Validator.validate = function (obj) {
+        return loadSchema().then(function (schema) {
+            return tv4.validateMultiple(obj, schema);
+        });
+    };
+})
+.controller('SensorMapCtrl', function ($scope, SensorMapValidator) {
+    SensorMapValidator.validate($scope.modal.sensorMap)
+        .then(function (result) {
+            if (!result.valid) {
+                angular.forEach(result.errors, function (v, k) {
+                    result.errors[k].stack = null;
+                });
+            }
+
+            $scope.modal.result = result;
+        });
+
+    $scope.modal.save = function () {
         $scope.modal.sensorMap = null;
     };
 });

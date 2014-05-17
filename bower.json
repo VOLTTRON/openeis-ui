@@ -16,7 +16,7 @@
     "inuit-clearfix": "^0.1",
     "inuit-defaults": "^0.1",
     "inuit-flag": "^0.2",
-    "inuit-functions": "^0.1",
+    "inuit-functions": "^0.2",
     "inuit-headings": "^0.1",
     "inuit-images": "^0.1",
     "inuit-layout": "^0.1",
@@ -32,7 +32,8 @@
     "inuit-tables": "^0.1",
     "inuit-tabs": "^0.1",
     "inuit-ui-list": "^0.2",
-    "inuit-widths": "^0.1"
+    "inuit-widths": "^0.1",
+    "tv4": "^1.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.2"

@@ -72,7 +72,10 @@
                 <button ng-click="createSensorMap()">Create new sensor map</button>
                 <modal class="modal--sensor-map" ng-if="modal.sensorMap" ng-controller="SensorMapCtrl">
                     <h4>Sensor map</h4>
-                    <button ng-click="modal.sensorMap.save()">Save</button>
+                    <pre ng-repeat="error in modal.result.errors" ng-if="!modal.result.valid">{{error}}</pre>
+                    <pre ng-if="modal.result.valid">{{modal.result}}</pre>
+                    <pre>{{modal.sensorMap}}</pre>
+                    <button ng-click="modal.save()">Save</button>
                 </modal>
             </div>
         </div>

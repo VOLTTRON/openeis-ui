@@ -98,6 +98,7 @@ module.exports = function(grunt) {
       build: {
         files: {
           '<%= buildDir %>/js/app.min.js': [
+            'bower_components/tv4/tv4.js',
             '<%= buildDir %>/js/app.js',
             '<%= buildDir %>/js/app.templates.js',
           ],
@@ -140,7 +141,7 @@ module.exports = function(grunt) {
       },
 
       karma: {
-        files: ['js/*.js'],
+        files: ['js/*.js', 'settings.js'],
         tasks: ['karma:dev:run'],
       },
 
