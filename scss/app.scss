@@ -255,7 +255,7 @@ nav {
     }
 }
 
-table.file-preview {
+.table--file-preview {
     label:after {
         content: "";
     }
@@ -272,4 +272,8 @@ table.file-preview {
     td {
         border-right: 1px solid #ddd;
     }
+}
+
+.modal--sensor-map .modal__dialog {
+    width: 900px;
 }

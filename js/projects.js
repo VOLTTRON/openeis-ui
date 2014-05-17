@@ -59,6 +59,7 @@ angular.module('openeis-ui.projects', [
     };
 })
 .controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, Files) {
+    $scope.modal = {};
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = [
@@ -67,7 +68,7 @@ angular.module('openeis-ui.projects', [
         { name: 'Data set 3', status: 'Queued' },
     ];
 
-    function openModal(file) {
+    function openFileModal(file) {
         Files.head(file.id).then(function (headResponse) {
             if (headResponse.data.has_header) {
                 headResponse.data.header = headResponse.data.rows.shift();
@@ -79,15 +80,12 @@ angular.module('openeis-ui.projects', [
                 file.cols.push(k);
             });
 
-            $scope.modal = {
-                show: true,
-                file: file,
-            };
+            $scope.modal.File = file;
         });
     }
 
     $scope.viewFile = function ($index) {
-        openModal($scope.dataFiles[$index]);
+        openFileModal($scope.dataFiles[$index]);
     };
 
     $scope.upload = function (fileInput) {
@@ -98,7 +96,7 @@ angular.module('openeis-ui.projects', [
             }).then(function (response) {
                 // Perform a 'get' so that the file object has $save and $delete methods
                 Files.get(response.data.id).then(function (getResponse) {
-                    openModal(getResponse);
+                    openFileModal(getResponse);
                     $scope.dataFiles.push(getResponse);
                 });
 
@@ -111,5 +109,14 @@ angular.module('openeis-ui.projects', [
         $scope.dataFiles[$index].$delete(function () {
             $scope.dataFiles.splice($index, 1);
         });
+    };
+
+    $scope.createSensorMap = function () {
+        $scope.modal.sensorMap = {};
+    };
+})
+.controller('SensorMapCtrl', function ($scope) {
+    $scope.modal.sensorMap.save = function () {
+        $scope.modal.sensorMap = null;
     };
 });

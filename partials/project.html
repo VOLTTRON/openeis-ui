@@ -29,28 +29,28 @@
                 </table>
                 <label class="label--block">Upload file</label>
                 <file-upload file-upload-click="upload(fileInput)"></file-upload>
-                <modal ng-if="modal.show">
-                    <h4>{{modal.file.file}}</h4>
-                    <table class="file-preview">
+                <modal ng-if="modal.File">
+                    <h4>{{modal.File.file}}</h4>
+                    <table class="table--file-preview">
                         <thead>
                             <tr>
-                                <th colspan="{{modal.file.cols.length}}">Select columns that comprise timestamp:</th>
+                                <th colspan="{{modal.File.cols.length}}">Select columns that comprise timestamp:</th>
                             <tr>
-                                <th ng-repeat="col in modal.file.cols">
+                                <th ng-repeat="col in modal.File.cols">
                                     <input type="checkbox" id="{{col}}" value="{{col}}">
                                 </th>
                             </tr>
-                            <tr ng-if="modal.file.head.header.length">
-                                <th ng-repeat="header in modal.file.head.header"><label for="{{$index}}">{{header}}</label></th>
+                            <tr ng-if="modal.File.head.header.length">
+                                <th ng-repeat="header in modal.File.head.header"><label for="{{$index}}">{{header}}</label></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="row in modal.file.head.rows">
+                            <tr ng-repeat="row in modal.File.head.rows">
                                 <td ng-repeat="col in row">{{col}}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <button ng-click="modal.show = false">Continue</button>
+                    <button ng-click="modal.File = null">Continue</button>
                 </modal>
             </div>
             <div class="data-sets">
@@ -69,6 +69,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <button ng-click="createSensorMap()">Create new sensor map</button>
+                <modal class="modal--sensor-map" ng-if="modal.sensorMap" ng-controller="SensorMapCtrl">
+                    <h4>Sensor map</h4>
+                    <button ng-click="modal.sensorMap.save()">Save</button>
+                </modal>
             </div>
         </div>
     </div>
