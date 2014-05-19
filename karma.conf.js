@@ -3,6 +3,7 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     browsers: ['PhantomJS'],
     files: [
+      'settings.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-*/angular-*.js',
       'bower_components/ng-file-upload/angular-file-upload.js',

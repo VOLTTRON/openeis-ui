@@ -1,19 +1,10 @@
 describe('openeis-ui.api', function () {
-    var API_URL = '/api',
-        LOGIN_PAGE = '/path/to/login/page',
-        AUTH_HOME = '/path/to/auth/home',
-        accountResourceUrl = API_URL + '/account',
-        loginResourceUrl = API_URL + '/account/login',
-        pwResetResourceUrl = API_URL + '/account/password_reset';
+    var accountResourceUrl = settings.API_URL + '/account',
+        loginResourceUrl = settings.API_URL + '/account/login',
+        pwResetResourceUrl = settings.API_URL + '/account/password_reset';
 
     beforeEach(function () {
         module('openeis-ui.api');
-
-        module(function($provide) {
-            $provide.constant('API_URL', API_URL);
-            $provide.constant('LOGIN_PAGE', LOGIN_PAGE);
-            $provide.constant('AUTH_HOME', AUTH_HOME);
-        });
     });
 
     describe('Auth service', function () {
@@ -69,15 +60,15 @@ describe('openeis-ui.api', function () {
             });
 
             it('should redirect to AUTH_HOME if successful', function () {
-                $location.url(LOGIN_PAGE);
-                expect($location.url()).toEqual(LOGIN_PAGE);
+                $location.url(settings.LOGIN_PAGE);
+                expect($location.url()).toEqual(settings.LOGIN_PAGE);
 
                 $httpBackend.expectPOST(loginResourceUrl).respond(204, '');
                 $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
                 Auth.logIn({ username: 'TestUser', password: 'testpassword' });
                 $httpBackend.flush();
 
-                expect($location.url()).toEqual(AUTH_HOME);
+                expect($location.url()).toEqual(settings.AUTH_HOME);
             });
         });
 
@@ -115,14 +106,14 @@ describe('openeis-ui.api', function () {
             });
 
             it('should redirect to LOGIN_PAGE if successful', function () {
-                $location.url(AUTH_HOME);
-                expect($location.url()).toEqual(AUTH_HOME);
+                $location.url(settings.AUTH_HOME);
+                expect($location.url()).toEqual(settings.AUTH_HOME);
 
                 $httpBackend.expectDELETE(loginResourceUrl).respond(204, '');
                 Auth.logOut();
                 $httpBackend.flush();
 
-                expect($location.url()).toEqual(LOGIN_PAGE);
+                expect($location.url()).toEqual(settings.LOGIN_PAGE);
             });
         });
     });
@@ -147,7 +138,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.get).toBeDefined();
 
-            $httpBackend.expectGET(API_URL + '/projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
+            $httpBackend.expectGET(settings.API_URL + '/projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
             Projects.get(testProjects[0].id).then(function (response) {
                 project = response;
             });
@@ -164,7 +155,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.query).toBeDefined();
 
-            $httpBackend.expectGET(API_URL + '/projects').respond(angular.toJson(testProjects));
+            $httpBackend.expectGET(settings.API_URL + '/projects').respond(angular.toJson(testProjects));
             Projects.query().then(function (response) {
                 projects = response;
             });
@@ -184,7 +175,7 @@ describe('openeis-ui.api', function () {
 
             expect(Projects.create).toBeDefined();
 
-            $httpBackend.expectPOST(API_URL + '/projects').respond(angular.toJson(newProject));
+            $httpBackend.expectPOST(settings.API_URL + '/projects').respond(angular.toJson(newProject));
             Projects.create(newProject).then(function (response) {
                 project = response;
             });
@@ -196,7 +187,7 @@ describe('openeis-ui.api', function () {
 
     describe('Files service', function () {
         var Files, $httpBackend,
-            headUrlPattern = new RegExp('^' + API_URL + '\\/files\\/\\d+/head(\\?rows=\\d+)?$'),
+            headUrlPattern = new RegExp('^' + settings.API_URL + '\\/files\\/\\d+/head(\\?rows=\\d+)?$'),
             testFiles = [
                 { id: 1, file: 'File 1' },
                 { id: 2, file: 'File 2' },
@@ -215,7 +206,7 @@ describe('openeis-ui.api', function () {
 
             expect(Files.get).toBeDefined();
 
-            $httpBackend.expectGET(API_URL + '/files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
+            $httpBackend.expectGET(settings.API_URL + '/files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
             Files.get(testFiles[0].id).then(function (response) {
                 file = response;
             });
@@ -232,7 +223,7 @@ describe('openeis-ui.api', function () {
 
             expect(Files.query).toBeDefined();
 
-            $httpBackend.expectGET(API_URL + '/files?project=1').respond(angular.toJson(testFiles));
+            $httpBackend.expectGET(settings.API_URL + '/files?project=1').respond(angular.toJson(testFiles));
             Files.query(1).then(function (response) {
                 files = response;
             });

@@ -60,7 +60,8 @@ module.exports = function(grunt) {
           collapseBooleanAttributes:      true,
           collapseWhitespace:             true,
           removeAttributeQuotes:          true,
-          removeComments:                 true, // Only if you don't use comment directives!
+          // removeComments cannot be true if using comment directives
+          removeComments:                 true,
           removeEmptyAttributes:          true,
           removeScriptTypeAttributes:     true,
           removeStyleLinkTypeAttributes:  true,
@@ -88,7 +89,7 @@ module.exports = function(grunt) {
     sync: {
       build: {
         files: [
-          { src: 'index.html', dest: '<%= buildDir %>/' },
+          { src: ['index.html', 'settings.js'], dest: '<%= buildDir %>/' },
         ]
       },
     },
@@ -117,14 +118,15 @@ module.exports = function(grunt) {
         options: { livereload: true },
         files: [
           '<%= buildDir %>/index.html',
+          '<%= buildDir %>/settings.js',
           '<%= buildDir %>/css/app.css',
           '<%= buildDir %>/js/app.min.js',
         ],
       },
 
-      index: {
-        files: ['index.html'],
-        tasks: ['sync:build'],
+      sync: {
+        files: ['index.html', 'settings.js'],
+        tasks: ['sync'],
       },
 
       partials: {
@@ -160,7 +162,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-sync');
 
-  grunt.registerTask('build', ['clean', 'sass', 'sync:build', 'ngmin', 'ngtemplates', 'uglify', 'concat']);
+  grunt.registerTask('build', ['clean', 'sass', 'sync', 'ngmin',
+    'ngtemplates', 'uglify', 'concat']);
   grunt.registerTask('notest', ['build', 'focus:notest']);
   grunt.registerTask('default', ['karma:dev:start', 'build', 'watch']);
 };

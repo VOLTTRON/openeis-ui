@@ -58,7 +58,7 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, API_URL, Files) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, Files) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = [
@@ -93,7 +93,7 @@ angular.module('openeis-ui.projects', [
     $scope.upload = function (fileInput) {
         angular.forEach(fileInput[0].files, function(file) {
             $upload.upload({
-                url: API_URL + '/projects/' + project.id + '/add_file',
+                url: settings.API_URL + '/projects/' + project.id + '/add_file',
                 file: file,
             }).then(function (response) {
                 // Perform a 'get' so that the file object has $save and $delete methods

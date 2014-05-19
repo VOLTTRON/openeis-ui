@@ -32,7 +32,8 @@ setup(
     packages = ['openeis.ui'],
     package_data = {
         'openeis.ui': ['static/openeis-ui/' + name for name in
-                       ['index.html', 'css/app.css', 'js/app.min.js']],
+                       ['index.html', 'settings.js',
+                        'css/app.css', 'js/app.min.js']],
     },
     zip_safe = False,
 )

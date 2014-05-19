@@ -1,14 +1,14 @@
 angular.module('openeis-ui.api', ['ngResource'])
-.service('Auth', function ($resource, API_URL, $q, LOGIN_PAGE, AUTH_HOME, $location, $rootScope) {
+.service('Auth', function ($resource, $q, $location, $rootScope) {
     var Auth = this,
         account = null,
-        resource = $resource(API_URL + '/account', null, {
+        resource = $resource(settings.API_URL + '/account', null, {
             create: { method: 'POST' },
             update: { method: 'PATCH' },
         }),
-        loginResource = $resource(API_URL + '/account/login'),
-        pwChangeResource = $resource(API_URL + '/account/change_password'),
-        pwResetResource = $resource(API_URL + '/account/password_reset', null, {
+        loginResource = $resource(settings.API_URL + '/account/login'),
+        pwChangeResource = $resource(settings.API_URL + '/account/change_password'),
+        pwResetResource = $resource(settings.API_URL + '/account/password_reset', null, {
             put: { method: 'PUT' },
         }),
         loginRedirect = null;
@@ -81,12 +81,12 @@ angular.module('openeis-ui.api', ['ngResource'])
     };
 
     Auth.authHome = function () {
-        $location.url(AUTH_HOME);
+        $location.url(settings.AUTH_HOME);
     };
 
     Auth.afterLogin = function (url) {
         loginRedirect = url;
-        $location.url(LOGIN_PAGE);
+        $location.url(settings.LOGIN_PAGE);
     };
 
     Auth.logOut = function () {
@@ -95,7 +95,7 @@ angular.module('openeis-ui.api', ['ngResource'])
         loginResource.delete(function () {
             account = false;
             $rootScope.$emit('accountChange');
-            $location.url(LOGIN_PAGE);
+            $location.url(settings.LOGIN_PAGE);
             deferred.resolve();
         }, function (rejection) {
             deferred.reject(rejection);
@@ -104,9 +104,9 @@ angular.module('openeis-ui.api', ['ngResource'])
         return deferred.promise;
     };
 })
-.service('Projects', function ($resource, API_URL) {
+.service('Projects', function ($resource) {
     var Projects = this,
-        resource = $resource(API_URL + '/projects/:projectId', { projectId: '@id' }, {
+        resource = $resource(settings.API_URL + '/projects/:projectId', { projectId: '@id' }, {
             create: { method: 'POST' },
             save: { method: 'PUT' },
         });
@@ -123,9 +123,9 @@ angular.module('openeis-ui.api', ['ngResource'])
         return resource.create(project).$promise;
     };
 })
-.service('Files', function ($resource, API_URL, $http) {
+.service('Files', function ($resource, $http) {
     var Files = this,
-        resource = $resource(API_URL + '/files/:fileId', { fileId: '@id' });
+        resource = $resource(settings.API_URL + '/files/:fileId', { fileId: '@id' });
 
     Files.get = function (fileId) {
         return resource.get({ fileId: fileId }).$promise;
@@ -138,7 +138,7 @@ angular.module('openeis-ui.api', ['ngResource'])
     Files.head = function (fileId) {
         return $http({
             method: 'GET',
-            url: API_URL + '/files/' + fileId + '/head?rows=5',
+            url: settings.API_URL + '/files/' + fileId + '/head?rows=5',
             transformResponse: angular.fromJson,
         });
     };
