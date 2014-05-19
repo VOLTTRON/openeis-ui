@@ -1,0 +1,21 @@
+<h4>{{modal.File.file}}</h4>
+<table class="table--file-preview">
+    <thead>
+        <tr>
+            <th colspan="{{modal.File.cols.length}}">Select columns that comprise timestamp:</th>
+        <tr>
+            <th ng-repeat="col in modal.File.cols">
+                <input type="checkbox" id="{{col}}" value="{{col}}">
+            </th>
+        </tr>
+        <tr ng-if="modal.File.head.header.length">
+            <th ng-repeat="header in modal.File.head.header"><label for="{{$index}}">{{header}}</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in modal.File.head.rows">
+            <td ng-repeat="col in row">{{col}}</td>
+        </tr>
+    </tbody>
+</table>
+<button ng-click="modal.File = null">Continue</button>

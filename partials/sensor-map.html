@@ -1,0 +1,5 @@
+<h4>Sensor map</h4>
+<pre ng-repeat="error in modal.result.errors" ng-if="!modal.result.valid">{{error}}</pre>
+<pre ng-if="modal.result.valid">{{modal.result}}</pre>
+<pre>{{modal.sensorMap}}</pre>
+<button ng-click="modal.save()">Save</button>
