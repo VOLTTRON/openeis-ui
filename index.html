@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en" ng-app="openeis-ui">
+
 <head>
     <base href="/">
     <meta charset="utf-8">
@@ -7,10 +8,12 @@
     <title>OpenEIS</title>
     <link rel="stylesheet" href="css/app.css">
 </head>
+
 <body>
     <ng-include src="'partials/topbar.html'" ng-controller="TopBarCtrl"></ng-include>
     <div ng-view></div>
-    <script src="settings.js"></script>
-    <script src="js/app.min.js"></script>
+    <script type="text/javascript" src="settings.js"></script>
+    <!-- build:script app --><!-- /build -->
 </body>
+
 </html>

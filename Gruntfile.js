@@ -2,28 +2,69 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    buildDir: 'openeis/ui/static/openeis-ui',
+    buildDir: 'openeis/ui/static/openeis-ui/',
 
     clean: {
-      build: ['<%= buildDir %>'],
+      buildDir: ['<%= buildDir %>'],
+      artifacts: [
+        '<%= buildDir %>js/app.js',
+        '<%= buildDir %>js/app.templates.js',
+      ],
     },
 
     concat: {
-      options: {
-        process: function(src) {
-          return src.replace(/^\/\/# sourceMappingURL=.+\n/mg, '');
-        },
-      },
       build: {
-        files : {
-          '<%= buildDir %>/js/app.min.js': [
+        options: {
+          process: function(src) {
+            return src.replace(/^\/\/# sourceMappingURL=.+\n/mg, '');
+          },
+        },
+        files: {
+          '<%= buildDir %>js/app.min.js': [
             'bower_components/angular/angular.min.js',
             'bower_components/angular-*/angular-*.min.js',
             'bower_components/ng-file-upload/angular-file-upload.min.js',
-            '<%= buildDir %>/js/app.min.js',
+            '<%= buildDir %>js/app.min.js',
           ],
         }
-      }
+      },
+    },
+
+    htmlbuild: {
+      options: {
+        relative: true,
+      },
+      build: {
+        src: 'index.html',
+        dest: '<%= buildDir %>',
+        options: {
+          beautify: true,
+          scripts: {
+            app: '<%= buildDir %>js/app.min.js',
+          },
+        },
+      },
+      dev: {
+        src: 'index.html',
+        dest: '<%= buildDir %>',
+        options: {
+          scripts: {
+            app: [
+              '<%= buildDir %>js/angular.js',
+              '<%= buildDir %>js/angular*.js',
+              '<%= buildDir %>js/tv4.js',
+              '<%= buildDir %>js/*.js',
+            ],
+          },
+        },
+      },
+    },
+
+    livereload_snippet: {
+      options: {
+        before: '</body>',
+      },
+      src: '<%= buildDir %>index.html',
     },
 
     karma: {
@@ -45,7 +86,7 @@ module.exports = function(grunt) {
     ngmin: {
       build: {
         files: {
-          '<%= buildDir %>/js/app.js': [
+          '<%= buildDir %>js/app.js': [
             'js/*.js',
             '!js/*.spec.js',
           ]
@@ -70,7 +111,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: 'partials/*.html',
-        dest: '<%= buildDir %>/js/app.templates.js',
+        dest: '<%= buildDir %>js/app.templates.js',
       },
     },
 
@@ -81,7 +122,7 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-        '<%= buildDir %>/css/app.css': 'scss/app.scss',
+        '<%= buildDir %>css/app.css': 'scss/app.scss',
         },
       },
     },
@@ -89,26 +130,37 @@ module.exports = function(grunt) {
     sync: {
       build: {
         files: [
-          { src: ['index.html', 'settings.js'], dest: '<%= buildDir %>/' },
+          { src: 'settings.js', dest: '<%= buildDir %>' },
         ]
+      },
+      dev: {
+        files: [
+          {
+            expand: true,
+            src: [
+              'bower_components/angular*/angular*.js',
+              '!bower_components/angular*/angular*.min.js',
+              'bower_components/ng-file-upload/angular-file-upload.js',
+              'bower_components/tv4/tv4.js',
+              'js/*.js',
+              '!js/*.spec.js',
+            ],
+            dest: '<%= buildDir %>js/',
+            flatten: true,
+          },
+        ],
       },
     },
 
     uglify: {
       build: {
         files: {
-          '<%= buildDir %>/js/app.min.js': [
+          '<%= buildDir %>js/app.min.js': [
             'bower_components/tv4/tv4.js',
-            '<%= buildDir %>/js/app.js',
-            '<%= buildDir %>/js/app.templates.js',
+            '<%= buildDir %>js/app.js',
+            '<%= buildDir %>js/app.templates.js',
           ],
         },
-      },
-    },
-
-    focus: {
-      notest: {
-        exclude: ['karma'],
       },
     },
 
@@ -118,26 +170,34 @@ module.exports = function(grunt) {
       livereload: {
         options: { livereload: true },
         files: [
-          '<%= buildDir %>/index.html',
-          '<%= buildDir %>/settings.js',
-          '<%= buildDir %>/css/app.css',
-          '<%= buildDir %>/js/app.min.js',
+          '<%= buildDir %>index.html',
+          '<%= buildDir %>settings.js',
+          '<%= buildDir %>css/app.css',
+          '<%= buildDir %>js/*.js',
         ],
       },
 
+      html: {
+        files: [
+          'index.html',
+          'js/*.js',
+          '!js/*.spec.js',
+        ],
+        tasks: ['htmlbuild:dev', 'livereload_snippet'],
+      },
+
       sync: {
-        files: ['index.html', 'settings.js'],
+        files: [
+          'settings.js',
+          'js/*.js',
+          '!js/*.spec.js',
+        ],
         tasks: ['sync'],
       },
 
       partials: {
         files: ['partials/*.html'],
-        tasks: ['ngtemplates', 'uglify', 'concat'],
-      },
-
-      js: {
-        files: ['js/*.js', '!js/*.spec.js'],
-        tasks: ['ngmin', 'uglify', 'concat'],
+        tasks: ['ngtemplates'],
       },
 
       karma: {
@@ -158,13 +218,22 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-focus');
+  grunt.loadNpmTasks('grunt-html-build');
+  grunt.loadNpmTasks('grunt-livereload-snippet');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-sync');
 
-  grunt.registerTask('build', ['clean', 'sass', 'sync', 'ngmin',
-    'ngtemplates', 'uglify', 'concat']);
-  grunt.registerTask('notest', ['build', 'focus:notest']);
-  grunt.registerTask('default', ['karma:dev:start', 'build', 'watch']);
+  grunt.registerTask('build', [
+    'clean:buildDir', 'sass', 'sync:build', 'ngmin', 'ngtemplates',
+    'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
+  ]);
+
+  grunt.registerTask('build-dev', [
+    'clean:buildDir', 'sass', 'sync', 'ngtemplates', 'htmlbuild:dev',
+  ]);
+
+  grunt.registerTask('default', [
+    'karma:dev:start', 'build-dev', 'livereload_snippet', 'watch',
+  ]);
 };
