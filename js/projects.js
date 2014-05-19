@@ -160,8 +160,8 @@ angular.module('openeis-ui.projects', [
 
         var deferred = $q.defer();
         deferred.resolve(schema);
-        return deferred.$promise;
-    };
+        return deferred.promise;
+    }
 
     Validator.validate = function (obj) {
         return loadSchema().then(function (schema) {
