@@ -1,3 +1,11 @@
+<h4>Files</h4>
+<ul ng-if="modal.files.length">
+    <li ng-repeat="file in modal.files">{{file.name}}</li>
+</ul>
+<form ng-submit="addFile()">
+    <button>Add file</button>
+</form>
+
 <h4>Sensor map</h4>
 <form ng-submit="addChild()">
     <button ng-disabled="!newChild.name">Add</button>&nbsp;
@@ -9,10 +17,14 @@
     <input class="input--inline" required placeholder="{{newChild.level | capitalize}} name" ng-if="newChild.level" ng-model="newChild.name">
     &nbsp;to sensor map
 </form>
-<sensor-container ng-repeat="container in modal.sensorMap.sensors" container="container"></sensor-container>
+
+<sensor-container ng-repeat="container in modal.sensorMap.sensors" container="container" files="modal.files"></sensor-container>
+
 <div class="form__group"><button ng-click="modal.close()">Cancel</button></div>
+
 <h4>JSON Schema validation</h4>
 <pre ng-repeat="error in modal.result.errors" ng-if="!modal.result.valid">{{error | json}}</pre>
 <pre ng-if="modal.result.valid">{{modal.result | json}}</pre>
+
 <h4>SensorMap JSON</h4>
 <pre ng-if="modal.json">{{modal.json | json}}</pre>

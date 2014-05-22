@@ -4,6 +4,7 @@ angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
         replace: true,
         restrict: 'E',
         scope: {
+            files: '=',
             container: '=',
         },
         templateUrl: 'partials/sensor-container.html',
@@ -134,6 +135,32 @@ angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
     };
 })
 .controller('SensorMapCtrl', function ($scope, sensorMapValidator) {
+    $scope.modal.sensorMap.files = {};
+    $scope.modal.sensorMap.sensors = [];
+
+    var fileCounter = 0;
+
+    $scope.modal.files = [];
+
+    $scope.addFile = function () {
+        var file = {
+            id: fileCounter.toString(),
+            name: 'SomeFile' + fileCounter,
+            columns: ['Column1', 'Column2', 'Column3'],
+        };
+
+        $scope.modal.files.push(file);
+
+        $scope.modal.sensorMap.files[file.id] = {
+            signature: { headers: file.columns },
+            timestamp: { columns: file.columns[0], format: null },
+        };
+
+        $scope.$emit('sensorMapChange');
+
+        fileCounter++;
+    };
+
     $scope.validate = function () {
         sensorMapValidator.validate($scope.modal.sensorMap)
             .then(function (response) {

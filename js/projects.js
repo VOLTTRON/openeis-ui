@@ -109,14 +109,5 @@ angular.module('openeis-ui.projects', [
 
     $scope.createDataSet = function () {
         $scope.modal.sensorMap = { version: 1 };
-
-        $scope.modal.sensorMap.files = {
-            foofile: {
-                signature: { headers: ['foo', 'bar'] },
-                timestamp: { columns: ['foo', 'bar'], format: '' },
-            },
-        };
-
-        $scope.modal.sensorMap.sensors = [];
     };
 });
