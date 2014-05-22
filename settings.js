@@ -6,12 +6,23 @@ var settings = {
      */
     BASE_HREF: '/',
 
-    // URL of OpenEIS API
+    /**
+     * URL of OpenEIS API
+     */
     API_URL: '/api/',
 
-    // Route redirect for anonymous users (root-relative to HTML base)
+    /**
+     * Redirect destination for anonymous users (root-relative to BASE_HREF)
+     */
     LOGIN_PAGE: '/',
 
-    // Route redirect for authenticated users (root-relative to HTML base)
+    /**
+     * Redirect destination for authenticated users (root-relative to BASE_HREF)
+     */
     AUTH_HOME: '/projects',
+
+    SENSORMAP_DEFINITION_URL: '/static/projects/json/general_definition.json',
+    SENSORMAP_SCHEMA_URL: '/static/projects/json/sensormap-schema.json',
+    SENSORMAP_UNITS_URL: '/static/projects/json/units.json',
+    SENSORMAP_TOPIC_SEPARATOR: '/',
 };

@@ -1,6 +1,6 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.file', 'openeis-ui.modal',
-    'ngResource', 'angularFileUpload',
+    'openeis-ui.sensor-map', 'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
     authRouteProvider
@@ -62,11 +62,7 @@ angular.module('openeis-ui.projects', [
     $scope.modal = {};
     $scope.project = project;
     $scope.dataFiles = dataFiles;
-    $scope.dataSets = [
-        { name: 'Data set 1', status: 'Ready' },
-        { name: 'Data set 2', status: 'Importing' },
-        { name: 'Data set 3', status: 'Queued' },
-    ];
+    $scope.dataSets = [];
 
     function openFileModal(file) {
         Files.head(file.id).then(function (headResponse) {
@@ -111,7 +107,7 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.createSensorMap = function () {
+    $scope.createDataSet = function () {
         $scope.modal.sensorMap = { version: 1 };
 
         $scope.modal.sensorMap.files = {
@@ -121,67 +117,6 @@ angular.module('openeis-ui.projects', [
             },
         };
 
-        $scope.modal.sensorMap.sensors = {
-            site1: {
-                attributes: {
-                    address: {
-                        address: '123 Anystreet',
-                        city: 'Richland',
-                        state: 'WA',
-                        zip_code: '99352',
-                    },
-                },
-            },
-            'site2/building1': {
-                attributes: {
-                    address: {
-                        address: '321 Anystreet',
-                        city: 'Richland',
-                        state: 'WA',
-                        zip_code: '99352',
-                    },
-                },
-            },
-        };
-    };
-})
-.service('SensorMapValidator', function ($http, $q) {
-    var Validator = this,
-        schema;
-
-    function loadSchema() {
-        if (!schema) {
-            return $http.get('/static/projects/json/sensormap-schema.json')
-                .then(function (response) {
-                    schema = response.data;
-                    return schema;
-                });
-        }
-
-        var deferred = $q.defer();
-        deferred.resolve(schema);
-        return deferred.promise;
-    }
-
-    Validator.validate = function (obj) {
-        return loadSchema().then(function (schema) {
-            return tv4.validateMultiple(obj, schema);
-        });
-    };
-})
-.controller('SensorMapCtrl', function ($scope, SensorMapValidator) {
-    SensorMapValidator.validate($scope.modal.sensorMap)
-        .then(function (result) {
-            if (!result.valid) {
-                angular.forEach(result.errors, function (v, k) {
-                    result.errors[k].stack = null;
-                });
-            }
-
-            $scope.modal.result = result;
-        });
-
-    $scope.modal.save = function () {
-        $scope.modal.sensorMap = null;
+        $scope.modal.sensorMap.sensors = [];
     };
 });

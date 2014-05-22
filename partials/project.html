@@ -49,9 +49,9 @@
                         </tr>
                     </tbody>
                 </table>
-                <button ng-click="createSensorMap()">Create new sensor map</button>
-                <modal class="modal--sensor-map" ng-if="modal.sensorMap" ng-controller="SensorMapCtrl">
-                    <ng-include src="'partials/sensor-map.html'"></ng-include>
+                <button ng-click="createDataSet()">Create new data set</button>
+                <modal class="modal--sensor-map" ng-if="modal.sensorMap">
+                    <ng-include src="'partials/sensor-map-modal.html'" ng-controller="SensorMapCtrl"></ng-include>
                 </modal>
             </div>
         </div>

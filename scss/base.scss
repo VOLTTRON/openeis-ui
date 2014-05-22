@@ -8,7 +8,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6,
-p, ul, table {
+p, ul, ol, dl, table, form {
     margin: 0 0 $inuit-base-spacing-unit;
 }
 
@@ -34,6 +34,19 @@ a {
     opacity: 0.5;
 }
 
+fieldset {
+    @extend %box;
+    padding-top: halve($inuit-base-spacing-unit) !important;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+legend {
+    background-color: #fff;
+    padding: 0 halve($inuit-base-spacing-unit);
+    margin-left: halve(-$inuit-base-spacing-unit);
+}
+
 label:after {
     content: ":";
 }
@@ -42,7 +55,7 @@ input {
     height: 2 * $inuit-base-spacing-unit;
     border: 1px solid #ddd;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-    vertical-align: middle;
+    vertical-align: baseline;
     padding: halve($inuit-base-spacing-unit);
 
     &[type="file"] {
@@ -50,8 +63,16 @@ input {
     }
 }
 
+select {
+    height: 2 * $inuit-base-spacing-unit;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    padding: halve($inuit-base-spacing-unit) quarter($inuit-base-spacing-unit);
+}
+
 button {
     @extend %btn;
+    vertical-align: baseline !important;
 
     &:disabled:hover {
         background-color: $inuit-btn-background;
@@ -69,4 +90,17 @@ thead {
 td, th {
     padding: halve($inuit-base-spacing-unit);
     text-align: left;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: $inuit-base-spacing-unit;
+    overflow-x: scroll;
+}
+
+pre {
+    @include inuit-font-size(14px);
 }

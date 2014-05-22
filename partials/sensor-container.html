@@ -1,0 +1,71 @@
+<div class="sensor-container">
+    <h1>{{container.level | capitalize}}: {{container.name}}</h1>
+
+    <div class="layout">
+        <div class="layout__item" style="width:50%" ng-if="objectDefinition.attribute_list.length || container.attributes">
+            <fieldset>
+                <legend>Attributes</legend>
+                <form class="form--stacked" ng-submit="addAttribute()" ng-if="objectDefinition.attribute_list.length">
+                    <div class="form__group">
+                        <label>New attribute</label>
+                        <select required ng-options="attribute for attribute in objectDefinition.attribute_list" ng-model="newAttribute.name"></select>
+                    </div>
+                    <button>Add</button>
+                </form>
+                <dl ng-if="container.attributes">
+                    <dt ng-repeat-start="(attribute, value) in container.attributes">{{attribute}}</dt>
+                    <dd ng-repeat-end><pre>{{value | json}}</pre></dd>
+                </dl>
+            </fieldset>
+        </div>
+        <div class="layout__item" style="width:50%" ng-if="objectDefinition.sensor_list.length || container.sensors">
+            <fieldset>
+                <legend>Sensors</legend>
+                <form class="form--stacked" ng-submit="addSensor()" ng-if="objectDefinition.sensor_list.length">
+                    <div class="form__group">
+                        <label>New sensor</label>
+                        <select class="select--inline" required ng-options="sensor for sensor in objectDefinition.sensor_list" ng-model="newSensor.name"></select>
+                        <div class="sensor-options" ng-if="newSensor.name">
+                            <label>Source file</label>
+                            <select ng-model="newSensor.file">
+                                <option>SomeFile</option>
+                            </select>
+                            <label>Source column</label>
+                            <select ng-model="newSensor.column">
+                                <option>SomeColumn</option>
+                            </select>
+                            <label>Value unit</label>
+                            <select ng-model="newSensor.unit" ng-options="key as value.value for (key, value) in units[definition.sensors[newSensor.name].unit_type]"></select>
+                        </div>
+                    </div>
+                    <button ng-disabled="!newSensor.name">Add</button>
+                </form>
+                <dl ng-if="container.sensors">
+                    <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}}</dt>
+                    <dd ng-repeat-end><pre>{{sensor | json}}</pre></dd>
+                </dl>
+            </fieldset>
+        </div>
+    </div>
+
+    <form ng-submit="addSystem()" ng-if="objectDefinition.system_list">
+        <button ng-disabled="!newSystem.name">Add</button>&nbsp;
+        <select class="select--inline" required ng-model="newSystem.name">
+            <option ng-repeat="system in objectDefinition.system_list">{{system}}</option>
+        </select>
+        &nbsp;system to {{container.level}}
+    </form>
+
+    <form ng-submit="addChild()" ng-if="objectDefinition.child_list">
+        <button ng-disabled="!newChild.name">Add</button>
+        <span ng-if="objectDefinition.child_list.length === 1" ng-init="newChild.level = objectDefinition.child_list.0">{{objectDefinition.child_list.0}}</span>
+        <select class="select--inline" required ng-if="objectDefinition.child_list.length > 1" ng-change="newChild.name = ''" ng-model="newChild.level">
+            <option value="{{child}}" ng-repeat="child in objectDefinition.child_list">{{child}}</option>
+        </select>
+        &nbsp;
+        <input class="input--inline" required placeholder="{{newChild.level | capitalize}} name" ng-model="newChild.name">
+        &nbsp;to {{container.level}}
+    </form>
+
+    <sensor-container ng-repeat="child in container.children" container="child"></sensor-containers>
+</div>

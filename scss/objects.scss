@@ -68,6 +68,7 @@ modal {
 %form--aligned {
     label {
         @extend %label--inline;
+        margin-right: halve($inuit-base-spacing-unit);
         width: 8 * $inuit-base-spacing-unit;
         text-align: right;
     }
@@ -103,6 +104,10 @@ modal {
         @extend %input--block;
     }
 
+    select {
+        @extend %select--block;
+    }
+
     .help {
         display: block;
         width: 100%;
@@ -134,8 +139,6 @@ modal {
 %label--inline {
     display: inline-block;
     line-height: 2 * $inuit-base-spacing-unit;
-    margin-right: halve($inuit-base-spacing-unit);
-    vertical-align: middle;
 }
 
 .input--block,
@@ -145,8 +148,18 @@ modal {
 }
 
 .input--inline,
-%input--inline {
-    margin-right: halve($inuit-base-spacing-unit);
+%input--inline,
+.select--inline,
+%select--inline {
+    display: inline-block;
+}
+
+.input--block,
+%input--block,
+.select--block,
+%select--block {
+    display: block;
+    width: 100%;
 }
 
 .help,
@@ -156,5 +169,30 @@ modal {
 
     &--error {
         color: $error-color;
+    }
+}
+
+.modal--sensor-map {
+    button {
+        padding: 5px 10px;
+    }
+
+    input, select {
+        height: 1.5 * $inuit-base-spacing-unit;
+        padding: quarter($inuit-base-spacing-unit);
+    }
+}
+
+.sensor-container {
+    @extend %box;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+
+    h1 {
+        @include inuit-font-size(16px);
+    }
+
+    dt {
+        font-weight: bold;
     }
 }
