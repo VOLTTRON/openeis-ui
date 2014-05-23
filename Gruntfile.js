@@ -135,7 +135,6 @@ module.exports = function(grunt) {
               'settings.js',
               'general_definition.json',
               'sensormap-schema.json',
-              'units.json',
             ],
             dest: '<%= buildDir %>',
           },

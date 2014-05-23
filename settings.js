@@ -23,6 +23,6 @@ var settings = {
 
     SENSORMAP_DEFINITION_URL: 'general_definition.json',
     SENSORMAP_SCHEMA_URL: 'sensormap-schema.json',
-    SENSORMAP_UNITS_URL: 'units.json',
+    SENSORMAP_UNITS_URL: '/static/projects/json/units.json',
     SENSORMAP_TOPIC_SEPARATOR: '/',
 };
