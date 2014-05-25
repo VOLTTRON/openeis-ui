@@ -23,6 +23,9 @@ angular.module('openeis-ui.projects', [
                 dataFiles: ['Files', '$route', function(Files, $route) {
                     return Files.query($route.current.params.projectId);
                 }],
+                sensorMaps: ['sensorMaps', '$route', function(sensorMaps, $route) {
+                    return sensorMaps.query($route.current.params.projectId).$promise;
+                }],
             },
         });
 })
@@ -58,11 +61,12 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, $upload, Files) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, sensorMaps, $upload) {
     $scope.modal = {};
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = [];
+    $scope.sensorMaps = sensorMaps;
 
     function openFileModal(file) {
         Files.head(file.id).then(function (headResponse) {
@@ -107,7 +111,13 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.createDataSet = function () {
-        $scope.modal.sensorMap = { version: 1 };
+    $scope.closeSensorMapModal = function () {
+        $scope.newSensorMapModal = false;
+    };
+
+    $scope.deleteSensorMap = function ($index) {
+        $scope.sensorMaps[$index].$delete(function () {
+            $scope.sensorMaps.splice($index, 1);
+        });
     };
 });

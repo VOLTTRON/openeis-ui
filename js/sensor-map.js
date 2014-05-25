@@ -1,4 +1,4 @@
-angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
+angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
 .directive('sensorContainer', function (RecursionHelper) {
     return {
         replace: true,
@@ -8,8 +8,8 @@ angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
             container: '=',
         },
         templateUrl: 'partials/sensor-container.html',
-        controller: function ($scope, sensorMap) {
-            sensorMap.getDefinition().then(function (definition) {
+        controller: function ($scope, sensorMaps) {
+            sensorMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;
 
                 if ($scope.container.level === 'system') {
@@ -19,7 +19,7 @@ angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
                 }
             });
 
-            sensorMap.getUnits().then(function (units) {
+            sensorMaps.getUnits().then(function (units) {
                 $scope.units = units;
             });
 
@@ -82,115 +82,46 @@ angular.module('openeis-ui.sensor-map', ['RecursionHelper'])
         },
     };
 })
-.service('sensorMap', function ($http, $q) {
-    var sensorMap = this;
+.controller('SensorMapCtrl', function ($scope, sensorMaps) {
+    // TODO: use actual columns, instead of these fake ones
+    angular.forEach($scope.dataFiles, function (file, key) {
+        $scope.dataFiles[key].columns = [
+            file.file + ' - Col1',
+            file.file + ' - Col2',
+            file.file + ' - Col3',
+        ];
+    });
 
-    sensorMap.getDefinition = function () {
-        return $http.get(settings.SENSORMAP_DEFINITION_URL).then(function (response) {
-            return response.data;
-        });
-    };
-
-    sensorMap.getUnits = function () {
-        return $http.get(settings.SENSORMAP_UNITS_URL).then(function (response) {
-            return response.data;
-        });
-    };
-})
-.service('sensorMapValidator', function ($http, $q) {
-    var Validator = this;
-
-    Validator.validate = function (sensorMap) {
-        function flatten(topicBase, containers) {
-            var flattened = {};
-
-            angular.forEach(containers, function(container) {
-                var topic = topicBase + container.name.replace('/', '-'),
-                    sensors = container.sensors || {},
-                    children = container.children || {};
-
-                delete container.name;
-                delete container.sensors;
-                delete container.children;
-
-                flattened[topic] = container;
-
-                angular.extend(flattened, flatten(topic + settings.SENSORMAP_TOPIC_SEPARATOR, sensors));
-                angular.extend(flattened, flatten(topic + settings.SENSORMAP_TOPIC_SEPARATOR, children));
-            });
-
-            return flattened;
-        }
-
-        var mapCopy = angular.copy(sensorMap);
-        mapCopy.sensors = flatten('', mapCopy.sensors);
-
-        return $http.get(settings.SENSORMAP_SCHEMA_URL)
-            .then(function (response) {
-                return {
-                    json: mapCopy,
-                    result: tv4.validateMultiple(mapCopy, response.data),
-                };
-            });
-    };
-})
-.controller('SensorMapCtrl', function ($scope, sensorMapValidator) {
-    $scope.modal.sensorMap.files = {};
-    $scope.modal.sensorMap.sensors = [];
-
-    var fileCounter = 0;
-
-    $scope.modal.files = [];
-
-    $scope.addFile = function () {
-        var file = {
-            id: fileCounter.toString(),
-            name: 'SomeFile' + fileCounter,
-            columns: ['Column1', 'Column2', 'Column3'],
-        };
-
-        $scope.modal.files.push(file);
-
-        $scope.modal.sensorMap.files[file.id] = {
-            signature: { headers: file.columns },
-            timestamp: { columns: file.columns[0], format: null },
-        };
-
-        $scope.$emit('sensorMapChange');
-
-        fileCounter++;
-    };
-
-    $scope.validate = function () {
-        sensorMapValidator.validate($scope.modal.sensorMap)
-            .then(function (response) {
-                if (!response.result.valid) {
-                    angular.forEach(response.result.errors, function (v, k) {
-                        response.result.errors[k].stack = null;
-                    });
-                }
-
-                $scope.modal.result = response.result;
-                $scope.modal.json = response.json;
-            });
+    $scope.newSensorMap = {
+        project: $scope.project.id,
+        map: {
+            version: 1,
+            files: {},
+            sensors: [],
+        },
+        valid: false,
     };
 
     $scope.$on('sensorMapChange', function () {
-        $scope.validate();
+        sensorMaps.validateMap($scope.newSensorMap.map)
+            .then(function (result) {
+                $scope.newSensorMap.valid = result.valid;
+            });
     });
 
-    $scope.validate();
+    $scope.save = function () {
+        sensorMaps.create($scope.newSensorMap).$promise.then(function (response) {
+            $scope.sensorMaps.push(response);
+            $scope.closeSensorMapModal();
+        });
+    };
 
     $scope.newChild = {};
 
     $scope.addChild = function () {
         $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-        $scope.modal.sensorMap.sensors.unshift(angular.copy($scope.newChild));
+        $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
         $scope.$emit('sensorMapChange');
         $scope.newChild = {};
-    };
-
-    $scope.modal.close = function () {
-        $scope.modal.sensorMap = null;
     };
 });

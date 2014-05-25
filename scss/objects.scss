@@ -82,6 +82,7 @@ modal {
         display: inline-block;
         line-height: 2 * $inuit-base-spacing-unit;
         vertical-align: middle;
+        margin-left: halve($inuit-base-spacing-unit);
     }
 
     br ~ * {
@@ -118,7 +119,8 @@ modal {
         display: none;
     }
 
-    :not(label) + input {
+    :not(label) + input,
+    :not(label) + select {
         margin-top: halve($inuit-base-spacing-unit);
     }
 }

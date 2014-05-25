@@ -137,5 +137,87 @@ angular.module('openeis-ui.api', ['ngResource'])
             transformResponse: angular.fromJson,
         });
     };
+})
+.service('sensorMaps', function ($http, $resource) {
+    var sensorMaps = this,
+        resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
+            create: { method: 'POST' },
+        });
+
+    sensorMaps.query = function (projectId) {
+        return resource.query({ project: projectId });
+    };
+
+    sensorMaps.create = function (sensorMap) {
+        sensorMap.map = sensorMaps.flattenMap(sensorMap.map);
+        return resource.create(sensorMap);
+    };
+
+    sensorMaps.getDefinition = function () {
+        return $http.get(settings.SENSORMAP_DEFINITION_URL).then(function (response) {
+            return response.data;
+        });
+    };
+
+    sensorMaps.getUnits = function () {
+        return $http.get(settings.SENSORMAP_UNITS_URL).then(function (response) {
+            return response.data;
+        });
+    };
+
+    sensorMaps.flattenMap = function (map) {
+        var mapCopy = angular.copy(map),
+            files = {},
+            fileCounter = 0;
+
+        function flattenObject(objects, topicBase) {
+            var flattened = {};
+
+            angular.forEach(objects, function(object) {
+                var topic = topicBase + object.name.replace('/', '-'),
+                    sensors = object.sensors || {},
+                    children = object.children || {};
+
+                delete object.name;
+                delete object.sensors;
+                delete object.children;
+
+                if (object.file) {
+                    if (!files[object.file.file]) {
+                        files[object.file.file] = {
+                            key: fileCounter++ + '',
+                            signature: { headers: object.file.columns },
+                            timestamp: { columns: object.file.columns[0], format: null },
+                        };
+                    }
+
+                    object.file = files[object.file.file].key;
+                }
+
+                flattened[topic] = object;
+
+                angular.extend(flattened, flattenObject(sensors, topic + settings.SENSORMAP_TOPIC_SEPARATOR));
+                angular.extend(flattened, flattenObject(children, topic + settings.SENSORMAP_TOPIC_SEPARATOR));
+            });
+
+            return flattened;
+        }
+
+        mapCopy.sensors = flattenObject(mapCopy.sensors, '');
+
+        angular.forEach(files, function (file, key) {
+            mapCopy.files[file.key] = file;
+            delete mapCopy.files[file.key].key;
+        });
+
+        return mapCopy;
+    };
+
+    sensorMaps.validateMap = function (map) {
+        return $http.get(settings.SENSORMAP_SCHEMA_URL)
+            .then(function (response) {
+                return tv4.validateMultiple(sensorMaps.flattenMap(map), response.data);
+            });
+    };
 });
 
