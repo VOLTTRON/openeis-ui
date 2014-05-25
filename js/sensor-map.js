@@ -1,11 +1,9 @@
 angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
 .directive('sensorContainer', function (RecursionHelper) {
     return {
-        replace: true,
         restrict: 'E',
         scope: {
             container: '=',
-            deleteSelf: '&delete',
             files: '=',
             index: '=',
         },
@@ -43,7 +41,6 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                     $scope.objectDefinition.attribute_list.indexOf($scope.newAttribute.name), 1
                 );
                 $scope.newAttribute = {};
-                $scope.$emit('sensorMapChange');
             };
 
             $scope.newSensor = {};
@@ -56,7 +53,6 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                     $scope.objectDefinition.sensor_list.indexOf($scope.newSensor.name), 1
                 );
                 $scope.newSensor = {};
-                $scope.$emit('sensorMapChange');
             };
 
             $scope.newSystem = {};
@@ -66,7 +62,6 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                 $scope.container.children = $scope.container.children || [];
                 $scope.container.children.unshift(angular.copy($scope.newSystem));
                 $scope.newSystem = {};
-                $scope.$emit('sensorMapChange');
             };
 
             $scope.newChild = {};
@@ -76,11 +71,6 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                 $scope.container.children = $scope.container.children || [];
                 $scope.container.children.unshift(angular.copy($scope.newChild));
                 $scope.newChild = {};
-                $scope.$emit('sensorMapChange');
-            };
-
-            $scope.deleteChild = function (index) {
-                $scope.container.children.splice(index, 1);
             };
         },
         compile: function(element) {
@@ -108,12 +98,12 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
         valid: false,
     };
 
-    $scope.$on('sensorMapChange', function () {
+    $scope.$watch('newSensorMap.map', function () {
         sensorMaps.validateMap($scope.newSensorMap.map)
             .then(function (result) {
                 $scope.newSensorMap.valid = result.valid;
             });
-    });
+    }, true);
 
     $scope.save = function () {
         sensorMaps.create($scope.newSensorMap).$promise.then(function (response) {
@@ -127,11 +117,6 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
     $scope.addChild = function () {
         $scope.newChild.name = $scope.newChild.name.replace('/', '-');
         $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
-        $scope.$emit('sensorMapChange');
         $scope.newChild = {};
-    };
-
-    $scope.deleteContainer = function (index) {
-        $scope.newSensorMap.map.sensors.splice(index, 1);
     };
 });

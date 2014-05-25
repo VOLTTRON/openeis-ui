@@ -174,6 +174,12 @@ angular.module('openeis-ui.api', ['ngResource'])
             var flattened = {};
 
             angular.forEach(objects, function(object) {
+                if (object.deleted === true) {
+                    return;
+                }
+
+                delete object.deleted;
+
                 var topic = topicBase + object.name.replace('/', '-'),
                     sensors = object.sensors || {},
                     children = object.children || {};

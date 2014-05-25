@@ -179,13 +179,18 @@ modal {
         padding: 5px 10px;
     }
 
-    input, select {
+    input {
+        height: 1.5 * $inuit-base-spacing-unit;
+        padding: 0 quarter($inuit-base-spacing-unit);
+    }
+
+    select {
         height: 1.5 * $inuit-base-spacing-unit;
         padding: quarter($inuit-base-spacing-unit);
     }
 }
 
-.sensor-container {
+sensor-container {
     @extend %box;
     border: 1px solid #ddd;
     margin-bottom: 20px;
