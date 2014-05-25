@@ -4,8 +4,10 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
         replace: true,
         restrict: 'E',
         scope: {
-            files: '=',
             container: '=',
+            deleteSelf: '&delete',
+            files: '=',
+            index: '=',
         },
         templateUrl: 'partials/sensor-container.html',
         controller: function ($scope, sensorMaps) {
@@ -76,6 +78,10 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                 $scope.newChild = {};
                 $scope.$emit('sensorMapChange');
             };
+
+            $scope.deleteChild = function (index) {
+                $scope.container.children.splice(index, 1);
+            };
         },
         compile: function(element) {
             return RecursionHelper.compile(element);
@@ -123,5 +129,9 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
         $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
         $scope.$emit('sensorMapChange');
         $scope.newChild = {};
+    };
+
+    $scope.deleteContainer = function (index) {
+        $scope.newSensorMap.map.sensors.splice(index, 1);
     };
 });

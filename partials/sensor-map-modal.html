@@ -11,7 +11,7 @@
     &nbsp;to sensor map
 </form>
 
-<sensor-container ng-repeat="container in newSensorMap.map.sensors" container="container" files="dataFiles"></sensor-container>
+<sensor-container ng-repeat="container in newSensorMap.map.sensors" container="container" index="$index" files="dataFiles" delete="deleteContainer(index)"></sensor-container>
 
 <button ng-click="save()" ng-disabled="!newSensorMap.valid">Save</button>
 <button ng-click="closeSensorMapModal()">Cancel</button>

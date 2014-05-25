@@ -1,5 +1,5 @@
 <div class="sensor-container">
-    <h1>{{container.level | capitalize}}: {{container.name}}</h1>
+    <h1>{{container.level | capitalize}}: {{container.name}} <a ng-click="deleteSelf({index: index})">Delete</a></h1>
 
     <div class="layout">
         <div class="layout__item" style="width:50%" ng-if="objectDefinition.attribute_list.length || container.attributes">
@@ -74,5 +74,5 @@
         &nbsp;to {{container.level}}
     </form>
 
-    <sensor-container ng-repeat="child in container.children" container="child" files="files"></sensor-containers>
+    <sensor-container ng-repeat="child in container.children" container="child" index="$index" files="files" delete="deleteChild(index)"></sensor-containers>
 </div>
