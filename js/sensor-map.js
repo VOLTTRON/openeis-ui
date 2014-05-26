@@ -138,6 +138,8 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
         sensorMaps.create($scope.newSensorMap).$promise.then(function (response) {
             $scope.sensorMaps.push(response);
             $scope.closeSensorMapModal();
+        }, function (rejection) {
+            alert(rejection.data.__all__.join('\n'));
         });
     };
 

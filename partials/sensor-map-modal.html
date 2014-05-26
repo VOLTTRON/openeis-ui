@@ -1,4 +1,4 @@
-<h4>New sensor map:&nbsp;<input class="input--inline" placeholder="Name" required ng-model="newSensorMap.name"></h4>
+<h4>New sensor map</h4>
 <form ng-submit="addChild()">
     <button >Add</button>&nbsp;
     <select class="select--inline" required ng-model="newChild.level">
@@ -13,6 +13,10 @@
 
 <sensor-container ng-repeat="container in newSensorMap.map.sensors" container="container" index="$index" files="dataFiles" delete="deleteContainer(index)"></sensor-container>
 
-<button ng-click="save()" ng-disabled="!newSensorMap.valid">Save</button>
-<button ng-click="closeSensorMapModal()">Cancel</button>
-<small class="help help--error" ng-if="!newSensorMap.valid">Add at least one object and sensor to save</small>
+<form ng-submit="save()">
+    <label class="label--inline">Sensor map name</label>&nbsp;
+    <input class="input--inline" required ng-model="newSensorMap.name">
+    &nbsp;<button ng-disabled="!newSensorMap.valid">Save</button>
+    <button ng-click="closeSensorMapModal()">Cancel</button>
+    <small class="help help--error" ng-if="!newSensorMap.valid">Add at least one object and sensor to save</small>
+</form>

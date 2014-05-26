@@ -149,8 +149,9 @@ angular.module('openeis-ui.api', ['ngResource'])
     };
 
     sensorMaps.create = function (sensorMap) {
-        sensorMap.map = sensorMaps.flattenMap(sensorMap.map);
-        return resource.create(sensorMap);
+        var copy = angular.copy(sensorMap);
+        copy.map = sensorMaps.flattenMap(copy.map);
+        return resource.create(copy);
     };
 
     sensorMaps.getDefinition = function () {
