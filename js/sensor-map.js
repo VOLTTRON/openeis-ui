@@ -17,6 +17,17 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                 } else {
                     $scope.objectDefinition = definition[$scope.container.level];
                 }
+
+                if ($scope.objectDefinition.sensor_list) {
+                    if ($scope.objectDefinition.sensor_list === '*') {
+                        $scope.objectDefinition.sensor_list = [];
+                        angular.forEach(definition.sensors, function (def, name) {
+                            $scope.objectDefinition.sensor_list.push(name);
+                        });
+                    }
+
+                    $scope.objectDefinition.sensor_list.sort();
+                }
             });
 
             sensorMaps.getUnits().then(function (units) {
@@ -45,6 +56,18 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
 
             $scope.newSensor = {};
 
+            $scope.$watchCollection('newSensor', function () {
+                if (!$scope.newSensor.file || $scope.newSensor.file.columns.indexOf($scope.newSensor.column) === -1) {
+                    $scope.newSensor.column = '';
+                }
+
+                if (!$scope.newSensor.name ||
+                    !$scope.units[$scope.definition.sensors[$scope.newSensor.name].unit_type] ||
+                    !$scope.units[$scope.definition.sensors[$scope.newSensor.name].unit_type][$scope.newSensor.unit]) {
+                    delete $scope.newSensor.unit;
+                }
+            });
+
             $scope.addSensor = function () {
                 $scope.newSensor.type = $scope.newSensor.name;
                 $scope.container.sensors = $scope.container.sensors || [];
@@ -53,6 +76,12 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
                     $scope.objectDefinition.sensor_list.indexOf($scope.newSensor.name), 1
                 );
                 $scope.newSensor = {};
+            };
+
+            $scope.deleteSensor = function (index) {
+                $scope.objectDefinition.sensor_list.push($scope.container.sensors[index].name);
+                $scope.objectDefinition.sensor_list.sort();
+                $scope.container.sensors.splice(index, 1);
             };
 
             $scope.newSystem = {};
@@ -82,9 +111,9 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
     // TODO: use actual columns, instead of these fake ones
     angular.forEach($scope.dataFiles, function (file, key) {
         $scope.dataFiles[key].columns = [
-            file.file + ' - Col1',
-            file.file + ' - Col2',
-            file.file + ' - Col3',
+            file.file + ':Col1',
+            file.file + ':Col2',
+            file.file + ':Col3',
         ];
     });
 

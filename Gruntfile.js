@@ -118,13 +118,23 @@ module.exports = function(grunt) {
     sass: {
       options: {
         loadPath: ['bower_components'],
-        style: 'compressed',
       },
       build: {
+        options: {
+          style: 'compressed',
+        },
         files: {
-        '<%= buildDir %>css/app.css': 'scss/app.scss',
+          '<%= buildDir %>css/app.css': 'scss/app.scss',
         },
       },
+      dev: {
+        options: {
+          style: 'nested',
+        },
+        files: {
+          '<%= buildDir %>css/app.css': 'scss/app.scss',
+        },
+      }
     },
 
     sync: {
@@ -214,7 +224,7 @@ module.exports = function(grunt) {
 
       sass: {
         files: ['scss/**/*.scss'],
-        tasks: ['sass'],
+        tasks: ['sass:dev'],
       },
     }
   });
@@ -232,12 +242,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-sync');
 
   grunt.registerTask('build', [
-    'clean:buildDir', 'sass', 'sync:build', 'ngmin', 'ngtemplates',
+    'clean:buildDir', 'sass:build', 'sync:build', 'ngmin', 'ngtemplates',
     'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
   grunt.registerTask('build-dev', [
-    'clean:buildDir', 'sass', 'sync', 'ngtemplates', 'htmlbuild:dev',
+    'clean:buildDir', 'sass:dev', 'sync', 'ngtemplates', 'htmlbuild:dev',
   ]);
 
   grunt.registerTask('default', [

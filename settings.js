@@ -21,7 +21,7 @@ var settings = {
      */
     AUTH_HOME: '/projects',
 
-    SENSORMAP_DEFINITION_URL: 'general_definition.json',
+    SENSORMAP_DEFINITION_URL: '/static/projects/json/general_definition.json',
     SENSORMAP_SCHEMA_URL: 'sensormap-schema.json',
     SENSORMAP_UNITS_URL: '/static/projects/json/units.json',
     SENSORMAP_TOPIC_SEPARATOR: '/',
