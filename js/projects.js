@@ -186,12 +186,6 @@ angular.module('openeis-ui.projects', [
 .controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {
     SensorMaps.ensureFileMetaData($scope.dataFiles);
 
-    angular.forEach($scope.sensorMaps, function (sensorMap) {
-        if (!angular.isObject(sensorMap.map)) {
-            sensorMap.map = angular.fromJson(sensorMap.map.replace(/'/g, '"').replace(/None/g, 'null'));
-        }
-    });
-
     $scope.newDataMap = { files: {} };
 
     $scope.filesWithSignature = function (key) {
