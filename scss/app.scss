@@ -202,9 +202,36 @@ nav {
     &--project {
         @extend %box;
 
+        .layout {
+            display: flex;
+            margin-right: -$inuit-base-spacing-unit;
+        }
+
         .data-files {
-            @extend %box;
+
+            padding-bottom: $inuit-base-spacing-unit;
+            border-bottom: 1px solid #ddd;
+
+            > table {
+                width: 100%;
+            }
+        }
+
+        .data-sets {
             @extend %layout__item;
+            @extend %box;
+            width: 50%;
+
+            > table {
+                width: 100%;
+            }
+        }
+
+        .sensor-maps {
+            @extend %layout__item;
+            @extend %box;
+            padding-top: $inuit-base-spacing-unit;
+            padding-right: $inuit-base-spacing-unit;
             width: 50%;
             border-right: 1px solid #ddd;
 
@@ -213,20 +240,10 @@ nav {
             }
         }
 
-        .data-sets {
-            @extend %box;
-            @extend %layout__item;
-            width: 50%;
-
-            > table {
-                width: 100%;
-            }
-        }
-
         file-upload {
             input {
-                @extend %input--block;
-                margin-bottom: halve($inuit-base-spacing-unit);
+                @extend %input--inline;
+                margin-right: halve($inuit-base-spacing-unit);
             }
         }
     }

@@ -6,63 +6,41 @@
 
     <div class="view view--project">
         <h2>{{project.name}}</h2>
-        <div class="layout">
-            <div class="data-files">
-                <h3>Data files</h3>
-                <table ng-if="dataFiles.length">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Timestamp</th>
-                            <th>Size</th>
-                            <th>Download</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="file in dataFiles">
-                            <td>{{file.file}}</td>
-                            <td ng-if="file.timestamp">Configured</td>
-                            <td ng-if="!file.timestamp"><a ng-click="configureTimestamp($index)">Configure</a></td>
-                            <td>{{file.size | bytes}}</td>
-                            <td><a href="{{file.download_url}}" target="_self">Download</a></td>
-                            <td><a ng-click="deleteFile($index)">Delete</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <label class="label--block">Upload file</label>
+        <div class="data-files">
+            <h3>Data files</h3>
+            <p>
+                <label class="label--inline">Upload file</label>&nbsp;
                 <file-upload file-upload-click="upload(fileInput)"></file-upload>
-                <modal class="modal--file-timestamps" ng-if="fileTimestampsFile">
-                    <ng-include src="'partials/file-timestamps.html'" ng-controller="FileTimestampsCtrl"></ng-include>
-                </modal>
-            </div>
-            <div class="data-sets">
-                <h3>Data sets</h3>
-                <table ng-if="dataSets.length">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Errors</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="dataSet in dataSets">
-                            <td>Dataset {{dataSet.id}}</td>
-                            <td>{{dataSet.status.status || 'Checking&hellip;' | capitalize}}</td>
-                            <td><ng-pluralize count="dataSet.errors.length" when="{'0': 'None', 'one': '1 error', 'other': '{} errors'}"></ng-pluralize></td>
-                            <td><a ng-click="deleteDataSet($index)">Delete</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button ng-click="newDataSetModal = true">Create new data set</button>
-
-                <modal class="modal--new-data-set" ng-if="newDataSetModal === true">
-                    <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
-                </modal>
-
+            </p>
+            <table ng-if="dataFiles.length">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Timestamp</th>
+                        <th>Size</th>
+                        <th>Download</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="file in dataFiles">
+                        <td>{{file.file}}</td>
+                        <td ng-if="file.timestamp">Configured</td>
+                        <td ng-if="!file.timestamp"><a ng-click="configureTimestamp($index)">Configure</a></td>
+                        <td>{{file.size | bytes}}</td>
+                        <td><a href="{{file.download_url}}" target="_self">Download</a></td>
+                        <td><a ng-click="deleteFile($index)">Delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <modal class="modal--file-timestamps" ng-if="fileTimestampsFile">
+                <ng-include src="'partials/file-timestamps.html'" ng-controller="FileTimestampsCtrl"></ng-include>
+            </modal>
+        </div>
+        <div class="layout">
+            <div class="sensor-maps">
                 <h3>Sensor maps</h3>
+                <p><button ng-click="newSensorMapModal = true">Create new sensor map</button></p>
                 <table ng-if="sensorMaps.length">
                     <thead>
                         <tr>
@@ -77,10 +55,52 @@
                         </tr>
                     </tbody>
                 </table>
-                <button ng-click="newSensorMapModal = true">Create new sensor map</button>
-
                 <modal class="modal--new-sensor-map" ng-if="newSensorMapModal === true">
                     <ng-include src="'partials/new-sensor-map.html'" ng-controller="NewSensorMapCtrl"></ng-include>
+                </modal>
+            </div>
+            <div class="data-sets">
+                <h3>Data sets</h3>
+                <p><button ng-click="newDataSetModal = true">Create new data set</button></p>
+                <table ng-if="dataSets.length">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Errors</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="dataSet in dataSets">
+                            <td>Dataset {{dataSet.id}}</td>
+                            <td>{{dataSet.status.status || 'Checking&hellip;' | capitalize}}</td>
+                            <td ng-if="!dataSet.errors.length">None</td>
+                            <td ng-if="dataSet.errors.length"><a ng-click="showErrors(dataSet)"><ng-pluralize count="dataSet.errors.length" when="{'one': '1 error', 'other': '{} errors'}"></ng-pluralize></a></td>
+                            <td><a ng-click="deleteDataSet($index)">Delete</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <modal class="modal--data-set-errors" ng-if="errorsModal.errors.length">
+                    <h4>Errors</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Message</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="error in errorsModal.errors">
+                                <td>{{error.message}}</td>
+                                <td>{{errorsModal.files[error.file]}}: row {{error.row}}, column {{error.column}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button ng-click="errorsModal.errors = []">Close</button>
+                </modal>
+                <modal class="modal--new-data-set" ng-if="newDataSetModal === true">
+                    <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
                 </modal>
             </div>
         </div>

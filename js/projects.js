@@ -131,6 +131,27 @@ angular.module('openeis-ui.projects', [
         $scope.newDataSetModal = false;
     };
 
+    $scope.errorsModal = {};
+
+    $scope.showErrors = function (dataSet) {
+        $scope.errorsModal.files = {};
+
+        // Create hash of sensor map file names to data file names
+        angular.forEach(dataSet.files, function (file) {
+            angular.forEach(dataFiles, function (dataFile) {
+                if (dataFile.id === file.file) {
+                    $scope.errorsModal.files[file.name] = dataFile.file;
+                }
+            });
+
+            if (!$scope.errorsModal.files[file.name]) {
+                $scope.errorsModal.files[file.name] = 'File "' + file.name + '"';
+            }
+        });
+
+        $scope.errorsModal.errors = dataSet.errors;
+    };
+
     $scope.deleteDataSet = function ($index) {
         $scope.dataSets[$index].$delete(function () {
             $scope.dataSets.splice($index, 1);
