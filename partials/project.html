@@ -43,13 +43,15 @@
                         <tr>
                             <th>Name</th>
                             <th>Status</th>
+                            <th>Errors</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="dataSet in dataSets">
                             <td>Dataset {{dataSet.id}}</td>
-                            <td>{{dataSet.status.status | capitalize}}</td>
+                            <td>{{dataSet.status.status || 'Checking&hellip;' | capitalize}}</td>
+                            <td><ng-pluralize count="dataSet.errors.length" when="{'0': 'None', 'one': '1 error', 'other': '{} errors'}"></ng-pluralize></td>
                             <td><a ng-click="deleteDataSet($index)">Delete</a></td>
                         </tr>
                     </tbody>

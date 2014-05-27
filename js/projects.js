@@ -64,7 +64,7 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, sensorMaps, $upload, $timeout) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, sensorMaps, $upload, $timeout, $q) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
@@ -75,10 +75,18 @@ angular.module('openeis-ui.projects', [
     $scope.statusCheck = function () {
         angular.forEach(dataSets, function (dataSet) {
             if (!dataSets.status || dataSets.status.status !== 'complete') {
-                DataSets.getStatus(dataSet).then(function (response) {
-                    dataSet.status = response.data;
+                var promises = [];
 
-                    if (response.data.status !== 'complete') {
+                promises.push(DataSets.getStatus(dataSet).then(function (response) {
+                    dataSet.status = response.data;
+                }));
+
+                promises.push(DataSets.getErrors(dataSet).then(function (response) {
+                    dataSet.errors = response.data;
+                }));
+
+                $q.all(promises).then(function () {
+                    if (dataSet.status.status !== 'complete') {
                         $timeout.cancel(statusCheckPromise);
                         statusCheckPromise = $timeout($scope.statusCheck, 5000);
                     }

@@ -159,6 +159,14 @@ angular.module('openeis-ui.api', ['ngResource'])
             transformResponse: angular.fromJson,
         });
     };
+
+    DataSets.getErrors = function (dataSet) {
+        return $http({
+            method: 'GET',
+            url: settings.API_URL + 'datasets/' + dataSet.id + '/errors',
+            transformResponse: angular.fromJson,
+        });
+    };
 })
 .service('SensorMaps', function ($http, $resource, Files, $q) {
     var SensorMaps = this,
