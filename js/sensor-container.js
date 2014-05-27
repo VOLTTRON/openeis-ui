@@ -8,8 +8,8 @@ angular.module('openeis-ui.sensor-container', ['openeis-ui.api', 'RecursionHelpe
             index: '=',
         },
         templateUrl: 'partials/sensor-container.html',
-        controller: function ($scope, sensorMaps) {
-            sensorMaps.getDefinition().then(function (definition) {
+        controller: function ($scope, SensorMaps) {
+            SensorMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;
 
                 if ($scope.container.level === 'system') {
@@ -30,7 +30,7 @@ angular.module('openeis-ui.sensor-container', ['openeis-ui.api', 'RecursionHelpe
                 }
             });
 
-            sensorMaps.getUnits().then(function (units) {
+            SensorMaps.getUnits().then(function (units) {
                 $scope.units = units;
             });
 

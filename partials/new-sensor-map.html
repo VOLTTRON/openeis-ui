@@ -17,6 +17,6 @@
     <label class="label--inline">Sensor map name</label>&nbsp;
     <input class="input--inline" required ng-model="newSensorMap.name">
     &nbsp;<button ng-disabled="!newSensorMap.valid">Save</button>
-    <button ng-click="closeSensorMapModal()">Cancel</button>
+    <button ng-click="closeNewSensorMapModal()">Cancel</button>
     <small class="help help--error" ng-if="!newSensorMap.valid">Add at least one object and sensor to save</small>
 </form>
