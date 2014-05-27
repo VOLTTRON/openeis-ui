@@ -74,11 +74,11 @@ angular.module('openeis-ui.projects', [
 
     $scope.statusCheck = function () {
         angular.forEach(dataSets, function (dataSet) {
-            if (!dataSets.status || dataSets.status !== 'Complete') {
+            if (!dataSets.status || dataSets.status.status !== 'complete') {
                 DataSets.getStatus(dataSet).then(function (response) {
                     dataSet.status = response.data;
 
-                    if (response.data !== 'Complete') {
+                    if (response.data.status !== 'complete') {
                         $timeout.cancel(statusCheckPromise);
                         statusCheckPromise = $timeout($scope.statusCheck, 5000);
                     }
@@ -179,7 +179,7 @@ angular.module('openeis-ui.projects', [
 
     $scope.saveTimestamps = function () {
         // TODO: Save timestamp to server
-        $scope.fileTimestampsFile.timestamp = { columns: $scope.selectedColumns, format: null };
+        $scope.fileTimestampsFile.timestamp = { columns: $scope.selectedColumns };
         $scope.closeFileTimestampsModal();
     };
 })

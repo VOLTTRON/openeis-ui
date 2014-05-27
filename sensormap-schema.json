@@ -102,7 +102,7 @@
             "title": "Timestamp format mapping",
             "description": "Indicates the columns in the file used to generate the timestamp and the format string used to parse the columns, which are concatenated together and separated by a single space.",
             "type": "object",
-            "required": ["columns", "format"],
+            "required": ["columns"],
             "properties": {
                 "columns": {
                     "oneOf": [
@@ -121,7 +121,7 @@
                         {"type": "integer", "minimum": 0}
                     ]
                 },
-                "format": {"type": ["string", "null"]}
+                "format": {"type": ["string"]}
             },
             "additionalProperties": false
         },
@@ -235,6 +235,18 @@
                     },
                     "required": ["unit"]
                 },
+                 {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "WholeBuildingElectricity",
+                                "WholeBuildingGas"
+                            ]
+                        },
+                        "unit": {"$ref": "#/definitions/units/power"}
+                    },
+                    "required": ["unit"]
+                },
                 {
                     "properties": {
                         "type": {
@@ -308,7 +320,11 @@
                     "tons_refrigeration_hour",
                     "watt_hour"
                 ]
+            },
+            "power": {
+                "enum": ["kilowatt","kilobtus_per_hour"]
             }
+            
         },
 
         "attributes": {

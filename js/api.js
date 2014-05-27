@@ -140,7 +140,7 @@ angular.module('openeis-ui.api', ['ngResource'])
 })
 .service('DataSets', function ($resource, $http) {
     var DataSets = this,
-        resource = $resource(settings.API_URL + 'ingest/:dataSetId', { dataSetId: '@id' }, {
+        resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
             create: { method: 'POST' },
         });
 
@@ -155,7 +155,7 @@ angular.module('openeis-ui.api', ['ngResource'])
     DataSets.getStatus = function (dataSet) {
         return $http({
             method: 'GET',
-            url: settings.API_URL + 'ingest/' + dataSet.id + '/status',
+            url: settings.API_URL + 'datasets/' + dataSet.id + '/status',
             transformResponse: angular.fromJson,
         });
     };

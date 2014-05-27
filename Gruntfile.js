@@ -143,7 +143,6 @@ module.exports = function(grunt) {
           {
             src: [
               'settings.js',
-              'general_definition.json',
               'sensormap-schema.json',
             ],
             dest: '<%= buildDir %>',
@@ -206,6 +205,7 @@ module.exports = function(grunt) {
       sync: {
         files: [
           'settings.js',
+          'sensormap-schema.json',
           'js/*.js',
           '!js/*.spec.js',
         ],
