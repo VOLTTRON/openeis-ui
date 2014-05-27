@@ -35,7 +35,7 @@
                     </div>
                     <div class="form__group" ng-if="newSensor.name">
                         <label>Source</label>
-                        <select required ng-model="newSensor.file" ng-options="file.file for file in files">
+                        <select required ng-model="newSensor.file" ng-options="file.file for file in files | hasTimestamp">
                             <option value="">-- Choose file --</option>
                         </select>
                         <select required ng-model="newSensor.column" ng-options="key as column for (key, column) in newSensor.file.columns">

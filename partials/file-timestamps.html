@@ -1,0 +1,42 @@
+<h4>{{modal.file.file}}</h4>
+<div ng-if="!modal.confirm">
+    <table class="table--file-preview">
+        <thead>
+            <tr>
+                <th colspan="{{modal.file.cols.length}}">Select columns that comprise timestamp:</th>
+            <tr>
+                <th ng-repeat="col in modal.file.cols">
+                    <input type="checkbox" ng-model="modal.columns[$index]">
+                </th>
+            </tr>
+            <tr ng-if="modal.file.head.header.length">
+                <th ng-repeat="header in modal.file.head.header"><label for="{{$index}}">{{header}}</label></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in modal.file.head.rows">
+                <td ng-repeat="col in row track by $index">{{col}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <button ng-click="previewTimestamps()">Continue</button> <button ng-click="closeFileTimestampsModal()">Cancel</button>
+</div>
+<div ng-if="modal.confirm">
+    <h5>Timestamps</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>Raw</th>
+                <th>Parsed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in modal.timestamps | limitTo:5">
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Are the parsed timestamps correct?</p>
+    <button ng-click="saveTimestamps()">Yes, save selection</button> <button ng-click="modal.confirm = false">No, re-select columns</button>
+</div>

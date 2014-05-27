@@ -65,7 +65,6 @@ angular.module('openeis-ui.projects', [
     };
 })
 .controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, sensorMaps, $upload, $timeout) {
-    $scope.modal = {};
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
@@ -90,24 +89,12 @@ angular.module('openeis-ui.projects', [
 
     $scope.statusCheck();
 
-    function openFileModal(file) {
-        Files.head(file.id).then(function (headResponse) {
-            if (headResponse.data.has_header) {
-                headResponse.data.header = headResponse.data.rows.shift();
-            }
+    $scope.configureTimestamp = function ($index) {
+        $scope.fileTimestampsFile = $scope.dataFiles[$index];
+    };
 
-            file.head = headResponse.data;
-            file.cols = [];
-            angular.forEach(file.head.rows[0], function (v, k) {
-                file.cols.push(k);
-            });
-
-            $scope.modal.File = file;
-        });
-    }
-
-    $scope.viewFile = function ($index) {
-        openFileModal($scope.dataFiles[$index]);
+    $scope.closeFileTimestampsModal = function () {
+        delete $scope.fileTimestampsFile;
     };
 
     $scope.upload = function (fileInput) {
@@ -118,7 +105,6 @@ angular.module('openeis-ui.projects', [
             }).then(function (response) {
                 // Perform a 'get' so that the file object has $save and $delete methods
                 Files.get(response.data.id).then(function (getResponse) {
-                    openFileModal(getResponse);
                     $scope.dataFiles.push(getResponse);
                 });
 
@@ -151,6 +137,50 @@ angular.module('openeis-ui.projects', [
         $scope.sensorMaps[$index].$delete(function () {
             $scope.sensorMaps.splice($index, 1);
         });
+    };
+})
+.controller('FileTimestampsCtrl', function ($scope, Files, $http) {
+    $scope.modal = { columns: {}, };
+
+    Files.head($scope.fileTimestampsFile.id).then(function (headResponse) {
+        if (headResponse.data.has_header) {
+            headResponse.data.header = headResponse.data.rows.shift();
+        }
+
+        $scope.fileTimestampsFile.head = headResponse.data;
+        $scope.fileTimestampsFile.cols = [];
+        angular.forEach($scope.fileTimestampsFile.head.rows[0], function (v, k) {
+            $scope.fileTimestampsFile.cols.push(k);
+        });
+
+        $scope.modal.file = $scope.fileTimestampsFile;
+    });
+
+    $scope.selectedColumns = [];
+
+    $scope.previewTimestamps = function () {
+        angular.forEach($scope.modal.columns, function (selected, column) {
+            if (selected) {
+                $scope.selectedColumns.push(parseInt(column));
+            }
+        });
+
+        $http({
+            method: 'GET',
+            url: settings.API_URL + 'files/' + $scope.modal.file.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
+            transformResponse: angular.fromJson,
+        }).then(function (response) {
+            $scope.modal.confirm = true;
+            $scope.modal.timestamps = response.data;
+        }, function (rejection) {
+            alert(angular.toJson(rejection.data));
+        });
+    };
+
+    $scope.saveTimestamps = function () {
+        // TODO: Save timestamp to server
+        $scope.fileTimestampsFile.timestamp = { columns: $scope.selectedColumns, format: null };
+        $scope.closeFileTimestampsModal();
     };
 })
 .controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {
@@ -193,6 +223,19 @@ angular.module('openeis-ui.projects', [
         }, function (rejection) {
             alert(angular.toJson(rejection, true));
         });
+    };
+})
+.filter('hasTimestamp', function () {
+    return function (items) {
+        var filtered = [];
+
+        angular.forEach(items, function (item) {
+            if (item.timestamp) {
+                filtered.push(item);
+            }
+        });
+
+        return filtered;
     };
 })
 .controller('NewSensorMapCtrl', function ($scope, SensorMaps) {

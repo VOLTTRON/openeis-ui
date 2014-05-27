@@ -262,8 +262,6 @@ angular.module('openeis-ui.api', ['ngResource'])
             if (!file.signature || file.columns || file.hasHeader || file.timestamp) {
                 promises.push(Files.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
-                    // TODO: Replace fake timestamp config
-                    file.timestamp = { columns: [0, 1], format: null };
                     file.columns = [];
                     file.hasHeader = headResponse.data.has_header;
 

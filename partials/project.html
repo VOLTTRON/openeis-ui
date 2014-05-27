@@ -13,6 +13,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Timestamp</th>
                             <th>Size</th>
                             <th>Download</th>
                             <th>Delete</th>
@@ -20,7 +21,9 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="file in dataFiles">
-                            <td><a ng-click="viewFile($index)">{{file.file}}</a></td>
+                            <td>{{file.file}}</td>
+                            <td ng-if="file.timestamp">Configured</td>
+                            <td ng-if="!file.timestamp"><a ng-click="configureTimestamp($index)">Configure</a></td>
                             <td>{{file.size | bytes}}</td>
                             <td><a href="{{file.download_url}}" target="_self">Download</a></td>
                             <td><a ng-click="deleteFile($index)">Delete</a></td>
@@ -29,8 +32,8 @@
                 </table>
                 <label class="label--block">Upload file</label>
                 <file-upload file-upload-click="upload(fileInput)"></file-upload>
-                <modal ng-if="modal.File">
-                    <ng-include src="'partials/file-preview.html'"></ng-include>
+                <modal class="modal--file-timestamps" ng-if="fileTimestampsFile">
+                    <ng-include src="'partials/file-timestamps.html'" ng-controller="FileTimestampsCtrl"></ng-include>
                 </modal>
             </div>
             <div class="data-sets">
