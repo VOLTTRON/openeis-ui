@@ -1,4 +1,4 @@
-angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
+angular.module('openeis-ui.sensor-container', ['openeis-ui.api', 'RecursionHelper'])
 .directive('sensorContainer', function (RecursionHelper) {
     return {
         restrict: 'E',
@@ -57,7 +57,7 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
             $scope.newSensor = {};
 
             $scope.$watchCollection('newSensor', function () {
-                if (!$scope.newSensor.file || $scope.newSensor.file.columns.indexOf($scope.newSensor.column) === -1) {
+                if (!$scope.newSensor.file || !$scope.newSensor.file.columns[$scope.newSensor.column]) {
                     $scope.newSensor.column = '';
                 }
 
@@ -105,49 +105,5 @@ angular.module('openeis-ui.sensor-map', ['openeis-ui.api', 'RecursionHelper'])
         compile: function(element) {
             return RecursionHelper.compile(element);
         },
-    };
-})
-.controller('SensorMapCtrl', function ($scope, sensorMaps) {
-    // TODO: use actual columns, instead of these fake ones
-    angular.forEach($scope.dataFiles, function (file, key) {
-        $scope.dataFiles[key].columns = [
-            file.file + ':Col1',
-            file.file + ':Col2',
-            file.file + ':Col3',
-        ];
-    });
-
-    $scope.newSensorMap = {
-        project: $scope.project.id,
-        map: {
-            version: 1,
-            files: {},
-            sensors: [],
-        },
-        valid: false,
-    };
-
-    $scope.$watch('newSensorMap.map', function () {
-        sensorMaps.validateMap($scope.newSensorMap.map)
-            .then(function (result) {
-                $scope.newSensorMap.valid = result.valid;
-            });
-    }, true);
-
-    $scope.save = function () {
-        sensorMaps.create($scope.newSensorMap).$promise.then(function (response) {
-            $scope.sensorMaps.push(response);
-            $scope.closeSensorMapModal();
-        }, function (rejection) {
-            alert(rejection.data.__all__.join('\n'));
-        });
-    };
-
-    $scope.newChild = {};
-
-    $scope.addChild = function () {
-        $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-        $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
-        $scope.newChild = {};
     };
 });

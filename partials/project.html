@@ -40,16 +40,22 @@
                         <tr>
                             <th>Name</th>
                             <th>Status</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="dataSet in dataSets">
-                            <td>{{dataSet.name}}</td>
+                            <td>Dataset {{dataSet.id}}</td>
                             <td>{{dataSet.status}}</td>
+                            <td><a ng-click="deleteDataSet($index)">Delete</a></td>
                         </tr>
                     </tbody>
                 </table>
-                <button disabled>Create new data set</button>
+                <button ng-click="newDataSetModal = true">Create new data set</button>
+
+                <modal class="modal--new-data-set" ng-if="newDataSetModal === true">
+                    <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
+                </modal>
 
                 <h3>Sensor maps</h3>
                 <table ng-if="sensorMaps.length">
@@ -68,8 +74,8 @@
                 </table>
                 <button ng-click="newSensorMapModal = true">Create new sensor map</button>
 
-                <modal class="modal--sensor-map" ng-if="newSensorMapModal === true">
-                    <ng-include src="'partials/sensor-map-modal.html'" ng-controller="SensorMapCtrl"></ng-include>
+                <modal class="modal--new-sensor-map" ng-if="newSensorMapModal === true">
+                    <ng-include src="'partials/new-sensor-map.html'" ng-controller="NewSensorMapCtrl"></ng-include>
                 </modal>
             </div>
         </div>

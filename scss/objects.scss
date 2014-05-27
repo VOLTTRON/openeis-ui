@@ -174,27 +174,6 @@ modal {
     }
 }
 
-.modal--sensor-map {
-    button {
-        padding: 5px 10px;
-    }
-
-    input {
-        height: 1.5 * $inuit-base-spacing-unit;
-        padding: 0 quarter($inuit-base-spacing-unit);
-    }
-
-    select {
-        @-moz-document url-prefix() {
-            padding: quarter($inuit-base-spacing-unit);
-        }
-
-        @media screen and (-webkit-min-device-pixel-ratio:0) {
-            height: 1.5 * $inuit-base-spacing-unit;
-        }
-    }
-}
-
 sensor-container {
     @extend %box;
     border: 1px solid #ddd;

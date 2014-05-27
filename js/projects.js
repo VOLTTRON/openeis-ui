@@ -1,6 +1,6 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.file', 'openeis-ui.modal',
-    'openeis-ui.sensor-map', 'ngResource', 'angularFileUpload',
+    'openeis-ui.sensor-container', 'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
     authRouteProvider
@@ -23,8 +23,11 @@ angular.module('openeis-ui.projects', [
                 dataFiles: ['Files', '$route', function(Files, $route) {
                     return Files.query($route.current.params.projectId);
                 }],
-                sensorMaps: ['sensorMaps', '$route', function(sensorMaps, $route) {
-                    return sensorMaps.query($route.current.params.projectId).$promise;
+                dataSets: ['DataSets', '$route', function(DataSets, $route) {
+                    return DataSets.query($route.current.params.projectId).$promise;
+                }],
+                sensorMaps: ['SensorMaps', '$route', function(SensorMaps, $route) {
+                    return SensorMaps.query($route.current.params.projectId).$promise;
                 }],
             },
         });
@@ -61,12 +64,31 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, sensorMaps, $upload) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, sensorMaps, $upload, $timeout) {
     $scope.modal = {};
     $scope.project = project;
     $scope.dataFiles = dataFiles;
-    $scope.dataSets = [];
+    $scope.dataSets = dataSets;
     $scope.sensorMaps = sensorMaps;
+
+    var statusCheckPromise;
+
+    $scope.statusCheck = function () {
+        angular.forEach(dataSets, function (dataSet) {
+            if (!dataSets.status || dataSets.status !== 'Complete') {
+                DataSets.getStatus(dataSet).then(function (response) {
+                    dataSet.status = response.data;
+
+                    if (response.data !== 'Complete') {
+                        $timeout.cancel(statusCheckPromise);
+                        statusCheckPromise = $timeout($scope.statusCheck, 5000);
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.statusCheck();
 
     function openFileModal(file) {
         Files.head(file.id).then(function (headResponse) {
@@ -111,7 +133,17 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.closeSensorMapModal = function () {
+    $scope.closeNewDataSetModal = function () {
+        $scope.newDataSetModal = false;
+    };
+
+    $scope.deleteDataSet = function ($index) {
+        $scope.dataSets[$index].$delete(function () {
+            $scope.dataSets.splice($index, 1);
+        });
+    };
+
+    $scope.closeNewSensorMapModal = function () {
         $scope.newSensorMapModal = false;
     };
 
@@ -119,5 +151,84 @@ angular.module('openeis-ui.projects', [
         $scope.sensorMaps[$index].$delete(function () {
             $scope.sensorMaps.splice($index, 1);
         });
+    };
+})
+.controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {
+    SensorMaps.ensureFileMetaData($scope.dataFiles);
+
+    angular.forEach($scope.sensorMaps, function (sensorMap) {
+        if (!angular.isObject(sensorMap.map)) {
+            sensorMap.map = angular.fromJson(sensorMap.map.replace(/'/g, '"').replace(/None/g, 'null'));
+        }
+    });
+
+    $scope.newDataMap = { files: {} };
+
+    $scope.filesWithSignature = function (key) {
+        var files = [];
+
+        angular.forEach($scope.dataFiles, function (file) {
+            if (angular.equals(file.signature, $scope.newDataMap.map.map.files[key].signature)) {
+                files.push(file);
+            }
+        });
+
+        return files;
+    };
+
+    $scope.save = function () {
+        var files = [];
+
+        angular.forEach($scope.newDataMap.files, function (fileId, key) {
+            files.push({ name: key, file: fileId });
+        });
+
+        DataSets.create({
+            map: $scope.newDataMap.map.id,
+            files: files,
+        }).$promise.then(function (dataSet) {
+            $scope.dataSets.push(dataSet);
+            $scope.statusCheck();
+            $scope.closeNewDataSetModal();
+        }, function (rejection) {
+            alert(angular.toJson(rejection, true));
+        });
+    };
+})
+.controller('NewSensorMapCtrl', function ($scope, SensorMaps) {
+    SensorMaps.ensureFileMetaData($scope.dataFiles);
+
+    $scope.newSensorMap = {
+        project: $scope.project.id,
+        map: {
+            version: 1,
+            files: {},
+            sensors: [],
+        },
+        valid: false,
+    };
+
+    $scope.$watch('newSensorMap.map', function () {
+        SensorMaps.validateMap($scope.newSensorMap.map)
+            .then(function (result) {
+                $scope.newSensorMap.valid = result.valid;
+            });
+    }, true);
+
+    $scope.save = function () {
+        SensorMaps.create($scope.newSensorMap).$promise.then(function (sensorMap) {
+            $scope.sensorMaps.push(sensorMap);
+            $scope.closeNewSensorMapModal();
+        }, function (rejection) {
+            alert(rejection.data.__all__.join('\n'));
+        });
+    };
+
+    $scope.newChild = {};
+
+    $scope.addChild = function () {
+        $scope.newChild.name = $scope.newChild.name.replace('/', '-');
+        $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
+        $scope.newChild = {};
     };
 });

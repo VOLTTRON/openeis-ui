@@ -38,13 +38,13 @@
                         <select required ng-model="newSensor.file" ng-options="file.file for file in files">
                             <option value="">-- Choose file --</option>
                         </select>
-                        <select required ng-model="newSensor.column" ng-options="column for column in newSensor.file.columns">
+                        <select required ng-model="newSensor.column" ng-options="key as column for (key, column) in newSensor.file.columns">
                             <option value="">-- Choose column --</option>
                         </select>
                     </div>
                     <div class="form__group" ng-if="newSensor.name && definition.sensors[newSensor.name].unit_type != 'dimensionless'">
                         <label>Value unit</label>
-                        <select required ng-model="newSensor.unit" ng-options="key as value.value for (key, value) in units[definition.sensors[newSensor.name].unit_type]">
+                        <select required ng-model="newSensor.unit" ng-options="key as unit.value for (key, unit) in units[definition.sensors[newSensor.name].unit_type]">
                             <option value="">-- Choose unit  --</option>
                         </select>
                     </div>

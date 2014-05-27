@@ -1,0 +1,25 @@
+<h4>New data set</h4>
+
+<form ng-submit="save()">
+    <div class="form__group">
+        <h5>Select sensor map to use</h5>
+        <select required ng-options="sensorMap as sensorMap.name for sensorMap in sensorMaps" ng-model="newDataMap.map">
+            <option value="">-- Choose sensor map --</option>
+        </select>
+    </div>
+
+    <div class="form__group" ng-if="newDataMap.map">
+        <h5>Select files to use</h5>
+        <dl>
+            <dt ng-repeat-start="(key, file) in newDataMap.map.map.files">File "{{key}}":<dt>
+            <dd ng-repeat-end>
+                Signature: <pre>{{file.signature.headers}}</pre>
+                <select required ng-options="file.id as file.file for file in filesWithSignature(key)" ng-model="newDataMap.files[key]">
+                    <option value="">-- Choose file --</option>
+                </select>
+            </dd>
+        </dl>
+    </div>
+
+    <button>Create</button> <button ng-click="closeNewDataSetModal()">Cancel</button>
+</form>

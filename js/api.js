@@ -138,35 +138,57 @@ angular.module('openeis-ui.api', ['ngResource'])
         });
     };
 })
-.service('sensorMaps', function ($http, $resource) {
-    var sensorMaps = this,
+.service('DataSets', function ($resource, $http) {
+    var DataSets = this,
+        resource = $resource(settings.API_URL + 'ingest/:dataSetId', { dataSetId: '@id' }, {
+            create: { method: 'POST' },
+        });
+
+    DataSets.create = function (dataSet) {
+        return resource.create(dataSet);
+    };
+
+    DataSets.query = function (projectId) {
+        return resource.query({ project: projectId });
+    };
+
+    DataSets.getStatus = function (dataSet) {
+        return $http({
+            method: 'GET',
+            url: settings.API_URL + 'ingest/' + dataSet.id + '/status',
+            transformResponse: angular.fromJson,
+        });
+    };
+})
+.service('SensorMaps', function ($http, $resource, Files, $q) {
+    var SensorMaps = this,
         resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
         });
 
-    sensorMaps.query = function (projectId) {
+    SensorMaps.query = function (projectId) {
         return resource.query({ project: projectId });
     };
 
-    sensorMaps.create = function (sensorMap) {
+    SensorMaps.create = function (sensorMap) {
         var copy = angular.copy(sensorMap);
-        copy.map = sensorMaps.flattenMap(copy.map);
+        copy.map = SensorMaps.flattenMap(copy.map);
         return resource.create(copy);
     };
 
-    sensorMaps.getDefinition = function () {
+    SensorMaps.getDefinition = function () {
         return $http.get(settings.SENSORMAP_DEFINITION_URL).then(function (response) {
             return response.data;
         });
     };
 
-    sensorMaps.getUnits = function () {
+    SensorMaps.getUnits = function () {
         return $http.get(settings.SENSORMAP_UNITS_URL).then(function (response) {
             return response.data;
         });
     };
 
-    sensorMaps.flattenMap = function (map) {
+    SensorMaps.flattenMap = function (map) {
         var mapCopy = angular.copy(map),
             files = {},
             fileCounter = 0;
@@ -190,11 +212,17 @@ angular.module('openeis-ui.api', ['ngResource'])
                 delete object.children;
 
                 if (object.file) {
+                    if (object.file.hasHeader) {
+                        object.column = object.file.columns[parseInt(object.column)];
+                    } else {
+                        object.column = parseInt(object.column);
+                    }
+
                     if (!files[object.file.file]) {
                         files[object.file.file] = {
                             key: fileCounter++ + '',
-                            signature: { headers: object.file.columns },
-                            timestamp: { columns: object.file.columns[0], format: null },
+                            signature: object.file.signature,
+                            timestamp: object.file.timestamp,
                         };
                     }
 
@@ -220,11 +248,41 @@ angular.module('openeis-ui.api', ['ngResource'])
         return mapCopy;
     };
 
-    sensorMaps.validateMap = function (map) {
+    SensorMaps.validateMap = function (map) {
         return $http.get(settings.SENSORMAP_SCHEMA_URL)
             .then(function (response) {
-                return tv4.validateMultiple(sensorMaps.flattenMap(map), response.data);
+                return tv4.validateMultiple(SensorMaps.flattenMap(map), response.data);
             });
+    };
+
+    SensorMaps.ensureFileMetaData = function (files) {
+        var promises = [];
+
+        angular.forEach(files, function(file) {
+            if (!file.signature || file.columns || file.hasHeader || file.timestamp) {
+                promises.push(Files.head(file.id).then(function (headResponse) {
+                    file.signature = { headers: [] };
+                    // TODO: Replace fake timestamp config
+                    file.timestamp = { columns: [0, 1], format: null };
+                    file.columns = [];
+                    file.hasHeader = headResponse.data.has_header;
+
+                    angular.forEach(headResponse.data.rows[0], function (v, k) {
+                        if (file.hasHeader) {
+                            file.signature.headers.push(v);
+                            file.columns.push(v);
+                        } else {
+                            file.signature.headers.push(null);
+                            file.columns.push("Column " + (k + 1));
+                        }
+                    });
+                }));
+            }
+        });
+
+        $q.all(promises).then(function () {
+            return files;
+        });
     };
 });
 

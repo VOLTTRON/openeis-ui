@@ -8,6 +8,8 @@ describe('openeis-ui.projects', function () {
             $provide.value('projects', []);
             $provide.value('project', {});
             $provide.value('dataFiles', []);
+            $provide.value('dataSets', []);
+            $provide.value('sensorMaps', []);
         });
 
         inject(function (_$httpBackend_) {

@@ -256,6 +256,10 @@ nav {
 }
 
 .table--file-preview {
+    display: block;
+    max-width: 900px;
+    overflow-y: scroll;
+
     label:after {
         content: "";
     }
@@ -270,10 +274,32 @@ nav {
 
     thead tr:not(:first-child) th,
     td {
-        border-right: 1px solid #ddd;
+        border-left: 1px solid #ddd;
     }
 }
 
-.modal--sensor-map .modal__dialog {
-    width: 900px;
+.modal--new-data-set,
+.modal--new-sensor-map {
+    .modal__dialog {
+        width: 900px;
+    }
+
+    button {
+        padding: 5px 10px;
+    }
+
+    input {
+        height: 1.5 * $inuit-base-spacing-unit;
+        padding: 0 quarter($inuit-base-spacing-unit);
+    }
+
+    select {
+        @-moz-document url-prefix() {
+            padding: quarter($inuit-base-spacing-unit);
+        }
+
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            height: 1.5 * $inuit-base-spacing-unit;
+        }
+    }
 }

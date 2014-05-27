@@ -14,7 +14,7 @@
     </thead>
     <tbody>
         <tr ng-repeat="row in modal.File.head.rows">
-            <td ng-repeat="col in row">{{col}}</td>
+            <td ng-repeat="col in row track by $index">{{col}}</td>
         </tr>
     </tbody>
 </table>
