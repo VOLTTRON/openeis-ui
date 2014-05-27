@@ -20,8 +20,11 @@
             </div>
             <div class="form__group">
                 <label for="password">Password</label>
-                <input id="password" type="password" autocomplete="off" required ng-trim="false" ng-change="form.error.data.password = false" ng-model="account.password">
-                <small class="help help--error" ng-if="form.error.data.password">{{form.error.data.password}}</small>
+                <input id="password" type="password" autocomplete="off" required ng-trim="false" ng-change="form.error.data.password = false; form.passwordConfirm = false" ng-model="account.password">
+                <small class="help help--error" ng-if="form.error.data.password">{{form.error.data.password}}</small><br>
+                <label for="passwordConfirm">Confirm password</label>
+                <input id="passwordConfirm" type="password" autocomplete="off" required ng-trim="false" ng-change="form.passwordConfirm = false" ng-model="account.passwordConfirm">
+                <small class="help help--error" ng-if="form.passwordConfirm">{{form.passwordConfirm}}</small>
             </div>
             <div class="form__group">
                 <button type="submit">Sign up</button>

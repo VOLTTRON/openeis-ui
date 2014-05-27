@@ -86,6 +86,11 @@ angular.module('openeis-ui.auth', ['openeis-ui.api', 'ngRoute'])
     $scope.form = {};
 
     $scope.submit = function () {
+        if ($scope.account.password !== $scope.account.passwordConfirm) {
+            $scope.form.passwordConfirm = 'Passwords do not match.';
+            return;
+        }
+
         Auth.accountCreate($scope.account).then(function (response) {
             Auth.logIn({
                 username: $scope.account.username,
