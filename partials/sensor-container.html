@@ -52,7 +52,7 @@
                 </form>
                 <dl ng-if="container.sensors">
                     <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}}</dt>
-                    <dd ng-repeat-end>{{sensor.file.file}} &rarr; {{sensor.column}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span> (<a ng-click="deleteSensor($index)">delete</a>)</dd>
+                    <dd ng-repeat-end>{{sensor.file.file}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span> (<a ng-click="deleteSensor($index)">delete</a>)</dd>
                 </dl>
             </fieldset>
         </div>
