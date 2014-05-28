@@ -202,7 +202,7 @@ nav {
     &--project {
         @extend %box;
 
-        .layout {
+        > .layout {
             display: flex;
             margin-right: -$inuit-base-spacing-unit;
         }

@@ -109,12 +109,12 @@ angular.module('openeis-ui.projects', [
                 $scope.dataFiles[$index].cols.push(k);
             });
 
-            $scope.timestampsFile = $scope.dataFiles[$index];
+            $scope.timestampFile = $scope.dataFiles[$index];
         });
     };
 
-    $scope.closeTimestampsModal = function () {
-        delete $scope.timestampsFile;
+    $scope.closeTimestampModal = function () {
+        delete $scope.timestampFile;
     };
 
     $scope.upload = function (fileInput) {
@@ -180,10 +180,10 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('TimestampsCtrl', function ($scope, Files, $http) {
+.controller('TimestampCtrl', function ($scope, Files, $http) {
     $scope.modal = { columns: {}, };
 
-    $scope.previewTimestamps = function () {
+    $scope.preview = function () {
         $scope.selectedColumns = [];
 
         angular.forEach($scope.modal.columns, function (selected, column) {
@@ -194,7 +194,7 @@ angular.module('openeis-ui.projects', [
 
         $http({
             method: 'GET',
-            url: settings.API_URL + 'files/' + $scope.timestampsFile.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
+            url: settings.API_URL + 'files/' + $scope.timestampFile.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
             transformResponse: angular.fromJson,
         }).then(function (response) {
             $scope.modal.confirm = true;
@@ -204,10 +204,18 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.saveTimestamps = function () {
-        // TODO: Save timestamp to server
-        $scope.timestampsFile.timestamp = { columns: $scope.selectedColumns };
-        $scope.closeTimestampsModal();
+    $scope.save = function () {
+        var timestamp = { columns: $scope.selectedColumns };
+
+        Files.update({
+            id: $scope.timestampFile.id,
+            timestamp: timestamp,
+        }).then(function (file) {
+            $scope.timestampFile.timestamp = timestamp;
+            $scope.closeTimestampModal();
+        }, function (rejection) {
+            alert(angular.toJson(rejection));
+        });
     };
 })
 .controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {

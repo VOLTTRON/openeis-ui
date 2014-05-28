@@ -120,7 +120,9 @@ angular.module('openeis-ui.api', ['ngResource'])
 })
 .service('Files', function ($resource, $http) {
     var Files = this,
-        resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' });
+        resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
+            update: { method: 'PATCH' },
+        });
 
     Files.get = function (fileId) {
         return resource.get({ fileId: fileId }).$promise;
@@ -128,6 +130,10 @@ angular.module('openeis-ui.api', ['ngResource'])
 
     Files.query = function (projectId) {
         return resource.query({ project: projectId }).$promise;
+    };
+
+    Files.update = function (file) {
+        return resource.update(file).$promise;
     };
 
     Files.head = function (fileId) {

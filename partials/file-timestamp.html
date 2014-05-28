@@ -1,25 +1,25 @@
-<h4>{{timestampsFile.file}}</h4>
+<h4>{{timestampFile.file}}</h4>
 <div ng-if="!modal.confirm">
     <table class="table--file-preview">
         <thead>
             <tr>
-                <th colspan="{{timestampsFile.cols.length}}">Select columns that comprise timestamp:</th>
+                <th colspan="{{timestampFile.cols.length}}">Select columns that comprise timestamp:</th>
             <tr>
-                <th ng-repeat="col in timestampsFile.cols">
+                <th ng-repeat="col in timestampFile.cols">
                     <input type="checkbox" ng-model="modal.columns[$index]">
                 </th>
             </tr>
-            <tr ng-if="timestampsFile.head.header.length">
-                <th ng-repeat="header in timestampsFile.head.header"><label for="{{$index}}">{{header}}</label></th>
+            <tr ng-if="timestampFile.head.header.length">
+                <th ng-repeat="header in timestampFile.head.header"><label for="{{$index}}">{{header}}</label></th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="row in timestampsFile.head.rows">
+            <tr ng-repeat="row in timestampFile.head.rows">
                 <td ng-repeat="col in row track by $index">{{col}}</td>
             </tr>
         </tbody>
     </table>
-    <button ng-click="previewTimestamps()">Continue</button> <button ng-click="closeTimestampsModal()">Cancel</button>
+    <button ng-click="preview()">Continue</button> <button ng-click="closeTimestampModal()">Cancel</button>
 </div>
 <div ng-if="modal.confirm">
     <h5>Timestamps</h5>
@@ -38,5 +38,5 @@
         </tbody>
     </table>
     <p>Are the parsed timestamps correct?</p>
-    <button ng-click="saveTimestamps()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button>
+    <button ng-click="save()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button>
 </div>
