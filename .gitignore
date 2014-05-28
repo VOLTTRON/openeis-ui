@@ -3,5 +3,4 @@ __pycache__
 /.sass-cache/
 /bower_components/
 /node_modules/
-/karma-results.xml
 /openeis/ui/static/

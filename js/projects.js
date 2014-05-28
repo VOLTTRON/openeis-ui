@@ -98,11 +98,23 @@ angular.module('openeis-ui.projects', [
     $scope.statusCheck();
 
     $scope.configureTimestamp = function ($index) {
-        $scope.fileTimestampsFile = $scope.dataFiles[$index];
+        Files.head($scope.dataFiles[$index].id).then(function (headResponse) {
+            if (headResponse.data.has_header) {
+                headResponse.data.header = headResponse.data.rows.shift();
+            }
+
+            $scope.dataFiles[$index].head = headResponse.data;
+            $scope.dataFiles[$index].cols = [];
+            angular.forEach($scope.dataFiles[$index].head.rows[0], function (v, k) {
+                $scope.dataFiles[$index].cols.push(k);
+            });
+
+            $scope.timestampsFile = $scope.dataFiles[$index];
+        });
     };
 
-    $scope.closeFileTimestampsModal = function () {
-        delete $scope.fileTimestampsFile;
+    $scope.closeTimestampsModal = function () {
+        delete $scope.timestampsFile;
     };
 
     $scope.upload = function (fileInput) {
@@ -168,35 +180,21 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('FileTimestampsCtrl', function ($scope, Files, $http) {
+.controller('TimestampsCtrl', function ($scope, Files, $http) {
     $scope.modal = { columns: {}, };
 
-    Files.head($scope.fileTimestampsFile.id).then(function (headResponse) {
-        if (headResponse.data.has_header) {
-            headResponse.data.header = headResponse.data.rows.shift();
-        }
-
-        $scope.fileTimestampsFile.head = headResponse.data;
-        $scope.fileTimestampsFile.cols = [];
-        angular.forEach($scope.fileTimestampsFile.head.rows[0], function (v, k) {
-            $scope.fileTimestampsFile.cols.push(k);
-        });
-
-        $scope.modal.file = $scope.fileTimestampsFile;
-    });
-
-    $scope.selectedColumns = [];
-
     $scope.previewTimestamps = function () {
+        $scope.selectedColumns = [];
+
         angular.forEach($scope.modal.columns, function (selected, column) {
-            if (selected) {
+            if (selected === true) {
                 $scope.selectedColumns.push(parseInt(column));
             }
         });
 
         $http({
             method: 'GET',
-            url: settings.API_URL + 'files/' + $scope.modal.file.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
+            url: settings.API_URL + 'files/' + $scope.timestampsFile.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
             transformResponse: angular.fromJson,
         }).then(function (response) {
             $scope.modal.confirm = true;
@@ -208,8 +206,8 @@ angular.module('openeis-ui.projects', [
 
     $scope.saveTimestamps = function () {
         // TODO: Save timestamp to server
-        $scope.fileTimestampsFile.timestamp = { columns: $scope.selectedColumns };
-        $scope.closeFileTimestampsModal();
+        $scope.timestampsFile.timestamp = { columns: $scope.selectedColumns };
+        $scope.closeTimestampsModal();
     };
 })
 .controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {
