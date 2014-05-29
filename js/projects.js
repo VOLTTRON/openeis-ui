@@ -126,6 +126,7 @@ angular.module('openeis-ui.projects', [
                 // Perform a 'get' so that the file object has $save and $delete methods
                 Files.get(response.data.id).then(function (getResponse) {
                     $scope.dataFiles.push(getResponse);
+                    $scope.configureTimestamp($scope.dataFiles.length - 1);
                 });
 
                 fileInput.val('').triggerHandler('change');

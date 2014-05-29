@@ -1,4 +1,4 @@
-<h4>{{timestampFile.file}}</h4>
+<h4>Configure timestamp: {{timestampFile.file}}</h4>
 <div ng-if="!modal.confirm">
     <table class="table--file-preview">
         <thead>
@@ -22,7 +22,6 @@
     <button ng-click="preview()">Continue</button> <button ng-click="closeTimestampModal()">Cancel</button>
 </div>
 <div ng-if="modal.confirm">
-    <h5>Timestamps</h5>
     <table>
         <thead>
             <tr>
@@ -38,5 +37,5 @@
         </tbody>
     </table>
     <p>Are the parsed timestamps correct?</p>
-    <button ng-click="save()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button>
+    <button ng-click="save()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button> <button ng-click="closeTimestampModal()">Cancel</button>
 </div>
