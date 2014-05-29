@@ -52,6 +52,7 @@ module.exports = function(grunt) {
             app: [
               '<%= buildDir %>js/angular.js',
               '<%= buildDir %>js/angular*.js',
+              '<%= buildDir %>js/autofill-event.js',
               '<%= buildDir %>js/tv4.js',
               '<%= buildDir %>js/*.js',
             ],
@@ -157,6 +158,7 @@ module.exports = function(grunt) {
               'bower_components/angular*/angular*.js',
               '!bower_components/angular*/angular*.min.js',
               'bower_components/ng-file-upload/angular-file-upload.js',
+              'bower_components/autofill-event/src/autofill-event.js',
               'bower_components/tv4/tv4.js',
               'js/*.js',
               '!js/*.spec.js',
@@ -172,6 +174,7 @@ module.exports = function(grunt) {
       build: {
         files: {
           '<%= buildDir %>js/app.min.js': [
+            'bower_components/autofill-event/src/autofill-event.js',
             'bower_components/tv4/tv4.js',
             '<%= buildDir %>js/app.js',
             '<%= buildDir %>js/app.templates.js',

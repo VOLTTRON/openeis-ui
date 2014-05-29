@@ -24,4 +24,11 @@ angular.module('openeis-ui', [
 
         return '';
     };
+})
+.run(function ($rootScope, $rootElement) {
+    $rootScope.$on('$viewContentLoaded', function () {
+        window.setTimeout(function() {
+            $rootElement.find('input').checkAndTriggerAutoFillEvent();
+        }, 200);
+    });
 });
