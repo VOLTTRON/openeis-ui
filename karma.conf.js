@@ -7,10 +7,8 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-*/angular-*.js',
       'bower_components/ng-file-upload/angular-file-upload.js',
+      'bower_components/tv4/tv4.js',
       'js/*.js',
     ],
-    junitReporter: {
-      outputFile: 'karma-results.xml',
-    },
   });
 };

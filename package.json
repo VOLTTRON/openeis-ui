@@ -9,11 +9,12 @@
     "grunt-contrib-uglify": "^0.4.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-html-build": "^0.3.2",
-    "grunt-livereload-snippet": "https://github.com/timdouglas/grunt-livereload-snippet/tarball/master",
     "grunt-karma": "^0.8.2",
+    "grunt-livereload-snippet": "https://github.com/timdouglas/grunt-livereload-snippet/tarball/master",
     "grunt-ngmin": "^0.0.3",
     "grunt-sync": "^0.0.6",
     "karma": "^0.12.16",
+    "karma-coverage": "^0.2.4",
     "karma-jasmine": "^0.1.5",
     "karma-junit-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^0.1.4"
