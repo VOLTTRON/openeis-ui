@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     buildDir: 'openeis/ui/static/openeis-ui/',
 
     clean: {
-      buildDir: ['<%= buildDir %>'],
+      build: ['<%= buildDir %>'],
       artifacts: [
         '<%= buildDir %>js/app.js',
         '<%= buildDir %>js/app.templates.js',
@@ -62,16 +62,12 @@ module.exports = function(grunt) {
       },
     },
 
-    livereload_snippet: {
-      options: {
-        before: '</body>',
-      },
-      src: '<%= buildDir %>index.html',
-    },
-
     karma: {
       options: {
         configFile: 'karma.conf.js',
+        preprocessors: {
+          'js/!(*.spec).js': ['coverage'],
+        },
       },
       dev: {
         background: true,
@@ -82,17 +78,11 @@ module.exports = function(grunt) {
         background: false,
         singleRun: true,
         reporters: 'coverage',
-        preprocessors: {
-          'js/!(*.spec).js': ['coverage'],
-        },
       },
       ci: {
         background: false,
         singleRun: true,
         reporters: ['coverage', 'junit'],
-        preprocessors: {
-          'js/!(*.spec).js': ['coverage'],
-        },
         coverageReporter: {
           type: 'cobertura',
         },
@@ -100,6 +90,13 @@ module.exports = function(grunt) {
           outputFile: 'karma-results.xml',
         },
       },
+    },
+
+    livereload_snippet: {
+      options: {
+        before: '</body>',
+      },
+      src: '<%= buildDir %>index.html',
     },
 
     ngmin: {
@@ -263,12 +260,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-sync');
 
   grunt.registerTask('build', [
-    'clean:buildDir', 'sass:build', 'sync:build', 'ngmin', 'ngtemplates',
+    'clean:build', 'sass:build', 'sync:build', 'ngmin', 'ngtemplates',
     'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
   grunt.registerTask('build-dev', [
-    'clean:buildDir', 'sass:dev', 'sync', 'ngtemplates', 'htmlbuild:dev',
+    'clean:build', 'sass:dev', 'sync', 'ngtemplates', 'htmlbuild:dev',
   ]);
 
   grunt.registerTask('coverage', ['clean:coverage', 'karma:coverage']);

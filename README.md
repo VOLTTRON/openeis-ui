@@ -21,14 +21,14 @@ Installing dependencies
 Building
 --------
 
-Single build:
+Single build: (production/minified)
 
     [openeis-ui]$ grunt build
 
-Continuous build (watch for changes and build automatically):
+Single build: (development)
+
+    [openeis-ui]$ grunt build-dev
+
+Continuous development build (watch for changes and build automatically):
 
     [openeis-ui]$ grunt
-
-Continuous build without tests:
-
-    [openeis-ui]$ grunt notest
