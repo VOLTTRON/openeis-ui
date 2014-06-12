@@ -1,6 +1,7 @@
 describe('openeis-ui.api', function () {
     var accountResourceUrl = settings.API_URL + 'account',
         loginResourceUrl = settings.API_URL + 'account/login',
+        pwChangeResourceUrl = settings.API_URL + 'account/change_password',
         pwResetResourceUrl = settings.API_URL + 'account/password_reset';
 
     beforeEach(function () {
@@ -36,7 +37,48 @@ describe('openeis-ui.api', function () {
 
                 // No API call second time around
                 Auth.account();
+            });
+
+            it('should return false if not authenticated', function () {
+                var account;
+
+                $httpBackend.expectGET(accountResourceUrl).respond(403, '');
+                Auth.account().then(function (response) {
+                    account = response;
                 });
+                expect(account).toEqual(null);
+                $httpBackend.flush();
+                expect(account).toEqual(false);
+            });
+        });
+
+        describe('accountCreate method', function () {
+            it('should create accounts', function () {
+                var newAccount = { username: 'newUser' };
+
+                $httpBackend.expectPOST(accountResourceUrl, angular.toJson(newAccount)).respond(204, '');
+                Auth.accountCreate(newAccount);
+                $httpBackend.flush();
+            });
+        });
+
+        describe('accountUpdate method', function () {
+            it('should update accounts', function () {
+                var newInfo = { email: 'newEmail' };
+
+                $httpBackend.expectPATCH(accountResourceUrl, angular.toJson(newInfo)).respond(204, '');
+                Auth.accountUpdate(newInfo);
+                $httpBackend.flush();
+            });
+        });
+
+        describe('accountPassword method', function () {
+            it('should change account passwords', function () {
+                var password = { old_password: 'old', new_password: 'new' };
+
+                $httpBackend.expectPOST(pwChangeResourceUrl, angular.toJson(password)).respond(204, '');
+                Auth.accountPassword(password);
+                $httpBackend.flush();
             });
         });
 
@@ -46,6 +88,10 @@ describe('openeis-ui.api', function () {
                 Auth.accountRecover1('TestUser');
                 $httpBackend.flush();
             });
+        });
+
+        describe('accountRecover2 method', function () {
+            // TODO
         });
 
         describe('loginRedirect method', function () {
@@ -262,6 +308,12 @@ describe('openeis-ui.api', function () {
             }
         });
 
+        it('should update (rename) files', function () {
+            $httpBackend.expectPATCH(settings.API_URL + 'files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
+            Files.update(testFiles[0]);
+            $httpBackend.flush();
+        });
+
         it('should retrieve the first rows of a file by file ID', function () {
             var head,
                 testHead = {
@@ -287,6 +339,135 @@ describe('openeis-ui.api', function () {
             for (var i = 0; i < testHead.rows.length; i++) {
                 expect(head.rows[i]).toEqual(testHead.rows[i]);
             }
+        });
+    });
+
+    describe('DataSets service', function () {
+        var DataSets, $httpBackend,
+            testDataSets = [
+                { id: 1 },
+                { id: 2 },
+                { id: 3 },
+            ];
+
+        beforeEach(function () {
+            inject(function (_DataSets_, _$httpBackend_) {
+                DataSets = _DataSets_;
+                $httpBackend = _$httpBackend_;
+            });
+        });
+
+        it('should create data sets', function () {
+            var newDataSet = { map: 0, files: [0] };
+
+            $httpBackend.expectPOST(settings.API_URL + 'datasets').respond(angular.toJson(newDataSet));
+            DataSets.create(newDataSet);
+            $httpBackend.flush();
+        });
+
+        it('should query for all data sets in a project by project ID', function () {
+            var dataSets;
+
+            $httpBackend.expectGET(settings.API_URL + 'datasets?project=1').respond(angular.toJson(testDataSets));
+            dataSets = DataSets.query(1);
+            $httpBackend.flush();
+
+            expect(dataSets.length).toEqual(testDataSets.length);
+
+            for (var i = 0; i < testDataSets.length; i++) {
+                expect(dataSets[i].id).toEqual(testDataSets[i].id);
+            }
+        });
+
+        it('should retrieve data set status', function () {
+            var dataSet = { id: 1 },
+                status;
+
+            $httpBackend.expectGET(settings.API_URL + 'datasets/' + dataSet.id + '/status').respond('"completed"');
+            DataSets.getStatus(dataSet).then(function (response) {
+                status = response.data;
+            });
+            expect(status).toEqual(null);
+            $httpBackend.flush();
+            expect(status).toEqual('completed');
+        });
+
+        it('should retrieve data set errors', function () {
+            var dataSet = { id: 1 },
+                errors;
+
+            $httpBackend.expectGET(settings.API_URL + 'datasets/' + dataSet.id + '/errors').respond('[]');
+            DataSets.getErrors(dataSet).then(function (response) {
+                errors = response.data;
+            });
+            expect(errors).toEqual(null);
+            $httpBackend.flush();
+            expect(errors).toEqual([]);
+        });
+    });
+
+    describe('SensorMaps service', function () {
+        var SensorMaps, $httpBackend,
+            testSensorMaps = [
+                { id: 1 },
+                { id: 2 },
+                { id: 3 },
+            ];
+
+        beforeEach(function () {
+            inject(function (_SensorMaps_, _$httpBackend_) {
+                SensorMaps = _SensorMaps_;
+                $httpBackend = _$httpBackend_;
+            });
+        });
+
+        it('should query for all sensor maps in a project by project ID', function () {
+            var sensorMaps;
+
+            $httpBackend.expectGET(settings.API_URL + 'sensormaps?project=1').respond(angular.toJson(testSensorMaps));
+            sensorMaps = SensorMaps.query(1);
+            $httpBackend.flush();
+
+            expect(sensorMaps.length).toEqual(testSensorMaps.length);
+
+            for (var i = 0; i < testSensorMaps.length; i++) {
+                expect(sensorMaps[i].id).toEqual(testSensorMaps[i].id);
+            }
+        });
+
+        it('should create sensor maps from non-flattened sensor maps', function () {
+            var newSensorMap = { map: { sensors: [] } },
+                result;
+
+            spyOn(SensorMaps, 'flattenMap').andReturn('flattenedMap');
+
+            $httpBackend.expectPOST(settings.API_URL + 'sensormaps', '{"map":"flattenedMap"}').respond('');
+            SensorMaps.create(newSensorMap);
+            $httpBackend.flush();
+        });
+
+        it('should retrieve the sensor map defintion object', function () {
+            $httpBackend.expectGET(settings.SENSORMAP_DEFINITION_URL).respond('');
+            SensorMaps.getDefinition();
+            $httpBackend.flush();
+        });
+
+        it('should retrieve the sensor map units object', function () {
+            $httpBackend.expectGET(settings.SENSORMAP_UNITS_URL).respond('');
+            SensorMaps.getUnits();
+            $httpBackend.flush();
+        });
+
+        it('should flatten sensor map objects into topics', function () {
+            // TODO
+        });
+
+        it('validate sensor maps against JSON schema', function () {
+            // TODO
+        });
+
+        it('create file signatures', function () {
+            // TODO
         });
     });
 });
