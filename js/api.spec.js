@@ -24,15 +24,18 @@ describe('openeis-ui.api', function () {
 
         describe('account method', function () {
             it('should only call the API once', function () {
+                var account;
+
                 $httpBackend.expectGET(accountResourceUrl).respond('{"username":"TestUser"}');
-                Auth.account(function () {
-                    expect(account.username).toEqual('TestUser');
+                Auth.account().then(function (response) {
+                    account = response;
                 });
+                expect(account).toEqual(null);
                 $httpBackend.flush();
+                expect(account.username).toEqual('TestUser');
 
                 // No API call second time around
-                Auth.account(function () {
-                    expect(account.username).toEqual('TestUser');
+                Auth.account();
                 });
             });
         });
