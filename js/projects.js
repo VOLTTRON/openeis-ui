@@ -74,7 +74,7 @@ angular.module('openeis-ui.projects', [
 
     $scope.statusCheck = function () {
         angular.forEach(dataSets, function (dataSet) {
-            if (!dataSets.status || dataSets.status.status !== 'complete') {
+            if (!dataSet.status || dataSet.status.status !== 'complete') {
                 var promises = [];
 
                 promises.push(DataSets.getStatus(dataSet).then(function (response) {
