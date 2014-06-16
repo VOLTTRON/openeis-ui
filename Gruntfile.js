@@ -67,7 +67,11 @@ module.exports = function(grunt) {
         configFile: 'karma.conf.js',
         preprocessors: {
           'js/!(*.spec).js': ['coverage'],
+          'partials/*.html': ['ng-html2js'],
         },
+        ngHtml2JsPreprocessor: {
+          moduleName: 'openeis-ui.templates',
+        }
       },
       dev: {
         background: true,
