@@ -79,6 +79,10 @@ angular.module('openeis-ui.projects', [
 
                 promises.push(DataSets.getStatus(dataSet).then(function (response) {
                     dataSet.status = response.data;
+
+                    if (dataSet.status.status === 'processing') {
+                        dataSet.status.status += ' - ' + Math.floor(parseFloat(dataSet.status.percent)) + '%';
+                    }
                 }));
 
                 promises.push(DataSets.getErrors(dataSet).then(function (response) {
@@ -88,7 +92,7 @@ angular.module('openeis-ui.projects', [
                 $q.all(promises).then(function () {
                     if (dataSet.status.status !== 'complete') {
                         $timeout.cancel(statusCheckPromise);
-                        statusCheckPromise = $timeout($scope.statusCheck, 5000);
+                        statusCheckPromise = $timeout($scope.statusCheck, 1000);
                     }
                 });
             }
