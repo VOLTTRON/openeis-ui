@@ -1,6 +1,6 @@
-describe('openeis-ui.file', function () {
+describe('openeis-ui.file-upload', function () {
     beforeEach(function () {
-        module('openeis-ui.file');
+        module('openeis-ui.file-upload');
         module('openeis-ui.templates');
     });
 
