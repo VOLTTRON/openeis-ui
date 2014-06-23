@@ -16,15 +16,6 @@ angular.module('openeis-ui', [
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
 })
-.filter('capitalize', function () {
-    return function (input, scope) {
-        if (input) {
-            return input.substring(0,1).toUpperCase() + input.substring(1);
-        }
-
-        return '';
-    };
-})
 .run(function ($rootScope, $rootElement) {
     $rootScope.$on('$viewContentLoaded', function () {
         window.setTimeout(function() {
