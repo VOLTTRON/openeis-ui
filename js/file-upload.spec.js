@@ -5,43 +5,52 @@ describe('openeis-ui.file-upload', function () {
     });
 
     describe('fileUpload directive', function () {
-        var directive;
+        var $rootScope, directive, fileInput, uploadButton;
 
-        beforeEach(inject(function($rootScope, $compile) {
-            directive = angular.element('<file-upload></file-upload>');
+        beforeEach(inject(function(_$rootScope_, $compile) {
+            $rootScope = _$rootScope_;
+            $rootScope.clickFn = function (fileInput) {};
+            directive = angular.element('<file-upload file-upload-click="clickFn(fileInput)"></file-upload>');
             $compile(directive)($rootScope);
             $rootScope.$digest();
+
+            fileInput = directive.find('input');
+            uploadButton = directive.find('button');
         }));
 
         describe('file input field', function () {
             it('should exist', function () {
-                expect(directive[0].querySelectorAll('input[type="file"]').length).toBe(1);
+                expect(fileInput.length).toBe(1);
+                expect(fileInput.attr('type')).toBe('file');
             });
         });
 
         describe('upload button', function () {
-            var button;
-
-            beforeEach(function () {
-                button = directive[0].querySelectorAll('button');
-            });
-
             it('should exist', function () {
-                expect(button.length).toBe(1);
-                expect(button[0].innerHTML).toBe('Upload');
+                expect(uploadButton.length).toBe(1);
+                expect(uploadButton.prop('innerHTML')).toBe('Upload');
             });
 
             it('should be initially disabled', function () {
-                expect(button[0].disabled).toBe(true);
+                expect(uploadButton.prop('disabled')).toBe(true);
             });
 
-            it('should become enabled/disbaled when file is attached/detached', function () {
-                // TODO
+            it('should call file-upload-click value on click', function () {
+                spyOn($rootScope, 'clickFn');
+                expect($rootScope.clickFn).not.toHaveBeenCalled();
+                uploadButton.triggerHandler('click');
+                expect($rootScope.clickFn).toHaveBeenCalled();
             });
+        });
 
-            it('should call value of file-upload-click attribute when clicked', function () {
-                // TODO
-            });
+        it('should enable/disable upload button when file is attached/detached', function () {
+            // TODO: attach file
+            // fileInput.triggerHandler('change');
+            // expect(uploadButton.prop('disabled')).toBe(false);
+
+            // TODO: detach file
+            // fileInput.triggerHandler('change');
+            // expect(uploadButton.prop('disabled')).toBe(true);
         });
     });
 });
