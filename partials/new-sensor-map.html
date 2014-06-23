@@ -11,7 +11,7 @@
     &nbsp;to sensor map
 </form>
 
-<sensor-container ng-repeat="container in newSensorMap.map.sensors" container="container" index="$index" files="dataFiles" delete="deleteContainer(index)"></sensor-container>
+<sensor-container ng-repeat="container in newSensorMap.map.sensors" container="container" files="dataFiles"></sensor-container>
 
 <form ng-submit="save()">
     <label class="label--inline">Sensor map name</label>&nbsp;

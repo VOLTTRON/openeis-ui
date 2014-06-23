@@ -5,7 +5,6 @@ angular.module('openeis-ui.sensor-container', ['openeis-ui.api', 'RecursionHelpe
         scope: {
             container: '=',
             files: '=',
-            index: '=',
         },
         templateUrl: 'partials/sensor-container.html',
         controller: function ($scope, SensorMaps) {
