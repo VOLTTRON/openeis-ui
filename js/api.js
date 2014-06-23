@@ -271,7 +271,7 @@ angular.module('openeis-ui.api', ['ngResource'])
 
     SensorMaps.ensureFileMetaData = function (files) {
         angular.forEach(files, function(file) {
-            if (!file.signature || file.columns || file.hasHeader || file.timestamp) {
+            if (!(file.hasOwnProperty('signature') && file.hasOwnProperty('columns') && file.hasOwnProperty('hasHeader'))) {
                 Files.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
                     file.columns = [];
