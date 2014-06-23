@@ -174,7 +174,7 @@ angular.module('openeis-ui.api', ['ngResource'])
         });
     };
 })
-.service('SensorMaps', function ($http, $resource, Files, $q) {
+.service('SensorMaps', function ($http, $resource, Files) {
     var SensorMaps = this,
         resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
@@ -270,11 +270,9 @@ angular.module('openeis-ui.api', ['ngResource'])
     };
 
     SensorMaps.ensureFileMetaData = function (files) {
-        var promises = [];
-
         angular.forEach(files, function(file) {
             if (!file.signature || file.columns || file.hasHeader || file.timestamp) {
-                promises.push(Files.head(file.id).then(function (headResponse) {
+                Files.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
                     file.columns = [];
                     file.hasHeader = headResponse.data.has_header;
@@ -288,12 +286,8 @@ angular.module('openeis-ui.api', ['ngResource'])
                             file.columns.push("Column " + (k + 1));
                         }
                     });
-                }));
+                });
             }
-        });
-
-        $q.all(promises).then(function () {
-            return files;
         });
     };
 });
