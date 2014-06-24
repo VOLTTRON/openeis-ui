@@ -180,19 +180,19 @@ describe('openeis-ui.sensor-container', function () {
 
             isolateScope.newChild = {
                 level: 'building',
-                name: 'Building1',
+                name: 'Building/WithSlash',
             };
             isolateScope.addChild();
 
-            // Building should be added to children
-            expect(isolateScope.container.children[0].name).toBe('Building1');
+            // Building should be added to children, slashes replaced by dashes
+            expect(isolateScope.container.children[0].name).toBe('Building-WithSlash');
             expect(isolateScope.container.children[0].level).toBe('building');
 
             expect(directive.find('sensor-container').length).toBe(0);
             scope.$digest();
             // Building should be added to view
             expect(directive.find('sensor-container').length).toBe(1);
-            expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^Building: Building1/);
+            expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^Building: Building-WithSlash/);
         });
     });
 });
