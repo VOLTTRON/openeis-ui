@@ -254,6 +254,8 @@ angular.module('openeis-ui.api', ['ngResource'])
 
         mapCopy.sensors = flattenObject(mapCopy.sensors, '');
 
+        mapCopy.files = mapCopy.files || {};
+
         angular.forEach(files, function (file, key) {
             mapCopy.files[file.key] = file;
             delete mapCopy.files[file.key].key;

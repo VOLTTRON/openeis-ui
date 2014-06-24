@@ -280,7 +280,6 @@ angular.module('openeis-ui.projects', [
         project: $scope.project.id,
         map: {
             version: 1,
-            files: {},
             sensors: [],
         },
         valid: false,
