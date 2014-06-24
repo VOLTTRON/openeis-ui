@@ -5,7 +5,7 @@ describe('openeis-ui.sensor-container', function () {
     });
 
     describe('sensorContainer directive', function () {
-        var $httpBackend, $rootScope, $compile, $scope, definition,
+        var $httpBackend, $rootScope, $compile, scope, definition,
             directive, isolateScope;
 
         beforeEach(inject(function(_$httpBackend_, _$rootScope_, _$compile_) {
@@ -13,7 +13,7 @@ describe('openeis-ui.sensor-container', function () {
             $rootScope = _$rootScope_;
             $compile = _$compile_;
 
-            $scope = $rootScope.$new();
+            scope = $rootScope.$new();
         }));
 
         // Helper function to keep things DRY
@@ -22,7 +22,7 @@ describe('openeis-ui.sensor-container', function () {
 
             $httpBackend.whenGET(settings.SCHEMA_DEFINITION_URL).respond(angular.toJson(definition));
             $httpBackend.whenGET(settings.SCHEMA_UNITS_URL).respond('{}');
-            $compile(directive)($scope);
+            $compile(directive)(scope);
             $httpBackend.flush();
             $rootScope.$digest();
 
@@ -35,7 +35,7 @@ describe('openeis-ui.sensor-container', function () {
                 building: {},
                 systems: { System1: {} },
             };
-            $scope.rootContainer = { level: 'site', name: 'Site1', children: [
+            scope.rootContainer = { level: 'site', name: 'Site1', children: [
                 { level: 'building', name: 'Building1' },
                 { level: 'building', name: 'Building2' },
                 { level: 'building', name: 'Building3', children: [
@@ -60,7 +60,7 @@ describe('openeis-ui.sensor-container', function () {
                     sensor3: {},
                 }
             };
-            $scope.rootContainer = { level: 'site', name: 'Site1', children: [
+            scope.rootContainer = { level: 'site', name: 'Site1', children: [
                 { level: 'building', name: 'Building1' },
             ]};
             compile();
@@ -86,7 +86,7 @@ describe('openeis-ui.sensor-container', function () {
                     attribute1: {}
                 },
             };
-            $scope.rootContainer = { level: 'site', name: 'Site1' };
+            scope.rootContainer = { level: 'site', name: 'Site1' };
             compile();
 
             expect(isolateScope.container.attributes).not.toBeDefined();
@@ -118,7 +118,7 @@ describe('openeis-ui.sensor-container', function () {
                     sensor1: {}
                 },
             };
-            $scope.rootContainer = { level: 'site', name: 'Site1' };
+            scope.rootContainer = { level: 'site', name: 'Site1' };
             compile();
 
             expect(isolateScope.container.sensors).not.toBeDefined();
@@ -152,7 +152,7 @@ describe('openeis-ui.sensor-container', function () {
 
         it('should add system objects', function () {
             definition = { site: {} };
-            $scope.rootContainer = { level: 'site', name: 'Site1' };
+            scope.rootContainer = { level: 'site', name: 'Site1' };
             compile();
 
             expect(isolateScope.container.children).not.toBeDefined();
@@ -175,7 +175,7 @@ describe('openeis-ui.sensor-container', function () {
 
         it('should add child objects', function () {
             definition = { site: {} };
-            $scope.rootContainer = { level: 'site', name: 'Site1' };
+            scope.rootContainer = { level: 'site', name: 'Site1' };
             compile();
 
             expect(isolateScope.container.children).not.toBeDefined();
