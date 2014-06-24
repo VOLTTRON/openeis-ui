@@ -14,7 +14,7 @@
             <dt ng-repeat-start="(key, file) in newDataMap.map.map.files">File "{{key}}":<dt>
             <dd ng-repeat-end>
                 Signature: <pre>{{file.signature.headers}}</pre>
-                <select required ng-options="file.id as file.file for file in filesWithSignature(key)" ng-model="newDataMap.files[key]">
+                <select required ng-options="file.id as file.file for file in dataFiles | hasSignature:file.signature" ng-model="newDataMap.files[key]">
                     <option value="">-- Choose file --</option>
                 </select>
             </dd>

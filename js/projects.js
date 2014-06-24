@@ -229,18 +229,6 @@ angular.module('openeis-ui.projects', [
 
     $scope.newDataMap = { files: {} };
 
-    $scope.filesWithSignature = function (key) {
-        var files = [];
-
-        angular.forEach($scope.dataFiles, function (file) {
-            if (angular.equals(file.signature, $scope.newDataMap.map.map.files[key].signature)) {
-                files.push(file);
-            }
-        });
-
-        return files;
-    };
-
     $scope.save = function () {
         var files = [];
 
@@ -258,6 +246,19 @@ angular.module('openeis-ui.projects', [
         }, function (rejection) {
             alert(angular.toJson(rejection, true));
         });
+    };
+})
+.filter('hasSignature', function () {
+    return function (items, signature) {
+        var filtered = [];
+
+        angular.forEach(items, function (item) {
+            if (angular.equals(signature, item.signature)) {
+                filtered.push(item);
+            }
+        });
+
+        return filtered;
     };
 })
 .filter('hasTimestamp', function () {
