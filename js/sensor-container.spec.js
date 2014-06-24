@@ -5,14 +5,12 @@ describe('openeis-ui.sensor-container', function () {
     });
 
     describe('sensorContainer directive', function () {
-        var $httpBackend, $rootScope, $compile, scope, definition,
+        var $httpBackend, $compile, scope, definition,
             directive, isolateScope;
 
-        beforeEach(inject(function(_$httpBackend_, _$rootScope_, _$compile_) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, _$compile_) {
             $httpBackend = _$httpBackend_;
-            $rootScope = _$rootScope_;
             $compile = _$compile_;
-
             scope = $rootScope.$new();
         }));
 
@@ -24,7 +22,7 @@ describe('openeis-ui.sensor-container', function () {
             $httpBackend.whenGET(settings.SCHEMA_UNITS_URL).respond('{}');
             $compile(directive)(scope);
             $httpBackend.flush();
-            $rootScope.$digest();
+            scope.$digest();
 
             isolateScope = directive.isolateScope();
         }
@@ -104,7 +102,7 @@ describe('openeis-ui.sensor-container', function () {
             expect(isolateScope.objectDefinition.attribute_list.length).toBe(0);
 
             expect(directive.find('dt').length).toBe(0);
-            $rootScope.$digest();
+            scope.$digest();
             // Attribute should be added to view
             expect(directive.find('dt').prop('innerHTML')).toBe('attribute1');
         });
@@ -135,7 +133,7 @@ describe('openeis-ui.sensor-container', function () {
             expect(isolateScope.objectDefinition.sensor_list.length).toBe(0);
 
             expect(directive.find('dt').length).toBe(0);
-            $rootScope.$digest();
+            scope.$digest();
             // Sensor should be added to view
             expect(directive.find('dt').prop('innerHTML')).toBe('sensor1');
 
@@ -145,7 +143,7 @@ describe('openeis-ui.sensor-container', function () {
             expect(isolateScope.container.sensors.length).toBe(0);
             // Sensor should be restored to sensor_list
             expect(isolateScope.objectDefinition.sensor_list[0]).toBe('sensor1');
-            $rootScope.$digest();
+            scope.$digest();
             // Sensor should be removed from view
             expect(directive.find('dt').length).toBe(0);
         });
@@ -167,7 +165,7 @@ describe('openeis-ui.sensor-container', function () {
             expect(isolateScope.container.children[0].level).toBe('system');
 
             expect(directive.find('sensor-container').length).toBe(0);
-            $rootScope.$digest();
+            scope.$digest();
             // System should be added to view
             expect(directive.find('sensor-container').length).toBe(1);
             expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^System: System1/);
@@ -191,7 +189,7 @@ describe('openeis-ui.sensor-container', function () {
             expect(isolateScope.container.children[0].level).toBe('building');
 
             expect(directive.find('sensor-container').length).toBe(0);
-            $rootScope.$digest();
+            scope.$digest();
             // Building should be added to view
             expect(directive.find('sensor-container').length).toBe(1);
             expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^Building: Building1/);
