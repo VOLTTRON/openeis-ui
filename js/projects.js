@@ -74,7 +74,7 @@ angular.module('openeis-ui.projects', [
     var statusCheckPromise;
 
     $scope.statusCheck = function () {
-        angular.forEach(dataSets, function (dataSet) {
+        angular.forEach($scope.dataSets, function (dataSet) {
             if (!dataSet.status || dataSet.status.status !== 'complete') {
                 var promises = [];
 
@@ -156,7 +156,7 @@ angular.module('openeis-ui.projects', [
 
         // Create hash of sensor map file names to data file names
         angular.forEach(dataSet.files, function (file) {
-            angular.forEach(dataFiles, function (dataFile) {
+            angular.forEach($scope.dataFiles, function (dataFile) {
                 if (dataFile.id === file.file) {
                     $scope.errorsModal.files[file.name] = dataFile.file;
                 }
