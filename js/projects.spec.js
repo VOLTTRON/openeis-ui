@@ -97,19 +97,54 @@ describe('openeis-ui.projects', function () {
     });
 
     describe('ProjectCtrl controller', function () {
-        var controller, scope;
+        var $controller, controller, scope;
 
         beforeEach(function () {
-            inject(function($controller, $rootScope) {
+            inject(function($rootScope, _$controller_) {
+                $controller = _$controller_;
                 scope = $rootScope.$new();
                 controller = $controller('ProjectCtrl', { $scope: scope });
             });
         });
 
-        it('should define a function for uploading files', function () {
-            expect(scope.upload).toBeDefined();
+        describe('upload function', function () {
+            var upload, Files, resolve;
 
-            // TODO: refactor $scope.upload to make it more testable
+            beforeEach(function () {
+                upload = { upload: jasmine.createSpy().andReturn({
+                    then: function (successCallback) {
+                        resolve = successCallback;
+                    }
+                })};
+
+                Files = { get: jasmine.createSpy().andReturn({
+                    then: function (successCallback) {
+                        resolve = successCallback;
+                    }
+                })};
+
+                controller = $controller('ProjectCtrl', { $scope: scope, $upload: upload, Files: Files });
+            });
+
+            it('should upload selected files with $upload', function () {
+                scope.upload([{ files: ['file1', 'file2', 'file2'] }]);
+                expect(upload.upload.callCount).toBe(3);
+            });
+
+            it('should retrieve file and add it to array', function () {
+                scope.dataFiles = [];
+                scope.configureTimestamp = jasmine.createSpy();
+                scope.upload({
+                    0: { files: ['file1', 'file2', 'file2'] },
+                    val: function () { return { triggerHandler: function () {} }; }
+                });
+                resolve({ data: { id: 1 }});
+                resolve('file');
+                expect(scope.dataFiles.length).toBe(1);
+                expect(scope.dataFiles[0]).toBe('file');
+                expect(Files.get).toHaveBeenCalledWith(1);
+                expect(scope.configureTimestamp).toHaveBeenCalledWith(0);
+            });
         });
 
         it('should define a function for deleting files by array index', inject(function (Files) {
