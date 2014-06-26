@@ -2,19 +2,19 @@
 
 <form ng-submit="save()">
     <div class="form__group">
-        <h5>Select sensor map to use</h5>
-        <select required ng-options="sensorMap as sensorMap.name for sensorMap in sensorMaps" ng-model="newDataMap.map">
-            <option value="">-- Choose sensor map --</option>
+        <h5>Select data map to use</h5>
+        <select required ng-options="dataMap as dataMap.name for dataMap in dataMaps" ng-model="newDataSet.map">
+            <option value="">-- Choose data map --</option>
         </select>
     </div>
 
-    <div class="form__group" ng-if="newDataMap.map">
+    <div class="form__group" ng-if="newDataSet.map">
         <h5>Select files to use</h5>
         <dl>
-            <dt ng-repeat-start="(key, file) in newDataMap.map.map.files">File "{{key}}":<dt>
+            <dt ng-repeat-start="(key, file) in newDataSet.map.map.files">File "{{key}}":<dt>
             <dd ng-repeat-end>
                 Signature: <pre>{{file.signature.headers}}</pre>
-                <select required ng-options="file.id as file.file for file in dataFiles | hasSignature:file.signature" ng-model="newDataMap.files[key]">
+                <select required ng-options="file.id as file.file for file in dataFiles | hasSignature:file.signature" ng-model="newDataSet.files[key]">
                     <option value="">-- Choose file --</option>
                 </select>
             </dd>

@@ -227,7 +227,7 @@ nav {
             }
         }
 
-        .sensor-maps {
+        .data-maps {
             @extend %layout__item;
             @extend %box;
             padding-top: $inuit-base-spacing-unit;
@@ -296,7 +296,7 @@ nav {
 }
 
 .modal--new-data-set,
-.modal--new-sensor-map {
+.modal--new-data-map {
     .modal__dialog {
         width: 900px;
     }

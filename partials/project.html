@@ -38,10 +38,10 @@
             </modal>
         </div>
         <div class="layout">
-            <div class="sensor-maps">
-                <h3>Sensor maps</h3>
-                <p><button ng-click="newSensorMapModal = true">Create new sensor map</button></p>
-                <table ng-if="sensorMaps.length">
+            <div class="data-maps">
+                <h3>Data maps</h3>
+                <p><button ng-click="newDataMapModal = true">Create new data map</button></p>
+                <table ng-if="dataMaps.length">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -49,14 +49,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="sensorMap in sensorMaps">
-                            <td>{{sensorMap.name}}</td>
-                            <td><a ng-click="deleteSensorMap($index)">Delete</a></td>
+                        <tr ng-repeat="dataMap in dataMaps">
+                            <td>{{dataMap.name}}</td>
+                            <td><a ng-click="deleteDataMap($index)">Delete</a></td>
                         </tr>
                     </tbody>
                 </table>
-                <modal class="modal--new-sensor-map" ng-if="newSensorMapModal === true">
-                    <ng-include src="'partials/new-sensor-map.html'" ng-controller="NewSensorMapCtrl"></ng-include>
+                <modal class="modal--new-data-map" ng-if="newDataMapModal === true">
+                    <ng-include src="'partials/new-data-map.html'" ng-controller="NewDataMapCtrl"></ng-include>
                 </modal>
             </div>
             <div class="data-sets">
@@ -73,7 +73,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="dataSet in dataSets">
-                            <td>Dataset {{dataSet.id}}</td>
+                            <td>Data set {{dataSet.id}}</td>
                             <td>{{dataSet.status.status || 'Checking&hellip;' | capitalize}}</td>
                             <td ng-if="!dataSet.errors.length">None</td>
                             <td ng-if="dataSet.errors.length"><a ng-click="showErrors(dataSet)"><ng-pluralize count="dataSet.errors.length" when="{'one': '1 error', 'other': '{} errors'}"></ng-pluralize></a></td>

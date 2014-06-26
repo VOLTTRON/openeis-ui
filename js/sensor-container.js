@@ -9,8 +9,8 @@ angular.module('openeis-ui.sensor-container', [
             files: '=',
         },
         templateUrl: 'partials/sensor-container.html',
-        controller: function ($scope, SensorMaps) {
-            SensorMaps.getDefinition().then(function (definition) {
+        controller: function ($scope, DataMaps) {
+            DataMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;
 
                 if ($scope.container.level === 'system') {
@@ -31,7 +31,7 @@ angular.module('openeis-ui.sensor-container', [
                 }
             });
 
-            SensorMaps.getUnits().then(function (units) {
+            DataMaps.getUnits().then(function (units) {
                 $scope.units = units;
             });
 

@@ -27,8 +27,8 @@ angular.module('openeis-ui.projects', [
                 dataSets: ['DataSets', '$route', function(DataSets, $route) {
                     return DataSets.query($route.current.params.projectId).$promise;
                 }],
-                sensorMaps: ['SensorMaps', '$route', function(SensorMaps, $route) {
-                    return SensorMaps.query($route.current.params.projectId).$promise;
+                dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
+                    return DataMaps.query($route.current.params.projectId).$promise;
                 }],
             },
         });
@@ -65,11 +65,11 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, sensorMaps, $upload, $timeout, $q) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
-    $scope.sensorMaps = sensorMaps;
+    $scope.dataMaps = dataMaps;
 
     var statusCheckPromise;
 
@@ -154,7 +154,7 @@ angular.module('openeis-ui.projects', [
     $scope.showErrors = function (dataSet) {
         $scope.errorsModal.files = {};
 
-        // Create hash of sensor map file names to data file names
+        // Create hash of data map file names to data file names
         angular.forEach(dataSet.files, function (file) {
             angular.forEach($scope.dataFiles, function (dataFile) {
                 if (dataFile.id === file.file) {
@@ -176,13 +176,13 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.closeNewSensorMapModal = function () {
-        $scope.newSensorMapModal = false;
+    $scope.closeNewDataMapModal = function () {
+        $scope.newDataMapModal = false;
     };
 
-    $scope.deleteSensorMap = function ($index) {
-        $scope.sensorMaps[$index].$delete(function () {
-            $scope.sensorMaps.splice($index, 1);
+    $scope.deleteDataMap = function ($index) {
+        $scope.dataMaps[$index].$delete(function () {
+            $scope.dataMaps.splice($index, 1);
         });
     };
 })
@@ -224,20 +224,20 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('NewDataSetCtrl', function ($scope, DataSets, SensorMaps) {
-    SensorMaps.ensureFileMetaData($scope.dataFiles);
+.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps) {
+    DataMaps.ensureFileMetaData($scope.dataFiles);
 
-    $scope.newDataMap = { files: {} };
+    $scope.newDataSet = { files: {} };
 
     $scope.save = function () {
         var files = [];
 
-        angular.forEach($scope.newDataMap.files, function (fileId, key) {
+        angular.forEach($scope.newDataSet.files, function (fileId, key) {
             files.push({ name: key, file: fileId });
         });
 
         DataSets.create({
-            map: $scope.newDataMap.map.id,
+            map: $scope.newDataSet.map.id,
             files: files,
         }).$promise.then(function (dataSet) {
             $scope.dataSets.push(dataSet);
@@ -274,10 +274,10 @@ angular.module('openeis-ui.projects', [
         return filtered;
     };
 })
-.controller('NewSensorMapCtrl', function ($scope, SensorMaps) {
-    SensorMaps.ensureFileMetaData($scope.dataFiles);
+.controller('NewDataMapCtrl', function ($scope, DataMaps) {
+    DataMaps.ensureFileMetaData($scope.dataFiles);
 
-    $scope.newSensorMap = {
+    $scope.newDataMap = {
         project: $scope.project.id,
         map: {
             version: 1,
@@ -286,17 +286,17 @@ angular.module('openeis-ui.projects', [
         valid: false,
     };
 
-    $scope.$watch('newSensorMap.map', function () {
-        SensorMaps.validateMap($scope.newSensorMap.map)
+    $scope.$watch('newDataMap.map', function () {
+        DataMaps.validateMap($scope.newDataMap.map)
             .then(function (result) {
-                $scope.newSensorMap.valid = result.valid;
+                $scope.newDataMap.valid = result.valid;
             });
     }, true);
 
     $scope.save = function () {
-        SensorMaps.create($scope.newSensorMap).$promise.then(function (sensorMap) {
-            $scope.sensorMaps.push(sensorMap);
-            $scope.closeNewSensorMapModal();
+        DataMaps.create($scope.newDataMap).$promise.then(function (dataMap) {
+            $scope.dataMaps.push(dataMap);
+            $scope.closeNewDataMapModal();
         }, function (rejection) {
             alert(rejection.data.__all__.join('\n'));
         });
@@ -306,7 +306,7 @@ angular.module('openeis-ui.projects', [
 
     $scope.addChild = function () {
         $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-        $scope.newSensorMap.map.sensors.unshift(angular.copy($scope.newChild));
+        $scope.newDataMap.map.sensors.unshift(angular.copy($scope.newChild));
         $scope.newChild = {};
     };
 });

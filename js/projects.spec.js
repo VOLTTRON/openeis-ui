@@ -9,7 +9,7 @@ describe('openeis-ui.projects', function () {
             $provide.value('project', {});
             $provide.value('dataFiles', []);
             $provide.value('dataSets', []);
-            $provide.value('sensorMaps', []);
+            $provide.value('dataMaps', []);
         });
 
         inject(function (_$httpBackend_) {
@@ -143,7 +143,7 @@ describe('openeis-ui.projects', function () {
                 controller = $controller('ProjectCtrl', { $scope: scope, DataSets: DataSets });
             });
 
-            it('should check status and errors of incomplete dataset ingests', function () {
+            it('should check status and errors of incomplete data set ingests', function () {
                 scope.dataSets = [
                     { status: { status: 'complete' } },
                     { status: { status: 'processing' } },
@@ -396,7 +396,7 @@ describe('openeis-ui.projects', function () {
     });
 
     describe('NewDataSetCtrl controller', function () {
-        var $controller, controller, scope, DataSets, SensorMaps, resolve, reject;
+        var $controller, controller, scope, DataSets, DataMaps, resolve, reject;
 
         beforeEach(function () {
             DataSets = { create: function () {
@@ -406,26 +406,26 @@ describe('openeis-ui.projects', function () {
                 }}};
             }};
 
-            SensorMaps = { ensureFileMetaData: function () {} };
+            DataMaps = { ensureFileMetaData: function () {} };
 
             inject(function($rootScope, _$controller_) {
                 $controller = _$controller_;
                 scope = $rootScope.$new();
-                controller = $controller('NewDataSetCtrl', { $scope: scope, SensorMaps: SensorMaps, DataSets: DataSets });
+                controller = $controller('NewDataSetCtrl', { $scope: scope, DataMaps: DataMaps, DataSets: DataSets });
             });
         });
 
         it('should ensure file metadata', function () {
-            spyOn(SensorMaps, 'ensureFileMetaData');
-            controller = $controller('NewDataSetCtrl', { $scope: scope, SensorMaps: SensorMaps });
-            expect(SensorMaps.ensureFileMetaData).toHaveBeenCalled();
+            spyOn(DataMaps, 'ensureFileMetaData');
+            controller = $controller('NewDataSetCtrl', { $scope: scope, DataMaps: DataMaps });
+            expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
         });
 
         describe('save', function () {
             it('should call DataSets.create', function () {
                 spyOn(DataSets, 'create').andCallThrough();
 
-                scope.newDataMap = {
+                scope.newDataSet = {
                     map: { id: 1 },
                     files: {
                         0: 'File1',
@@ -434,17 +434,17 @@ describe('openeis-ui.projects', function () {
                 };
                 scope.save();
                 expect(DataSets.create).toHaveBeenCalledWith({
-                    map: scope.newDataMap.map.id,
+                    map: scope.newDataSet.map.id,
                     files: [
-                        { name: '0', file: scope.newDataMap.files[0] },
-                        { name: '1', file: scope.newDataMap.files[1] },
+                        { name: '0', file: scope.newDataSet.files[0] },
+                        { name: '1', file: scope.newDataSet.files[1] },
                     ],
                 });
             });
 
-            it('should call statusCheck, close modal, and add dataset to array on success', function () {
+            it('should call statusCheck, close modal, and add data set to array on success', function () {
                 scope.dataSets = [];
-                scope.newDataMap = { map: { id: 1 }, files: {} };
+                scope.newDataSet = { map: { id: 1 }, files: {} };
                 scope.statusCheck = jasmine.createSpy('statusCheck');
                 scope.closeNewDataSetModal = jasmine.createSpy('closeNewDataSetModal');
 
@@ -457,7 +457,7 @@ describe('openeis-ui.projects', function () {
 
             it('should alert on failure', function () {
                 scope.dataSets = [];
-                scope.newDataMap = { map: { id: 1 }, files: {} };
+                scope.newDataSet = { map: { id: 1 }, files: {} };
                 scope.closeNewDataSetModal = jasmine.createSpy('closeNewDataSetModal');
                 spyOn(window, 'alert');
                 scope.save();
@@ -490,11 +490,11 @@ describe('openeis-ui.projects', function () {
         }));
     });
 
-    describe('NewSensorMapCtrl controller', function () {
-        var $controller, controller, scope, SensorMaps, resolve, reject;
+    describe('NewDataMapCtrl controller', function () {
+        var $controller, controller, scope, DataMaps, resolve, reject;
 
         beforeEach(function () {
-            SensorMaps = {
+            DataMaps = {
                 ensureFileMetaData: function () {},
                 validateMap: function () {
                     return { then: function (successCallback) {
@@ -513,65 +513,65 @@ describe('openeis-ui.projects', function () {
                 $controller = _$controller_;
                 scope = $rootScope.$new();
                 scope.project = { id: 1 };
-                controller = $controller('NewSensorMapCtrl', { $scope: scope, SensorMaps: SensorMaps });
+                controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
             });
         });
 
         it('should ensure file metadata', function () {
-            spyOn(SensorMaps, 'ensureFileMetaData');
-            controller = $controller('NewSensorMapCtrl', { $scope: scope, SensorMaps: SensorMaps });
-            expect(SensorMaps.ensureFileMetaData).toHaveBeenCalled();
+            spyOn(DataMaps, 'ensureFileMetaData');
+            controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
+            expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
         });
 
         it('should validate map changes', function () {
-            spyOn(SensorMaps, 'validateMap').andCallThrough();
-            expect(SensorMaps.validateMap).not.toHaveBeenCalled();
-            expect(scope.newSensorMap.valid).toBe(false);
+            spyOn(DataMaps, 'validateMap').andCallThrough();
+            expect(DataMaps.validateMap).not.toHaveBeenCalled();
+            expect(scope.newDataMap.valid).toBe(false);
 
-            scope.newSensorMap.map.sensors.push('NewSensor');
+            scope.newDataMap.map.sensors.push('NewSensor');
             scope.$digest();
             resolve({ valid: true });
-            expect(SensorMaps.validateMap).toHaveBeenCalled();
-            expect(scope.newSensorMap.valid).toBe(true);
+            expect(DataMaps.validateMap).toHaveBeenCalled();
+            expect(scope.newDataMap.valid).toBe(true);
         });
 
-        it('should create sensor maps', function () {
-            spyOn(SensorMaps, 'create').andCallThrough();
-            expect(SensorMaps.create).not.toHaveBeenCalled();
+        it('should create data maps', function () {
+            spyOn(DataMaps, 'create').andCallThrough();
+            expect(DataMaps.create).not.toHaveBeenCalled();
             scope.save();
-            expect(SensorMaps.create).toHaveBeenCalled();
+            expect(DataMaps.create).toHaveBeenCalled();
         });
 
         describe('save', function () {
             it('should should not close modal and alert user on failure', function () {
                 spyOn(window, 'alert');
-                scope.closeNewSensorMapModal = jasmine.createSpy('closeNewSensorMapModal');
+                scope.closeNewDataMapModal = jasmine.createSpy('closeNewDataMapModal');
 
                 scope.save();
                 reject({ data: { __all__: [] } });
                 expect(window.alert).toHaveBeenCalled();
-                expect(scope.closeNewSensorMapModal).not.toHaveBeenCalled();
+                expect(scope.closeNewDataMapModal).not.toHaveBeenCalled();
             });
 
-            it('should close modal and add sensor map to array on success', function () {
-                scope.sensorMaps = [];
-                scope.closeNewSensorMapModal = jasmine.createSpy('closeNewSensorMapModal');
+            it('should close modal and add data map to array on success', function () {
+                scope.dataMaps = [];
+                scope.closeNewDataMapModal = jasmine.createSpy('closeNewDataMapModal');
 
                 scope.save();
-                resolve('newSensorMap');
-                expect(scope.sensorMaps[0]).toBe('newSensorMap');
-                expect(scope.closeNewSensorMapModal).toHaveBeenCalled();
+                resolve('newDataMap');
+                expect(scope.dataMaps[0]).toBe('newDataMap');
+                expect(scope.closeNewDataMapModal).toHaveBeenCalled();
             });
         });
 
         it('should add child objects', function () {
-            expect(scope.newSensorMap.map.sensors.length).toBe(0);
+            expect(scope.newDataMap.map.sensors.length).toBe(0);
 
             scope.newChild = { name: 'NameWith/Slash' };
             scope.addChild();
-            expect(scope.newSensorMap.map.sensors.length).toBe(1);
+            expect(scope.newDataMap.map.sensors.length).toBe(1);
             // Slashes should be replaced with dashes
-            expect(scope.newSensorMap.map.sensors[0].name).toBe('NameWith-Slash');
+            expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
         });
     });
 });

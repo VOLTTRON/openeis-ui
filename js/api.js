@@ -174,35 +174,35 @@ angular.module('openeis-ui.api', ['ngResource'])
         });
     };
 })
-.service('SensorMaps', function ($http, $resource, Files) {
-    var SensorMaps = this,
+.service('DataMaps', function ($http, $resource, Files) {
+    var DataMaps = this,
         resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
         });
 
-    SensorMaps.query = function (projectId) {
+    DataMaps.query = function (projectId) {
         return resource.query({ project: projectId });
     };
 
-    SensorMaps.create = function (sensorMap) {
-        var copy = angular.copy(sensorMap);
-        copy.map = SensorMaps.flattenMap(copy.map);
+    DataMaps.create = function (dataMap) {
+        var copy = angular.copy(dataMap);
+        copy.map = DataMaps.flattenMap(copy.map);
         return resource.create(copy);
     };
 
-    SensorMaps.getDefinition = function () {
-        return $http.get(settings.SENSORMAP_DEFINITION_URL).then(function (response) {
+    DataMaps.getDefinition = function () {
+        return $http.get(settings.GENERAL_DEFINITION_URL).then(function (response) {
             return response.data;
         });
     };
 
-    SensorMaps.getUnits = function () {
-        return $http.get(settings.SENSORMAP_UNITS_URL).then(function (response) {
+    DataMaps.getUnits = function () {
+        return $http.get(settings.UNITS_URL).then(function (response) {
             return response.data;
         });
     };
 
-    SensorMaps.flattenMap = function (map) {
+    DataMaps.flattenMap = function (map) {
         var mapCopy = angular.copy(map),
             files = {},
             fileCounter = 0;
@@ -245,8 +245,8 @@ angular.module('openeis-ui.api', ['ngResource'])
 
                 flattened[topic] = object;
 
-                angular.extend(flattened, flattenObject(sensors, topic + settings.SENSORMAP_TOPIC_SEPARATOR));
-                angular.extend(flattened, flattenObject(children, topic + settings.SENSORMAP_TOPIC_SEPARATOR));
+                angular.extend(flattened, flattenObject(sensors, topic + settings.DATAMAP_TOPIC_SEPARATOR));
+                angular.extend(flattened, flattenObject(children, topic + settings.DATAMAP_TOPIC_SEPARATOR));
             });
 
             return flattened;
@@ -264,14 +264,14 @@ angular.module('openeis-ui.api', ['ngResource'])
         return mapCopy;
     };
 
-    SensorMaps.validateMap = function (map) {
-        return $http.get(settings.SENSORMAP_SCHEMA_URL)
+    DataMaps.validateMap = function (map) {
+        return $http.get(settings.DATAMAP_SCHEMA_URL)
             .then(function (response) {
-                return tv4.validateMultiple(SensorMaps.flattenMap(map), response.data);
+                return tv4.validateMultiple(DataMaps.flattenMap(map), response.data);
             });
     };
 
-    SensorMaps.ensureFileMetaData = function (files) {
+    DataMaps.ensureFileMetaData = function (files) {
         angular.forEach(files, function(file) {
             if (!(file.hasOwnProperty('signature') && file.hasOwnProperty('columns') && file.hasOwnProperty('hasHeader'))) {
                 Files.head(file.id).then(function (headResponse) {

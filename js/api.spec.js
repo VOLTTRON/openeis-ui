@@ -416,60 +416,60 @@ describe('openeis-ui.api', function () {
         });
     });
 
-    describe('SensorMaps service', function () {
-        var SensorMaps, $httpBackend,
-            testSensorMaps = [
+    describe('DataMaps service', function () {
+        var DataMaps, $httpBackend,
+            testDataMaps = [
                 { id: 1 },
                 { id: 2 },
                 { id: 3 },
             ];
 
         beforeEach(function () {
-            inject(function (_SensorMaps_, _$httpBackend_) {
-                SensorMaps = _SensorMaps_;
+            inject(function (_DataMaps_, _$httpBackend_) {
+                DataMaps = _DataMaps_;
                 $httpBackend = _$httpBackend_;
             });
         });
 
-        it('should query for all sensor maps in a project by project ID', function () {
-            var sensorMaps;
+        it('should query for all data maps in a project by project ID', function () {
+            var dataMaps;
 
-            $httpBackend.expectGET(settings.API_URL + 'sensormaps?project=1').respond(angular.toJson(testSensorMaps));
-            sensorMaps = SensorMaps.query(1);
+            $httpBackend.expectGET(settings.API_URL + 'sensormaps?project=1').respond(angular.toJson(testDataMaps));
+            dataMaps = DataMaps.query(1);
             $httpBackend.flush();
 
-            expect(sensorMaps.length).toEqual(testSensorMaps.length);
+            expect(dataMaps.length).toEqual(testDataMaps.length);
 
-            for (var i = 0; i < testSensorMaps.length; i++) {
-                expect(sensorMaps[i].id).toEqual(testSensorMaps[i].id);
+            for (var i = 0; i < testDataMaps.length; i++) {
+                expect(dataMaps[i].id).toEqual(testDataMaps[i].id);
             }
         });
 
-        it('should create sensor maps from non-flattened sensor maps', function () {
-            var newSensorMap = { map: { sensors: [] } },
+        it('should create data maps from non-flattened data maps', function () {
+            var newDataMap = { map: { sensors: [] } },
                 result;
 
-            spyOn(SensorMaps, 'flattenMap').andReturn('flattenedMap');
+            spyOn(DataMaps, 'flattenMap').andReturn('flattenedMap');
 
             $httpBackend.expectPOST(settings.API_URL + 'sensormaps', '{"map":"flattenedMap"}').respond('');
-            SensorMaps.create(newSensorMap);
+            DataMaps.create(newDataMap);
             $httpBackend.flush();
         });
 
-        it('should retrieve the sensor map defintion object', function () {
-            $httpBackend.expectGET(settings.SENSORMAP_DEFINITION_URL).respond('');
-            SensorMaps.getDefinition();
+        it('should retrieve the data map defintion object', function () {
+            $httpBackend.expectGET(settings.GENERAL_DEFINITION_URL).respond('');
+            DataMaps.getDefinition();
             $httpBackend.flush();
         });
 
-        it('should retrieve the sensor map units object', function () {
-            $httpBackend.expectGET(settings.SENSORMAP_UNITS_URL).respond('');
-            SensorMaps.getUnits();
+        it('should retrieve the data map units object', function () {
+            $httpBackend.expectGET(settings.UNITS_URL).respond('');
+            DataMaps.getUnits();
             $httpBackend.flush();
         });
 
         describe('flattenMap method', function () {
-            it('should flatten sensor map objects into topics', function () {
+            it('should flatten data map objects into topics', function () {
                 var map = {
                         sensors: [
                             { name: 'Site1', children: [
@@ -487,7 +487,7 @@ describe('openeis-ui.api', function () {
                             ]},
                         ],
                     },
-                    flattenedMap = SensorMaps.flattenMap(map);
+                    flattenedMap = DataMaps.flattenMap(map);
 
                 expect(flattenedMap.sensors).toEqual({
                     'Site1': {},
@@ -540,7 +540,7 @@ describe('openeis-ui.api', function () {
                             ]},
                         ],
                     },
-                    flattenedMap = SensorMaps.flattenMap(map);
+                    flattenedMap = DataMaps.flattenMap(map);
 
                 expect(flattenedMap.files).toEqual({
                     '0': {
@@ -572,7 +572,7 @@ describe('openeis-ui.api', function () {
                             { name: 'Site3', deleted: false },
                         ],
                     },
-                    flattenedMap = SensorMaps.flattenMap(map);
+                    flattenedMap = DataMaps.flattenMap(map);
 
                 expect(flattenedMap.sensors).toEqual({
                     'Site1': {},
@@ -584,7 +584,7 @@ describe('openeis-ui.api', function () {
         });
 
         describe('validateMap method', function () {
-            it('validate sensor maps against JSON schema', function () {
+            it('validate data maps against JSON schema', function () {
                 // TODO
             });
         });
@@ -603,7 +603,7 @@ describe('openeis-ui.api', function () {
                         ['header1', 'header2', 'header3'],
                     ],
                 }));
-                SensorMaps.ensureFileMetaData(files);
+                DataMaps.ensureFileMetaData(files);
                 $httpBackend.flush();
 
                 angular.forEach(files, function (file, k) {
@@ -626,7 +626,7 @@ describe('openeis-ui.api', function () {
                         ['value1', 'value2', 'value3'],
                     ],
                 }));
-                SensorMaps.ensureFileMetaData(files);
+                DataMaps.ensureFileMetaData(files);
                 $httpBackend.flush();
 
                 angular.forEach(files, function (file, k) {
@@ -644,7 +644,7 @@ describe('openeis-ui.api', function () {
                     ];
 
                 // No API call should be made
-                SensorMaps.ensureFileMetaData(files);
+                DataMaps.ensureFileMetaData(files);
 
                 angular.forEach(files, function (file, k) {
                     expect(file.columns).toBe(true);
