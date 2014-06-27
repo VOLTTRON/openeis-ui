@@ -33,14 +33,14 @@
                     </tr>
                 </tbody>
             </table>
-            <modal class="modal--file-timestamp" ng-if="timestampFile">
-                <ng-include src="'partials/file-timestamp.html'" ng-controller="TimestampCtrl"></ng-include>
+            <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
+                <ng-include src="'partials/configure-timestamp.html'" ng-controller="TimestampCtrl"></ng-include>
             </modal>
         </div>
         <div class="layout">
             <div class="data-maps">
                 <h3>Data maps</h3>
-                <p><button ng-click="newDataMapModal = true">Create new data map</button></p>
+                <p><button ng-click="Modals.openModal('newDataMap')">Create new data map</button></p>
                 <table ng-if="dataMaps.length">
                     <thead>
                         <tr>
@@ -55,13 +55,13 @@
                         </tr>
                     </tbody>
                 </table>
-                <modal class="modal--new-data-map" ng-if="newDataMapModal === true">
+                <modal class="modal--new-data-map" ng-if="Modals.modalOpen('newDataMap')">
                     <ng-include src="'partials/new-data-map.html'" ng-controller="NewDataMapCtrl"></ng-include>
                 </modal>
             </div>
             <div class="data-sets">
                 <h3>Data sets</h3>
-                <p><button ng-click="newDataSetModal = true">Create new data set</button></p>
+                <p><button ng-click="Modals.openModal('newDataSet')">Create new data set</button></p>
                 <table ng-if="dataSets.length">
                     <thead>
                         <tr>
@@ -99,7 +99,7 @@
                     </table>
                     <button ng-click="errorsModal.errors = []">Close</button>
                 </modal>
-                <modal class="modal--new-data-set" ng-if="newDataSetModal === true">
+                <modal class="modal--new-data-set" ng-if="Modals.modalOpen('newDataSet')">
                     <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
                 </modal>
             </div>

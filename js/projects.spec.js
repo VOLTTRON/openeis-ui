@@ -206,11 +206,12 @@ describe('openeis-ui.projects', function () {
                 expect(Files.head).toHaveBeenCalledWith(1);
             }));
 
-            it('should set timestampFile', inject(function (Files) {
+            it('should set timestampFile and open a modal', inject(function (Files, Modals) {
                 var resolve;
                 spyOn(Files, 'head').andReturn({ then: function (successCallback) {
                     resolve = successCallback;
                 }});
+                spyOn(Modals, 'openModal');
                 scope.dataFiles = { 0: { id: 1 } };
                 scope.configureTimestamp(0);
 
@@ -233,6 +234,8 @@ describe('openeis-ui.projects', function () {
                     rows: [['val1', 'val2']],
                 });
                 expect(scope.timestampFile.cols).toEqual([0, 1]);
+
+                expect(Modals.openModal).toHaveBeenCalledWith('configureTimestamp');
             }));
         });
 
@@ -387,16 +390,16 @@ describe('openeis-ui.projects', function () {
                 expect(window.alert).toHaveBeenCalled();
             });
 
-            it('should close modal on success', function () {
-                scope.closeTimestampModal = jasmine.createSpy('closeTimestampModal');
+            it('should close modal on success', inject(function (Modals) {
+                spyOn(Modals, 'closeModal');
                 resolve({ data: 'preview' });
-                expect(scope.closeTimestampModal).toHaveBeenCalled();
-            });
+                expect(Modals.closeModal).toHaveBeenCalledWith('configureTimestamp');
+            }));
         });
     });
 
     describe('NewDataSetCtrl controller', function () {
-        var $controller, controller, scope, DataSets, DataMaps, resolve, reject;
+        var $controller, controller, scope, DataSets, DataMaps, Modals, resolve, reject;
 
         beforeEach(function () {
             DataSets = { create: function () {
@@ -408,10 +411,11 @@ describe('openeis-ui.projects', function () {
 
             DataMaps = { ensureFileMetaData: function () {} };
 
-            inject(function($rootScope, _$controller_) {
+            inject(function($rootScope, _$controller_, _Modals_) {
                 $controller = _$controller_;
                 scope = $rootScope.$new();
                 controller = $controller('NewDataSetCtrl', { $scope: scope, DataMaps: DataMaps, DataSets: DataSets });
+                Modals = _Modals_;
             });
         });
 
@@ -446,24 +450,24 @@ describe('openeis-ui.projects', function () {
                 scope.dataSets = [];
                 scope.newDataSet = { map: { id: 1 }, files: {} };
                 scope.statusCheck = jasmine.createSpy('statusCheck');
-                scope.closeNewDataSetModal = jasmine.createSpy('closeNewDataSetModal');
+                spyOn(Modals, 'closeModal');
 
                 scope.save();
                 resolve('newDataSet');
                 expect(scope.dataSets[0]).toBe('newDataSet');
                 expect(scope.statusCheck).toHaveBeenCalled();
-                expect(scope.closeNewDataSetModal).toHaveBeenCalled();
+                expect(Modals.closeModal).toHaveBeenCalledWith('newDataSet');
             });
 
             it('should alert on failure', function () {
                 scope.dataSets = [];
                 scope.newDataSet = { map: { id: 1 }, files: {} };
-                scope.closeNewDataSetModal = jasmine.createSpy('closeNewDataSetModal');
+                spyOn(Modals, 'closeModal');
                 spyOn(window, 'alert');
                 scope.save();
                 reject();
                 expect(scope.dataSets.length).toBe(0);
-                expect(scope.closeNewDataSetModal).not.toHaveBeenCalled();
+                expect(Modals.closeModal).not.toHaveBeenCalled();
                 expect(window.alert).toHaveBeenCalled();
             });
         });
@@ -491,7 +495,7 @@ describe('openeis-ui.projects', function () {
     });
 
     describe('NewDataMapCtrl controller', function () {
-        var $controller, controller, scope, DataMaps, resolve, reject;
+        var $controller, controller, scope, DataMaps, Modals, resolve, reject;
 
         beforeEach(function () {
             DataMaps = {
@@ -509,11 +513,12 @@ describe('openeis-ui.projects', function () {
                 },
             };
 
-            inject(function($rootScope, _$controller_) {
+            inject(function($rootScope, _$controller_, _Modals_) {
                 $controller = _$controller_;
                 scope = $rootScope.$new();
                 scope.project = { id: 1 };
                 controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
+                Modals = _Modals_;
             });
         });
 
@@ -545,22 +550,22 @@ describe('openeis-ui.projects', function () {
         describe('save', function () {
             it('should should not close modal and alert user on failure', function () {
                 spyOn(window, 'alert');
-                scope.closeNewDataMapModal = jasmine.createSpy('closeNewDataMapModal');
+                spyOn(Modals, 'closeModal');
 
                 scope.save();
                 reject({ data: { __all__: [] } });
                 expect(window.alert).toHaveBeenCalled();
-                expect(scope.closeNewDataMapModal).not.toHaveBeenCalled();
+                expect(Modals.closeModal).not.toHaveBeenCalled();
             });
 
             it('should close modal and add data map to array on success', function () {
                 scope.dataMaps = [];
-                scope.closeNewDataMapModal = jasmine.createSpy('closeNewDataMapModal');
+                spyOn(Modals, 'closeModal');
 
                 scope.save();
                 resolve('newDataMap');
                 expect(scope.dataMaps[0]).toBe('newDataMap');
-                expect(scope.closeNewDataMapModal).toHaveBeenCalled();
+                expect(Modals.closeModal).toHaveBeenCalledWith('newDataMap');
             });
         });
 

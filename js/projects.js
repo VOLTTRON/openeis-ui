@@ -65,11 +65,12 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
     $scope.dataMaps = dataMaps;
+    $scope.Modals = Modals;
 
     var statusCheckPromise;
 
@@ -115,11 +116,8 @@ angular.module('openeis-ui.projects', [
             });
 
             $scope.timestampFile = $scope.dataFiles[$index];
+            Modals.openModal('configureTimestamp');
         });
-    };
-
-    $scope.closeTimestampModal = function () {
-        delete $scope.timestampFile;
     };
 
     $scope.upload = function (fileInput) {
@@ -143,10 +141,6 @@ angular.module('openeis-ui.projects', [
         $scope.dataFiles[$index].$delete(function () {
             $scope.dataFiles.splice($index, 1);
         });
-    };
-
-    $scope.closeNewDataSetModal = function () {
-        $scope.newDataSetModal = false;
     };
 
     $scope.errorsModal = {};
@@ -176,17 +170,13 @@ angular.module('openeis-ui.projects', [
         });
     };
 
-    $scope.closeNewDataMapModal = function () {
-        $scope.newDataMapModal = false;
-    };
-
     $scope.deleteDataMap = function ($index) {
         $scope.dataMaps[$index].$delete(function () {
             $scope.dataMaps.splice($index, 1);
         });
     };
 })
-.controller('TimestampCtrl', function ($scope, Files, $http) {
+.controller('TimestampCtrl', function ($scope, Files, $http, Modals) {
     $scope.modal = { columns: {}, };
 
     $scope.preview = function () {
@@ -218,13 +208,13 @@ angular.module('openeis-ui.projects', [
             timestamp: timestamp,
         }).then(function (file) {
             $scope.timestampFile.timestamp = timestamp;
-            $scope.closeTimestampModal();
+            Modals.closeModal('configureTimestamp');
         }, function (rejection) {
             alert(angular.toJson(rejection));
         });
     };
 })
-.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps) {
+.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
     $scope.newDataSet = { files: {} };
@@ -242,7 +232,7 @@ angular.module('openeis-ui.projects', [
         }).$promise.then(function (dataSet) {
             $scope.dataSets.push(dataSet);
             $scope.statusCheck();
-            $scope.closeNewDataSetModal();
+            Modals.closeModal('newDataSet');
         }, function (rejection) {
             alert(angular.toJson(rejection, true));
         });
@@ -274,7 +264,7 @@ angular.module('openeis-ui.projects', [
         return filtered;
     };
 })
-.controller('NewDataMapCtrl', function ($scope, DataMaps) {
+.controller('NewDataMapCtrl', function ($scope, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
     $scope.newDataMap = {
@@ -296,7 +286,7 @@ angular.module('openeis-ui.projects', [
     $scope.save = function () {
         DataMaps.create($scope.newDataMap).$promise.then(function (dataMap) {
             $scope.dataMaps.push(dataMap);
-            $scope.closeNewDataMapModal();
+            Modals.closeModal('newDataMap');
         }, function (rejection) {
             alert(rejection.data.__all__.join('\n'));
         });

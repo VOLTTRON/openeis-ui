@@ -20,7 +20,7 @@
         </tbody>
     </table>
     <div>
-        <button ng-click="preview()">Continue</button> <button ng-click="closeTimestampModal()">Cancel</button>
+        <button ng-click="preview()">Continue</button> <button ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
     </div>
 </div>
 <div ng-if="modal.confirm">
@@ -39,5 +39,5 @@
         </tbody>
     </table>
     <p>Are the parsed timestamps correct?</p>
-    <button ng-click="save()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button> <button ng-click="closeTimestampModal()">Cancel</button>
+    <button ng-click="save()">Yes, save configuration</button> <button ng-click="modal.confirm = false">No, re-select columns</button> <button ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
 </div>
