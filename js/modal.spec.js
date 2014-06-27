@@ -25,4 +25,36 @@ describe('openeis-ui.modal', function () {
             expect(directive[0].querySelectorAll('contents').length).toBe(1);
         });
     });
+
+    describe('Modals service', function () {
+        var Modals;
+
+        beforeEach(inject(function (_Modals_) {
+            Modals = _Modals_;
+        }));
+
+        it('should open and close modals', function () {
+             expect(Modals.modalOpen()).toBe(false);
+
+             Modals.openModal('modal');
+
+             expect(Modals.modalOpen('modal')).toBe(true);
+             expect(Modals.modalOpen()).toBe(true);
+
+             Modals.openModal('modal2');
+
+             expect(Modals.modalOpen('modal2')).toBe(true);
+             expect(Modals.modalOpen()).toBe(true);
+
+             Modals.closeModal('modal');
+
+             expect(Modals.modalOpen('modal')).toBe(false);
+             expect(Modals.modalOpen()).toBe(true);
+
+             Modals.closeModal('modal2');
+
+             expect(Modals.modalOpen('modal2')).toBe(false);
+             expect(Modals.modalOpen()).toBe(false);
+        });
+    });
 });
