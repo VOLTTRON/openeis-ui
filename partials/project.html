@@ -33,10 +33,10 @@
                     </tr>
                 </tbody>
             </table>
-            <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
-                <ng-include src="'partials/configure-timestamp.html'" ng-controller="TimestampCtrl"></ng-include>
-            </modal>
         </div>
+        <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
+            <ng-include src="'partials/configure-timestamp.html'" ng-controller="TimestampCtrl"></ng-include>
+        </modal>
         <div class="layout">
             <div class="data-maps">
                 <h3>Data maps</h3>
@@ -55,10 +55,10 @@
                         </tr>
                     </tbody>
                 </table>
-                <modal class="modal--new-data-map" ng-if="Modals.modalOpen('newDataMap')">
-                    <ng-include src="'partials/new-data-map.html'" ng-controller="NewDataMapCtrl"></ng-include>
-                </modal>
             </div>
+            <modal class="modal--new-data-map" ng-if="Modals.modalOpen('newDataMap')">
+                <ng-include src="'partials/new-data-map.html'" ng-controller="NewDataMapCtrl"></ng-include>
+            </modal>
             <div class="data-sets">
                 <h3>Data sets</h3>
                 <p><button ng-click="Modals.openModal('newDataSet')">Create new data set</button></p>
@@ -81,28 +81,28 @@
                         </tr>
                     </tbody>
                 </table>
-                <modal class="modal--data-set-errors" ng-if="errorsModal.errors.length">
-                    <h4>Errors</h4>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Message</th>
-                                <th>Location</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="error in errorsModal.errors">
-                                <td>{{error.message}}</td>
-                                <td>{{errorsModal.files[error.file]}}: row {{error.row}}, column {{error.column}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button ng-click="errorsModal.errors = []">Close</button>
-                </modal>
-                <modal class="modal--new-data-set" ng-if="Modals.modalOpen('newDataSet')">
-                    <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
-                </modal>
             </div>
+            <modal class="modal--data-set-errors" ng-if="errorsModal.errors.length">
+                <h4>Errors</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Message</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="error in errorsModal.errors">
+                            <td>{{error.message}}</td>
+                            <td>{{errorsModal.files[error.file]}}: row {{error.row}}, column {{error.column}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button ng-click="errorsModal.errors = []">Close</button>
+            </modal>
+            <modal class="modal--new-data-set" ng-if="Modals.modalOpen('newDataSet')">
+                <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
+            </modal>
         </div>
     </div>
 </div>
