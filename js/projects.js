@@ -299,4 +299,15 @@ angular.module('openeis-ui.projects', [
         $scope.newDataMap.map.sensors.unshift(angular.copy($scope.newChild));
         $scope.newChild = {};
     };
+})
+.controller('NewDataReportCtrl', function ($scope) {
+    $scope.newDataReport = {};
+
+    $scope.checkApplications = function () {
+        if ($scope.newDataReport.dataSet.id === 1) {
+            $scope.applications = [{ name: 'App1' }];
+        } else {
+            $scope.applications = [{ name: 'App2' }];
+        }
+    };
 });

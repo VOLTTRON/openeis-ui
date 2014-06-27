@@ -1,0 +1,12 @@
+<h4>New data report</h4>
+
+<h5>Select data set to use</h5>
+<select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet" ng-change="checkApplications()">
+    <option value="">-- Choose data set --</option>
+</select>
+
+<ul>
+    <li ng-repeat="application in applications">{{application.name}} <a>Configure</a></li>
+</ul>
+
+<button type="button" ng-click="Modals.closeModal('newDataReport')">Cancel</button>

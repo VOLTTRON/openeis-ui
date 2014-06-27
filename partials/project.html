@@ -104,5 +104,29 @@
                 <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
             </modal>
         </div>
+        <div class="data-reports">
+            <h3>Data reports</h3>
+            <p><button ng-click="Modals.openModal('newDataReport')">Create new data report</button></p>
+            <table ng-if="dataReports.length">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Errors</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="dataReport in dataReports">
+                        <td>Data set {{dataReport.id}}</td>
+                        <td>{{dataReport.status.status || 'Checking&hellip;' | capitalize}}</td>
+                        <td><a ng-click="deleteDataReport($index)">Delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <modal class="modal--new-data-report" ng-if="Modals.modalOpen('newDataReport')">
+            <ng-include src="'partials/new-data-report.html'" ng-controller="NewDataReportCtrl"></ng-include>
+        </modal>
     </div>
 </div>

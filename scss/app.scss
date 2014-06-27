@@ -208,22 +208,28 @@ nav {
         }
 
         .data-files {
-
-            padding-bottom: $inuit-base-spacing-unit;
             border-bottom: 1px solid #ddd;
 
             > table {
                 width: 100%;
+
+                td:first-child {
+                    width: 38.2%
+                }
             }
         }
 
         .data-sets {
             @extend %layout__item;
             @extend %box;
-            width: 50%;
+            width: 61.8%;
 
             > table {
                 width: 100%;
+
+                td:first-child {
+                    width: 38.2%
+                }
             }
         }
 
@@ -232,12 +238,25 @@ nav {
             @extend %box;
             padding-top: $inuit-base-spacing-unit;
             padding-right: $inuit-base-spacing-unit;
-            width: 50%;
+            width: 38.2%;
             border-right: 1px solid #ddd;
 
             > table {
                 width: 100%;
+
+                td:first-child {
+                    width: 61.8%
+                }
+
+                td:last-child {
+                    width: 38.2%;
+                }
             }
+        }
+
+        .data-reports {
+            padding-top: $inuit-base-spacing-unit;
+            border-top: 1px solid #ddd;
         }
 
         file-upload {
@@ -296,7 +315,8 @@ nav {
 }
 
 .modal--new-data-set,
-.modal--new-data-map {
+.modal--new-data-map,
+.modal--new-data-report {
     .modal__dialog {
         width: 900px;
     }
