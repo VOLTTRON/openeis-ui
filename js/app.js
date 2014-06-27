@@ -16,6 +16,9 @@ angular.module('openeis-ui', [
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
 })
+.controller('AppCtrl', function ($scope, Modals) {
+    $scope.modalOpen = Modals.modalOpen;
+})
 .run(function ($rootScope, $rootElement) {
     $rootScope.$on('$viewContentLoaded', function () {
         window.setTimeout(function() {
