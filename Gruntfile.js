@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         '<%= buildDir %>js/app.js',
         '<%= buildDir %>js/app.templates.js',
       ],
-      coverage: ['coverage'],
+      karma: ['coverage'],
     },
 
     concat: {
@@ -76,12 +76,13 @@ module.exports = function(grunt) {
       dev: {
         background: true,
         singleRun: false,
-        reporters: 'progress',
-      },
-      coverage: {
-        background: false,
-        singleRun: true,
-        reporters: 'coverage',
+        reporters: ['progress', 'coverage'],
+        coverageReporter: {
+          reporters: [
+            { type: 'html' },
+            { type: 'text' },
+          ],
+        },
       },
       ci: {
         background: false,
@@ -241,7 +242,7 @@ module.exports = function(grunt) {
 
       karma: {
         files: ['js/*.js', 'settings.js'],
-        tasks: ['karma:dev:run'],
+        tasks: ['clean:karma', 'karma:dev:run'],
       },
 
       sass: {
@@ -271,8 +272,6 @@ module.exports = function(grunt) {
   grunt.registerTask('build-dev', [
     'clean:build', 'sass:dev', 'sync', 'ngtemplates', 'htmlbuild:dev',
   ]);
-
-  grunt.registerTask('coverage', ['clean:coverage', 'karma:coverage']);
 
   grunt.registerTask('default', [
     'karma:dev:start', 'build-dev', 'livereload_snippet', 'watch',
