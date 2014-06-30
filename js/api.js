@@ -292,5 +292,13 @@ angular.module('openeis-ui.api', ['ngResource'])
             }
         });
     };
+})
+.service('Applications', function ($resource) {
+    var Applications = this,
+        resource = $resource(settings.API_URL + 'applications');
+
+    Applications.query = function () {
+        return resource.query();
+    };
 });
 
