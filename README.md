@@ -44,3 +44,16 @@ Single build: (development)
 Continuous development build (watch for changes and build automatically):
 
     [openeis-ui]$ grunt
+
+
+Module override
+------------------------------------------
+
+A build of the openeis-ui module is bundled with [openeis]
+(https://bitbucket.org/berkeleylab/openeis). To serve your working copy
+instead, install it over the bundled module with `pip`:
+
+    $ cd /path/to/openeis
+    [openeis]$. env/bin/activate
+    (openeis)[openeis]$ pip install --editable /path/to/openeis-ui
+
