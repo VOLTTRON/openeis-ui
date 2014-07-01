@@ -340,3 +340,26 @@ nav {
         }
     }
 }
+
+.table--app-list {
+    width: 100%;
+
+    tbody tr:nth-child(even) {
+        background-color: #f6f6f6;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    td:last-child {
+        width: 61.8%;
+    }
+
+    .missing-inputs {
+        color: $error-color;
+        list-style: none;
+        margin-bottom: 0;
+        padding-left: 0;
+    }
+}

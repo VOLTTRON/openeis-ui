@@ -180,6 +180,10 @@ angular.module('openeis-ui.api', ['ngResource'])
             create: { method: 'POST' },
         });
 
+    DataMaps.get = function (mapId) {
+        return resource.get({ mapId: mapId });
+    };
+
     DataMaps.query = function (projectId) {
         return resource.query({ project: projectId });
     };

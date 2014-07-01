@@ -300,14 +300,65 @@ angular.module('openeis-ui.projects', [
         $scope.newChild = {};
     };
 })
-.controller('NewDataReportCtrl', function ($scope) {
+.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q) {
     $scope.newDataReport = {};
 
-    $scope.checkApplications = function () {
-        if ($scope.newDataReport.dataSet.id === 1) {
-            $scope.applications = [{ name: 'App1' }];
-        } else {
-            $scope.applications = [{ name: 'App2' }];
+    $scope.$watch('newDataReport.dataSet', function () {
+        $scope.availableApps = [];
+
+        if (!$scope.newDataReport.dataSet) {
+            return;
         }
+
+        var mapPromise = DataMaps.get($scope.newDataReport.dataSet.map).$promise,
+            appsPromise = Applications.query().$promise;
+
+        $q.all({ map: mapPromise, apps: appsPromise }).then(function (resolve) {
+            var foundCount = {};
+
+            angular.forEach(resolve.map.map.sensors, function (sensor) {
+                if (!sensor.type) {
+                    return;
+                }
+
+                if (!foundCount.hasOwnProperty(sensor.type)) {
+                    foundCount[sensor.type] = 0;
+                }
+
+                foundCount[sensor.type] += 1;
+            });
+
+            angular.forEach(resolve.apps, function (app) {
+                var requiredCount = {},
+                    missingInputs = [];
+
+                angular.forEach(app.inputs, function (input) {
+                    if (!requiredCount.hasOwnProperty(input.sensor_type)) {
+                        requiredCount[input.sensor_type] = 0;
+                    }
+
+                    requiredCount[input.sensor_type] += input.count_min;
+                });
+
+                angular.forEach(requiredCount, function (count, sensorType) {
+                    var found = foundCount[sensorType] || 0;
+
+                    if (found < count) {
+                        missingInputs.push(
+                            'At least ' + count + ' ' + sensorType + ' required, ' + found + ' found in data set'
+                        );
+                    }
+                });
+
+                $scope.availableApps.push({
+                    name: app.name,
+                    missingInputs: missingInputs,
+                });
+            });
+        });
+    });
+
+    $scope.showMissing = function (missing) {
+        alert(missing.join('\n'));
     };
 });

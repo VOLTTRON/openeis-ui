@@ -1,12 +1,31 @@
 <h4>New data report</h4>
 
-<h5>Select data set to use</h5>
-<select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet" ng-change="checkApplications()">
-    <option value="">-- Choose data set --</option>
-</select>
+<div class="form__group">
+    <label class="label--inline">Create data report with</label>&nbsp;
+    <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet">
+        <option value="">-- Choose data set --</option>
+    </select>
+</div>
 
-<ul>
-    <li ng-repeat="application in applications">{{application.name}} <a>Configure</a></li>
-</ul>
+<table class="table--app-list" ng-if="newDataReport.dataSet">
+    <thead>
+        <tr>
+            <th>Application</th>
+            <th>Configure</th>
+            <th>Missing inputs</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="app in availableApps">
+            <td>{{app.name}}</td>
+            <td><button ng-disabled="app.missingInputs.length">Configure</button></td>
+            <td>
+                <ul class="missing-inputs">
+                    <li ng-repeat="missingInput in app.missingInputs">{{missingInput}}</li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 <button type="button" ng-click="Modals.closeModal('newDataReport')">Cancel</button>

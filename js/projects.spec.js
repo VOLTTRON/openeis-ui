@@ -579,4 +579,55 @@ describe('openeis-ui.projects', function () {
             expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
         });
     });
+
+    describe('NewDataReportCtrl controller', function () {
+        var controller, scope, DataMaps, Applications;
+
+        beforeEach(function () {
+            inject(function($rootScope, $controller) {
+                scope = $rootScope.$new();
+                controller = $controller('NewDataReportCtrl', { $scope: scope });
+            });
+        });
+
+        it('should determine application compatibility upon data set selection', function () {
+            var testMap = { map: { sensors: {
+                'object': {},
+                'object/sensor1': { type: 'typeA' },
+                'object/sensor2': { type: 'typeA' },
+                'object/sensor3': { type: 'typeB' },
+            }}};
+            var testApps = [{
+                name: 'app1',
+                inputs: [{
+                    sensor_type: 'typeA',
+                    count_min: 2,
+                }],
+            }, {
+                name: 'app2',
+                inputs: [{
+                    sensor_type: 'typeB',
+                    count_min: 2,
+                }],
+            }, {
+                name: 'app3',
+                inputs: [{
+                    sensor_type: 'typeC',
+                    count_min: 1,
+                }],
+            }];
+
+            $httpBackend.expectGET(settings.API_URL + 'sensormaps/1').respond(angular.toJson(testMap));
+            $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
+
+            scope.newDataReport.dataSet = { map: 1 };
+            scope.$digest();
+
+            $httpBackend.flush();
+
+            expect(scope.availableApps[0].missingInputs.length).toBe(0);
+            expect(scope.availableApps[1].missingInputs.length).toBe(1);
+            expect(scope.availableApps[2].missingInputs.length).toBe(1);
+        });
+    });
 });

@@ -109,6 +109,10 @@ dd {
     overflow-x: scroll;
 }
 
+ul {
+    padding-left: $inuit-base-spacing-unit;
+}
+
 pre {
     @include inuit-font-size(14px);
 }
