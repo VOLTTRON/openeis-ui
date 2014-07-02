@@ -82,8 +82,12 @@ button {
     @extend %btn;
     vertical-align: baseline !important;
 
+    &:disabled {
+        background-color: #aaa;
+    }
+
     &:disabled:hover {
-        background-color: $inuit-btn-background;
+        background-color: #aaa;
     }
 }
 
