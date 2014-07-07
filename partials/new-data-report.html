@@ -1,31 +1,63 @@
 <h4>New data report</h4>
 
-<div class="form__group">
-    <label class="label--inline">Create data report with</label>&nbsp;
-    <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet">
-        <option value="">-- Choose data set --</option>
-    </select>
+<div ng-if="!newDataReport.application">
+    <div class="form__group">
+        <label class="label--inline">Create data report with</label>&nbsp;
+        <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet">
+            <option value="">-- Choose data set --</option>
+        </select>
+    </div>
+
+    <table class="table--app-list" ng-if="newDataReport.dataSet">
+        <thead>
+            <tr>
+                <th>Application</th>
+                <th>Configure</th>
+                <th>Missing inputs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="app in availableApps">
+                <td>{{app.name}}</td>
+                <td><button ng-disabled="app.missingInputs" ng-click="newDataReport.application = app">Configure</button></td>
+                <td>
+                    <ul class="missing-inputs" ng-if="app.missingInputs">
+                        <li ng-repeat="missingInput in app.missingInputs">{{missingInput}}</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button ng-click="Modals.closeModal('newDataReport')">Cancel</button>
 </div>
 
-<table class="table--app-list" ng-if="newDataReport.dataSet">
-    <thead>
-        <tr>
-            <th>Application</th>
-            <th>Configure</th>
-            <th>Missing inputs</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr ng-repeat="app in availableApps">
-            <td>{{app.name}}</td>
-            <td><button ng-disabled="app.missingInputs.length">Configure</button></td>
-            <td>
-                <ul class="missing-inputs">
-                    <li ng-repeat="missingInput in app.missingInputs">{{missingInput}}</li>
-                </ul>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<form class="form--stacked" ng-if="newDataReport.application" ng-submit="run()">
+    <h5>Configure run of <em>{{newDataReport.application.name}}</em></h5>
+    <div class="layout">
+        <div class="layout__item" style="width: 50%">
+            <fieldset>
+                <legend>Parameters</legend>
+                <div class="form__group" ng-repeat="param in newDataReport.application.parameters">
+                    <label>{{param.name}}</label>
+                    <input required input-type="{'number': (param.config_type === 'int' || param.config_type === 'float')}" ng-model="newDataReport.configuration.parameters[param.name]">
+                    <small class="help" ng-if="param.description">{{param.description}}</small>
+                </div>
+            </fieldset>
+        </div>
+        <div class="layout__item" style="width: 50%">
+            <fieldset>
+                <legend>Inputs</legend>
+                <div class="form__group" ng-repeat="input in newDataReport.application.inputs">
+                    <label>{{input.name}}</label>
+                    <select required ng-options="topic for topic in availableSensors[input.sensor_type]" ng-model="newDataReport.configuration.inputs[input.name]">
+                        <option value="">-- Choose sensor --</option>
+                    </select>
+                    <small class="help" ng-if="param.description">{{input.description}}</small>
+                </div>
+            </fieldset>
+        </div>
+    </div>
 
-<button type="button" ng-click="Modals.closeModal('newDataReport')">Cancel</button>
+    <button type="button" ng-click="newDataReport.application = null">Back</button> <button>Run</button> <button type="button" ng-click="Modals.closeModal('newDataReport')">Cancel</button>
+</form>

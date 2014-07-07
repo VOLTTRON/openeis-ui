@@ -1,6 +1,6 @@
 angular.module('openeis-ui.projects', [
-    'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.file-upload',
-    'openeis-ui.filters', 'openeis-ui.modal', 'openeis-ui.sensor-container',
+    'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.filters',
+    'openeis-ui.modal', 'openeis-ui.sensor-container', 'openeis-ui.directives',
     'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
@@ -304,7 +304,7 @@ angular.module('openeis-ui.projects', [
         $scope.newChild = {};
     };
 })
-.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q) {
+.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q, Modals) {
     $scope.newDataReport = {};
 
     $scope.$watch('newDataReport.dataSet', function () {
@@ -314,55 +314,81 @@ angular.module('openeis-ui.projects', [
             return;
         }
 
+        // Data set has been selected, generate lists of available and required sensors
+        // and compare for compatibility
         var mapPromise = DataMaps.get($scope.newDataReport.dataSet.map).$promise,
             appsPromise = Applications.query().$promise;
 
         $q.all({ map: mapPromise, apps: appsPromise }).then(function (resolve) {
-            var foundCount = {};
+            $scope.availableSensors = {};
 
-            angular.forEach(resolve.map.map.sensors, function (sensor) {
+            angular.forEach(resolve.map.map.sensors, function (sensor, topic) {
                 if (!sensor.type) {
                     return;
                 }
 
-                if (!foundCount.hasOwnProperty(sensor.type)) {
-                    foundCount[sensor.type] = 0;
+                if (!$scope.availableSensors.hasOwnProperty(sensor.type)) {
+                    $scope.availableSensors[sensor.type] = [];
                 }
 
-                foundCount[sensor.type] += 1;
+                $scope.availableSensors[sensor.type].push(topic);
             });
 
             angular.forEach(resolve.apps, function (app) {
-                var requiredCount = {},
+                var requiredCounts = {},
                     missingInputs = [];
 
                 angular.forEach(app.inputs, function (input) {
-                    if (!requiredCount.hasOwnProperty(input.sensor_type)) {
-                        requiredCount[input.sensor_type] = 0;
+                    if (!requiredCounts.hasOwnProperty(input.sensor_type)) {
+                        requiredCounts[input.sensor_type] = 0;
                     }
 
-                    requiredCount[input.sensor_type] += input.count_min;
+                    requiredCounts[input.sensor_type] += input.count_min;
                 });
 
-                angular.forEach(requiredCount, function (count, sensorType) {
-                    var found = foundCount[sensorType] || 0;
+                angular.forEach(requiredCounts, function (required, sensorType) {
+                    var available = 0;
 
-                    if (found < count) {
+                    if ($scope.availableSensors[sensorType]) {
+                        available = $scope.availableSensors[sensorType].length;
+                    }
+
+                    if (available < required) {
                         missingInputs.push(
-                            'At least ' + count + ' ' + sensorType + ' required, ' + found + ' found in data set'
+                            'At least ' + required + ' ' + sensorType + ' required, ' + available + ' available in data set'
                         );
                     }
                 });
 
-                $scope.availableApps.push({
-                    name: app.name,
-                    missingInputs: missingInputs,
-                });
+                if (missingInputs.length) {
+                    $scope.availableApps.push({
+                        name: app.name,
+                        missingInputs: missingInputs,
+                    });
+                    return;
+                }
+
+                $scope.availableApps.push(app);
             });
         });
     });
 
-    $scope.showMissing = function (missing) {
-        alert(missing.join('\n'));
+    var previousApp;
+
+    $scope.$watch('newDataReport.application', function (newValue, oldValue) {
+        // Reset configuration if application has changed
+        if (newValue && newValue !== previousApp) {
+            $scope.newDataReport.configuration = { parameters: {}, inputs: {} };
+            previousApp = newValue;
+        }
+    });
+
+    $scope.run = function () {
+        alert(angular.toJson({
+            dataset: $scope.newDataReport.dataSet.id,
+            application: $scope.newDataReport.application.name,
+            configuration: $scope.newDataReport.configuration,
+        }, true));
+        Modals.closeModal('newDataReport');
     };
 });
