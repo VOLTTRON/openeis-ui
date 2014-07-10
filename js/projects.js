@@ -73,6 +73,9 @@ angular.module('openeis-ui.projects', [
     $scope.Modals = Modals;
     $scope.dataReports = DataReports.query();
 
+    $scope.add = function(){
+        DataReports.create({"name": "Run1", "status":"Error"});
+    };
     var statusCheckPromise;
 
     $scope.statusCheck = function () {
