@@ -304,5 +304,11 @@ angular.module('openeis-ui.api', ['ngResource'])
     Applications.query = function () {
         return resource.query();
     };
+})
+.service('DataReports', function(){
+    var DataReports = this;
+    DataReports.query = function () {
+        return [{"name": "p1", "status": "Queued"}, {"name":"p2","status": "Running"}, {"name":"p3","status":"Completed"}];
+    };    
 });
 
