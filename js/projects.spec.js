@@ -590,23 +590,31 @@ describe('openeis-ui.projects', function () {
         }}};
         var testApps = [{
             name: 'app1',
-            inputs: [{
-                sensor_type: 'typeA',
-                count_min: 2,
-                count_max: 2,
-            }],
+            inputs: {
+                input1: {
+                    sensor_type: 'typeA',
+                    count_min: 2,
+                    count_max: 2,
+                },
+            },
         }, {
             name: 'app2',
-            inputs: [{
-                sensor_type: 'typeB',
-                count_min: 2,
-            }],
+            inputs: {
+                input1: {
+                    sensor_type: 'typeB',
+                    count_min: 2,
+                    count_max: null,
+                },
+            },
         }, {
             name: 'app3',
-            inputs: [{
-                sensor_type: 'typeC',
-                count_min: 1,
-            }],
+            inputs: {
+                input1: {
+                    sensor_type: 'typeC',
+                    count_min: 1,
+                    count_max: 3,
+                }
+            },
         }];
 
         beforeEach(function () {
@@ -643,7 +651,7 @@ describe('openeis-ui.projects', function () {
             });
 
             describe('and application selection', function () {
-                var blankConfig = { parameters: {}, inputs: {} };
+                var blankAppConfig = { parameters: {}, inputs: { input1: [{}, {}] } };
 
                 beforeEach(function () {
                     scope.$digest();
@@ -653,12 +661,12 @@ describe('openeis-ui.projects', function () {
                 it('should create empty configuration', function () {
                     expect(scope.newDataReport.configuration).not.toBeDefined();
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankConfig);
+                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
                 });
 
                 it('should preserve configuration if same application is re-selected', function () {
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankConfig);
+                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
 
                     var testConfig = {
                         parameters: { param1: 'value1', param2: 'value2' },
@@ -673,7 +681,7 @@ describe('openeis-ui.projects', function () {
 
                     scope.newDataReport.application = testApps[1];
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankConfig);
+                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
                 });
             });
         });
