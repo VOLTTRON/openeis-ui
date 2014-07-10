@@ -38,13 +38,13 @@
         <div class="layout__item" style="width: 50%">
             <fieldset>
                 <legend>Parameters</legend>
-                <div class="form__group" ng-repeat="param in newDataReport.application.parameters">
+                <div class="form__group" ng-repeat="(paramName, param) in newDataReport.application.parameters">
                     <label>{{param.display_name}}<span ng-if="param.optional">&nbsp;(optional)</label>
                     <input value="{{param.value_default}}"
                            type="text"
                            ng-if="param.config_type === 'str'"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[param.name]">
+                           ng-model="newDataReport.configuration.parameters[paramName]">
                     <input value="{{param.value_default}}"
                            type="number"
                            step="1"
@@ -52,7 +52,7 @@
                            min="{{param.value_min}}"
                            max="{{param.value_max}}"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[param.name]">
+                           ng-model="newDataReport.configuration.parameters[paramName]">
                     <input value="{{param.value_default}}"
                            type="number"
                            step="0.01"
@@ -60,18 +60,30 @@
                            min="{{param.value_min}}"
                            max="{{param.value_max}}"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[param.name]">
+                           ng-model="newDataReport.configuration.parameters[paramName]">
                 </div>
             </fieldset>
         </div>
         <div class="layout__item" style="width: 50%">
             <fieldset>
                 <legend>Inputs</legend>
-                <div class="form__group" ng-repeat="input in newDataReport.application.inputs">
+                <div class="form__group" ng-repeat="(inputName, input) in newDataReport.application.inputs">
                     <label>{{input.display_name}} ({{input.sensor_type}})</label>
-                    <select required ng-options="topic for topic in availableSensors[input.sensor_type]" ng-model="newDataReport.configuration.inputs[input.name]">
+                    <select required
+                            ng-if="input.count_min === 1 && input.count_max === 1"
+                            ng-options="topic for topic in availableSensors[input.sensor_type]"
+                            ng-model="newDataReport.configuration.inputs[inputName]">
                         <option value="">-- Choose sensor --</option>
                     </select>
+                    <div ng-if="input.count_min !== 1 || input.count_min !== 1 || input.count_max !== 1">
+                        <select required
+                                ng-repeat="multiInput in newDataReport.configuration.inputs[inputName]"
+                                ng-options="topic for topic in availableSensors[input.sensor_type]"
+                                ng-model="newDataReport.configuration.inputs[inputName][$index]">
+                            <option value="">-- Choose sensor --</option>
+                        </select>
+                        <a ng-if="canAddSensor(inputName, input.sensor_type)" ng-click="addInputSensor(inputName)">+ Add sensor</a>
+                    </div>
                 </div>
             </fieldset>
         </div>

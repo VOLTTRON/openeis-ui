@@ -593,6 +593,7 @@ describe('openeis-ui.projects', function () {
             inputs: [{
                 sensor_type: 'typeA',
                 count_min: 2,
+                count_max: 2,
             }],
         }, {
             name: 'app2',

@@ -379,9 +379,41 @@ angular.module('openeis-ui.projects', [
         // Reset configuration if application has changed
         if (newValue && newValue !== previousApp) {
             $scope.newDataReport.configuration = { parameters: {}, inputs: {} };
+
+            // Initialize multi-sensor inputs
+            angular.forEach(newValue.inputs, function (input, inputName) {
+                if (input.count_min !== 1 || input.count_max !== 1) {
+                    $scope.newDataReport.configuration.inputs[inputName] = [];
+
+                    var i = 0;
+                    while (i++ < input.count_min) {
+                        $scope.newDataReport.configuration.inputs[inputName].push({});
+                    }
+                }
+            });
+
             previousApp = newValue;
         }
     });
+
+    $scope.canAddSensor = function (inputName, inputType) {
+        var app = $scope.newDataReport.application,
+            config = $scope.newDataReport.configuration;
+
+        if (config.inputs[inputName].length >= $scope.availableSensors[inputType].length) {
+            return false;
+        }
+
+        if (app.inputs[inputName].count_max && config.inputs[inputName].length >= app.inputs[inputName].count_max) {
+            return false;
+        }
+
+        return true;
+    };
+
+    $scope.addInputSensor = function (inputName) {
+        $scope.newDataReport.configuration.inputs[inputName].push({});
+    };
 
     $scope.run = function () {
         alert(angular.toJson({
