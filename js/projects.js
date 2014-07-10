@@ -65,12 +65,13 @@ angular.module('openeis-ui.projects', [
         });
     };
 })
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
     $scope.dataMaps = dataMaps;
     $scope.Modals = Modals;
+    $scope.dataReports = DataReports.query();
 
     var statusCheckPromise;
 

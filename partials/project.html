@@ -112,15 +112,12 @@
                     <tr>
                         <th>Name</th>
                         <th>Status</th>
-                        <th>Errors</th>
-                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="dataReport in dataReports">
-                        <td>Data set {{dataReport.id}}</td>
-                        <td>{{dataReport.status.status || 'Checking&hellip;' | capitalize}}</td>
-                        <td><a ng-click="deleteDataReport($index)">Delete</a></td>
+                        <td>{{dataReport.name}}</td>
+                        <td>{{dataReport.status}}</td>
                     </tr>
                 </tbody>
             </table>
