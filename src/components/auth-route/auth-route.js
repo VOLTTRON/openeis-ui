@@ -1,7 +1,4 @@
-angular.module('openeis-ui.auth-route', [
-    'openeis-ui.api',
-    'ngRoute',
-])
+angular.module('openeis-ui.auth-route', ['openeis-ui.auth', 'ngRoute'])
 .provider('authRoute', function ($routeProvider) {
     // Wrapper around $routeProvider to add check for auth status
 

@@ -1,5 +1,5 @@
 angular.module('openeis-ui.recovery', [
-    'openeis-ui.api',
+    'openeis-ui.auth',
     'openeis-ui.auth-route',
 ])
 .config(function (authRouteProvider) {

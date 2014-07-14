@@ -1,5 +1,5 @@
 angular.module('openeis-ui.account', [
-    'openeis-ui.api',
+    'openeis-ui.auth',
     'openeis-ui.auth-route',
 ])
 .config(function (authRouteProvider) {
