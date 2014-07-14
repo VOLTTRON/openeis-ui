@@ -1,5 +1,4 @@
 angular.module('openeis-ui.project', [
-    'ngResource',
     'angularFileUpload',
     'openeis-ui.api',
     'openeis-ui.auth-route',
