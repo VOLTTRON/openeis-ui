@@ -1,19 +1,11 @@
-angular.module('openeis-ui.projects', [
+angular.module('openeis-ui.project', [
     'openeis-ui.api', 'openeis-ui.auth-route', 'openeis-ui.filters',
-    'openeis-ui.modals', 'openeis-ui.sensor-container', 'openeis-ui.directives',
+    'openeis-ui.modals', 'openeis-ui.projects.projects-service',
+    'openeis-ui.sensor-container', 'openeis-ui.directives',
     'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {
     authRouteProvider
-        .whenAuth('/projects', {
-            controller: 'ProjectsCtrl',
-            templateUrl: 'partials/projects.html',
-            resolve: {
-                projects: ['Projects', function(Projects) {
-                    return Projects.query();
-                }]
-            },
-        })
         .whenAuth('/projects/:projectId', {
             controller: 'ProjectCtrl',
             templateUrl: 'partials/project.html',
@@ -32,38 +24,6 @@ angular.module('openeis-ui.projects', [
                 }],
             },
         });
-})
-.controller('ProjectsCtrl', function ($scope, projects, Projects) {
-    $scope.projects = projects;
-
-    $scope.newProject = {
-        name: '',
-        create: function () {
-            Projects.create({ name: $scope.newProject.name }).then(function (response) {
-                $scope.newProject.name = '';
-                $scope.projects.push(response);
-            });
-        },
-    };
-
-    $scope.renameProject = function ($index) {
-        var newName = prompt("New project name:");
-
-        if (!newName || !newName.length) {
-            return;
-        }
-
-        $scope.projects[$index].name = newName;
-        $scope.projects[$index].$save(function (response) {
-            $scope.projects[$index] = response;
-        });
-    };
-
-    $scope.deleteProject = function ($index) {
-        $scope.projects[$index].$delete(function () {
-            $scope.projects.splice($index, 1);
-        });
-    };
 })
 .controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {
     $scope.project = project;

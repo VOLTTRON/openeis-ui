@@ -1,23 +1,4 @@
 angular.module('openeis-ui.api', ['ngResource'])
-.service('Projects', function ($resource) {
-    var Projects = this,
-        resource = $resource(settings.API_URL + 'projects/:projectId', { projectId: '@id' }, {
-            create: { method: 'POST' },
-            save: { method: 'PUT' },
-        });
-
-    Projects.get = function (projectId) {
-        return resource.get({ projectId: projectId}).$promise;
-    };
-
-    Projects.query = function () {
-        return resource.query().$promise;
-    };
-
-    Projects.create = function (project) {
-        return resource.create(project).$promise;
-    };
-})
 .service('Files', function ($resource, $http) {
     var Files = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
