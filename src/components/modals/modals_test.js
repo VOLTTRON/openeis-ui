@@ -1,6 +1,6 @@
-describe('openeis-ui.modal', function () {
+describe('openeis-ui.modals', function () {
     beforeEach(function () {
-        module('openeis-ui.modal');
+        module('openeis-ui.modals');
         module('openeis-ui.templates');
     });
 

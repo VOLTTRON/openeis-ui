@@ -1,6 +1,6 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.api', 'openeis-ui.auth', 'openeis-ui.filters',
-    'openeis-ui.modal', 'openeis-ui.sensor-container', 'openeis-ui.directives',
+    'openeis-ui.modals', 'openeis-ui.sensor-container', 'openeis-ui.directives',
     'ngResource', 'angularFileUpload',
 ])
 .config(function (authRouteProvider) {

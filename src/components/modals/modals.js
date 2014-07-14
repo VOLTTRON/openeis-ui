@@ -1,9 +1,9 @@
-angular.module('openeis-ui.modal', [])
+angular.module('openeis-ui.modals', [])
 .directive('modal', function () {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'src/components/modal/modal.tpl.html',
+        templateUrl: 'src/components/modals/modal.tpl.html',
     };
 })
 .service('Modals', function () {
