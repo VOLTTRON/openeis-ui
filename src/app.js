@@ -8,7 +8,7 @@ angular.module('openeis-ui', [
 .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider
         .otherwise({
-            templateUrl: 'partials/404.html',
+            templateUrl: 'src/404.tpl.html',
         });
 
     $locationProvider.html5Mode(true);
