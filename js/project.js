@@ -3,7 +3,7 @@ angular.module('openeis-ui.project', [
     'openeis-ui.filters',
     'openeis-ui.modals',
     'openeis-ui.projects.data-files',
-    'openeis-ui.sensor-container',
+    'openeis-ui.projects.data-maps',
 ])
 .controller('TimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = { columns: {}, };
