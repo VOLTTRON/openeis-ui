@@ -1,23 +1,23 @@
-angular.module('openeis-ui.projects.files', ['ngResource'])
-.service('Files', function ($resource, $http) {
-    var Files = this,
+angular.module('openeis-ui.projects.data-files', ['ngResource'])
+.service('DataFiles', function ($resource, $http) {
+    var DataFiles = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
             update: { method: 'PATCH' },
         });
 
-    Files.get = function (fileId) {
+    DataFiles.get = function (fileId) {
         return resource.get({ fileId: fileId }).$promise;
     };
 
-    Files.query = function (projectId) {
+    DataFiles.query = function (projectId) {
         return resource.query({ project: projectId }).$promise;
     };
 
-    Files.update = function (file) {
+    DataFiles.update = function (file) {
         return resource.update(file).$promise;
     };
 
-    Files.head = function (fileId) {
+    DataFiles.head = function (fileId) {
         return $http({
             method: 'GET',
             url: settings.API_URL + 'files/' + fileId + '/head?rows=5',

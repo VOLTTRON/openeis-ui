@@ -1,19 +1,19 @@
-describe('openeis-ui.projects.files', function () {
+describe('openeis-ui.projects.data-files', function () {
     var headUrlPattern = new RegExp('^' + settings.API_URL + 'files/\\d+/head(\\?rows=\\d+)?$');
 
-    beforeEach(module('openeis-ui.projects.files'));
+    beforeEach(module('openeis-ui.projects.data-files'));
 
-    describe('Files service', function () {
-        var Files, $httpBackend,
-            testFiles = [
+    describe('DataFiles service', function () {
+        var DataFiles, $httpBackend,
+            testDataFiles = [
                 { id: 1, file: 'File 1' },
                 { id: 2, file: 'File 2' },
                 { id: 3, file: 'File 3' },
             ];
 
         beforeEach(function () {
-            inject(function (_Files_, _$httpBackend_) {
-                Files = _Files_;
+            inject(function (_DataFiles_, _$httpBackend_) {
+                DataFiles = _DataFiles_;
                 $httpBackend = _$httpBackend_;
             });
         });
@@ -21,16 +21,16 @@ describe('openeis-ui.projects.files', function () {
         it('should get files by file ID that can be saved and deleted', function () {
             var file;
 
-            expect(Files.get).toBeDefined();
+            expect(DataFiles.get).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + 'files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
-            Files.get(testFiles[0].id).then(function (response) {
+            $httpBackend.expectGET(settings.API_URL + 'files/' + testDataFiles[0].id).respond(angular.toJson(testDataFiles[0]));
+            DataFiles.get(testDataFiles[0].id).then(function (response) {
                 file = response;
             });
             $httpBackend.flush();
 
-            expect(file.id).toEqual(testFiles[0].id);
-            expect(file.file).toEqual(testFiles[0].file);
+            expect(file.id).toEqual(testDataFiles[0].id);
+            expect(file.file).toEqual(testDataFiles[0].file);
             expect(file.$save).toBeDefined();
             expect(file.$delete).toBeDefined();
         });
@@ -38,25 +38,25 @@ describe('openeis-ui.projects.files', function () {
         it('should query for all files in a project by project ID', function () {
             var files;
 
-            expect(Files.query).toBeDefined();
+            expect(DataFiles.query).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson(testFiles));
-            Files.query(1).then(function (response) {
+            $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson(testDataFiles));
+            DataFiles.query(1).then(function (response) {
                 files = response;
             });
             $httpBackend.flush();
 
-            expect(files.length).toEqual(testFiles.length);
+            expect(files.length).toEqual(testDataFiles.length);
 
-            for (var i = 0; i < testFiles.length; i++) {
-                expect(files[i].id).toEqual(testFiles[i].id);
-                expect(files[i].file).toEqual(testFiles[i].file);
+            for (var i = 0; i < testDataFiles.length; i++) {
+                expect(files[i].id).toEqual(testDataFiles[i].id);
+                expect(files[i].file).toEqual(testDataFiles[i].file);
             }
         });
 
         it('should update (rename) files', function () {
-            $httpBackend.expectPATCH(settings.API_URL + 'files/' + testFiles[0].id).respond(angular.toJson(testFiles[0]));
-            Files.update(testFiles[0]);
+            $httpBackend.expectPATCH(settings.API_URL + 'files/' + testDataFiles[0].id).respond(angular.toJson(testDataFiles[0]));
+            DataFiles.update(testDataFiles[0]);
             $httpBackend.flush();
         });
 
@@ -72,10 +72,10 @@ describe('openeis-ui.projects.files', function () {
                     ],
                 };
 
-            expect(Files.head).toBeDefined();
+            expect(DataFiles.head).toBeDefined();
 
             $httpBackend.expectGET(headUrlPattern).respond(angular.toJson(testHead));
-            Files.head(1).then(function (response) {
+            DataFiles.head(1).then(function (response) {
                 head = response.data;
             });
             $httpBackend.flush();

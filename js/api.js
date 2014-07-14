@@ -1,6 +1,6 @@
 angular.module('openeis-ui.api', [
     'ngResource',
-    'openeis-ui.projects.files',
+    'openeis-ui.projects.data-files',
 ])
 .service('DataSets', function ($resource, $http) {
     var DataSets = this,
@@ -32,7 +32,7 @@ angular.module('openeis-ui.api', [
         });
     };
 })
-.service('DataMaps', function ($http, $resource, Files) {
+.service('DataMaps', function ($http, $resource, DataFiles) {
     var DataMaps = this,
         resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
@@ -136,7 +136,7 @@ angular.module('openeis-ui.api', [
     DataMaps.ensureFileMetaData = function (files) {
         angular.forEach(files, function(file) {
             if (!(file.hasOwnProperty('signature') && file.hasOwnProperty('columns') && file.hasOwnProperty('hasHeader'))) {
-                Files.head(file.id).then(function (headResponse) {
+                DataFiles.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
                     file.columns = [];
                     file.hasHeader = headResponse.data.has_header;

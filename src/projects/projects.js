@@ -1,7 +1,7 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.auth-route',
     'openeis-ui.file-upload',
-    'openeis-ui.projects.files',
+    'openeis-ui.projects.data-files',
     'openeis-ui.projects.project-controller',
     'openeis-ui.projects.projects-controller',
     'openeis-ui.projects.projects-service',
@@ -24,8 +24,8 @@ angular.module('openeis-ui.projects', [
                 project: ['Projects', '$route', function(Projects, $route) {
                     return Projects.get($route.current.params.projectId);
                 }],
-                dataFiles: ['Files', '$route', function(Files, $route) {
-                    return Files.query($route.current.params.projectId);
+                dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
+                    return DataFiles.query($route.current.params.projectId);
                 }],
                 dataSets: ['DataSets', '$route', function(DataSets, $route) {
                     return DataSets.query($route.current.params.projectId).$promise;

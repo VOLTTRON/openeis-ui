@@ -2,9 +2,10 @@ angular.module('openeis-ui.project', [
     'openeis-ui.api',
     'openeis-ui.filters',
     'openeis-ui.modals',
+    'openeis-ui.projects.data-files',
     'openeis-ui.sensor-container',
 ])
-.controller('TimestampCtrl', function ($scope, Files, $http, Modals) {
+.controller('TimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = { columns: {}, };
 
     $scope.preview = function () {
@@ -31,7 +32,7 @@ angular.module('openeis-ui.project', [
     $scope.save = function () {
         var timestamp = { columns: $scope.selectedColumns };
 
-        Files.update({
+        DataFiles.update({
             id: $scope.timestampFile.id,
             timestamp: timestamp,
         }).then(function (file) {

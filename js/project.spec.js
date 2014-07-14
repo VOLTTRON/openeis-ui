@@ -14,10 +14,10 @@ describe('openeis-ui.project', function () {
     });
 
     describe('TimestampCtrl controller', function () {
-        var controller, scope, Files, $http, resolve, reject;
+        var controller, scope, DataFiles, $http, resolve, reject;
 
         beforeEach(function () {
-            Files = { update: function () {
+            DataFiles = { update: function () {
                 return { then: function (successCallback, errorCallback) {
                     resolve = successCallback;
                     reject = errorCallback;
@@ -33,7 +33,7 @@ describe('openeis-ui.project', function () {
 
             inject(function($rootScope, $controller) {
                 scope = $rootScope.$new();
-                controller = $controller('TimestampCtrl', { $scope: scope, Files: Files, $http: $http });
+                controller = $controller('TimestampCtrl', { $scope: scope, DataFiles: DataFiles, $http: $http });
             });
         });
 

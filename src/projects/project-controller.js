@@ -1,11 +1,11 @@
 angular.module('openeis-ui.projects.project-controller', [
     'angularFileUpload',
     'openeis-ui.api',
-    'openeis-ui.projects.files',
+    'openeis-ui.projects.data-files',
     'openeis-ui.projects.projects-service',
     'openeis-ui.modals'
 ])
-.controller('ProjectCtrl', function ($scope, project, dataFiles, Files, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
@@ -48,7 +48,7 @@ angular.module('openeis-ui.projects.project-controller', [
     $scope.statusCheck();
 
     $scope.configureTimestamp = function ($index) {
-        Files.head($scope.dataFiles[$index].id).then(function (headResponse) {
+        DataFiles.head($scope.dataFiles[$index].id).then(function (headResponse) {
             if (headResponse.data.has_header) {
                 headResponse.data.header = headResponse.data.rows.shift();
             }
@@ -71,7 +71,7 @@ angular.module('openeis-ui.projects.project-controller', [
                 file: file,
             }).then(function (response) {
                 // Perform a 'get' so that the file object has $save and $delete methods
-                Files.get(response.data.id).then(function (getResponse) {
+                DataFiles.get(response.data.id).then(function (getResponse) {
                     $scope.dataFiles.push(getResponse);
                     $scope.configureTimestamp($scope.dataFiles.length - 1);
                 });

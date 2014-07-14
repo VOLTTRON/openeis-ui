@@ -95,16 +95,16 @@ describe('openeis-ui.projects.project-controller', function () {
         });
 
         describe('configureTimestamp function', function () {
-            it('should retrieve first rows of file', inject(function (Files) {
-                spyOn(Files, 'head').andReturn({ then: function () {} });
+            it('should retrieve first rows of file', inject(function (DataFiles) {
+                spyOn(DataFiles, 'head').andReturn({ then: function () {} });
                 scope.dataFiles = { 0: { id: 1 } };
                 scope.configureTimestamp(0);
-                expect(Files.head).toHaveBeenCalledWith(1);
+                expect(DataFiles.head).toHaveBeenCalledWith(1);
             }));
 
-            it('should set timestampFile and open a modal', inject(function (Files, Modals) {
+            it('should set timestampFile and open a modal', inject(function (DataFiles, Modals) {
                 var resolve;
-                spyOn(Files, 'head').andReturn({ then: function (successCallback) {
+                spyOn(DataFiles, 'head').andReturn({ then: function (successCallback) {
                     resolve = successCallback;
                 }});
                 spyOn(Modals, 'openModal');
@@ -136,7 +136,7 @@ describe('openeis-ui.projects.project-controller', function () {
         });
 
         describe('upload function', function () {
-            var upload, Files, resolve;
+            var upload, DataFiles, resolve;
 
             beforeEach(function () {
                 upload = { upload: jasmine.createSpy('upload.upload').andReturn({
@@ -145,13 +145,13 @@ describe('openeis-ui.projects.project-controller', function () {
                     }
                 })};
 
-                Files = { get: jasmine.createSpy('Files.get').andReturn({
+                DataFiles = { get: jasmine.createSpy('DataFiles.get').andReturn({
                     then: function (successCallback) {
                         resolve = successCallback;
                     }
                 })};
 
-                controller = $controller('ProjectCtrl', { $scope: scope, $upload: upload, Files: Files });
+                controller = $controller('ProjectCtrl', { $scope: scope, $upload: upload, DataFiles: DataFiles });
             });
 
             it('should upload selected files with $upload', function () {
@@ -170,20 +170,20 @@ describe('openeis-ui.projects.project-controller', function () {
                 resolve('file');
                 expect(scope.dataFiles.length).toBe(1);
                 expect(scope.dataFiles[0]).toBe('file');
-                expect(Files.get).toHaveBeenCalledWith(1);
+                expect(DataFiles.get).toHaveBeenCalledWith(1);
                 expect(scope.configureTimestamp).toHaveBeenCalledWith(0);
             });
         });
 
         describe('deleteFile function', function () {
-            it('should delete files by array index', inject(function (Files) {
+            it('should delete files by array index', inject(function (DataFiles) {
                 var testFile = { id: 1, file: 'test_file.csv' };
 
                 expect(scope.deleteFile).toBeDefined();
 
                 // Setup: populate scope.dataFiles
                 $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson([testFile]));
-                Files.query(1).then(function (response) {
+                DataFiles.query(1).then(function (response) {
                     scope.dataFiles = response;
                 });
                 $httpBackend.flush();
