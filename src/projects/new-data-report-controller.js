@@ -1,4 +1,4 @@
-angular.module('openeis-ui.project', [
+angular.module('openeis-ui.projects.new-data-report-controller', [
     'openeis-ui.applications-service',
     'openeis-ui.filters',
     'openeis-ui.modals',

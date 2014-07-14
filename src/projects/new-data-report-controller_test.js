@@ -1,11 +1,50 @@
-describe('openeis-ui.project', function () {
-    var $httpBackend;
+describe('openeis-ui.projects.new-data-report-controller', function () {
+    var $httpBackend, controller, scope, DataMaps, Applications;
+    var testMap = { map: { sensors: {
+        'object': {},
+        'object/sensor1': { type: 'typeA' },
+        'object/sensor2': { type: 'typeA' },
+        'object/sensor3': { type: 'typeB' },
+    }}};
+    var testApps = [{
+        name: 'app1',
+        inputs: {
+            input1: {
+                sensor_type: 'typeA',
+                count_min: 2,
+                count_max: 2,
+            },
+        },
+    }, {
+        name: 'app2',
+        inputs: {
+            input1: {
+                sensor_type: 'typeB',
+                count_min: 2,
+                count_max: null,
+            },
+        },
+    }, {
+        name: 'app3',
+        inputs: {
+            input1: {
+                sensor_type: 'typeC',
+                count_min: 1,
+                count_max: 3,
+            }
+        },
+    }];
 
     beforeEach(function () {
-        module('openeis-ui.project');
+        module('openeis-ui.projects.new-data-report-controller');
 
-        inject(function (_$httpBackend_) {
+        inject(function (_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
+            scope = $rootScope.$new();
+            controller = $controller('NewDataReportCtrl', { $scope: scope });
+
+            $httpBackend.expectGET(settings.API_URL + 'sensormaps/1').respond(angular.toJson(testMap));
+            $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
         });
     });
 
@@ -14,52 +53,6 @@ describe('openeis-ui.project', function () {
     });
 
     describe('NewDataReportCtrl controller', function () {
-        var controller, scope, DataMaps, Applications;
-        var testMap = { map: { sensors: {
-            'object': {},
-            'object/sensor1': { type: 'typeA' },
-            'object/sensor2': { type: 'typeA' },
-            'object/sensor3': { type: 'typeB' },
-        }}};
-        var testApps = [{
-            name: 'app1',
-            inputs: {
-                input1: {
-                    sensor_type: 'typeA',
-                    count_min: 2,
-                    count_max: 2,
-                },
-            },
-        }, {
-            name: 'app2',
-            inputs: {
-                input1: {
-                    sensor_type: 'typeB',
-                    count_min: 2,
-                    count_max: null,
-                },
-            },
-        }, {
-            name: 'app3',
-            inputs: {
-                input1: {
-                    sensor_type: 'typeC',
-                    count_min: 1,
-                    count_max: 3,
-                }
-            },
-        }];
-
-        beforeEach(function () {
-            inject(function($rootScope, $controller) {
-                scope = $rootScope.$new();
-                controller = $controller('NewDataReportCtrl', { $scope: scope });
-
-                $httpBackend.expectGET(settings.API_URL + 'sensormaps/1').respond(angular.toJson(testMap));
-                $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
-            });
-        });
-
         describe('upon data set selection', function () {
             beforeEach(function () {
                 scope.newDataReport.dataSet = { map: 1 };
