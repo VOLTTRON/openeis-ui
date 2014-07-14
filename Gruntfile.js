@@ -36,7 +36,7 @@ module.exports = function(grunt) {
         relative: true,
       },
       build: {
-        src: 'index.html',
+        src: 'src/index.html',
         dest: '<%= buildDir %>',
         options: {
           beautify: true,
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
         },
       },
       dev: {
-        src: 'index.html',
+        src: 'src/index.html',
         dest: '<%= buildDir %>',
         options: {
           scripts: {
@@ -145,7 +145,7 @@ module.exports = function(grunt) {
           style: 'compressed',
         },
         files: {
-          '<%= buildDir %>css/app.css': 'scss/app.scss',
+          '<%= buildDir %>css/app.css': 'src/app.scss',
         },
       },
       dev: {
@@ -153,7 +153,7 @@ module.exports = function(grunt) {
           style: 'nested',
         },
         files: {
-          '<%= buildDir %>css/app.css': 'scss/app.scss',
+          '<%= buildDir %>css/app.css': 'src/app.scss',
         },
       }
     },
@@ -162,6 +162,7 @@ module.exports = function(grunt) {
       build: {
         files: [
           {
+            cwd: 'src/',
             src: [
               'settings.js',
               'sensormap-schema.json',
@@ -227,8 +228,8 @@ module.exports = function(grunt) {
 
       sync: {
         files: [
-          'settings.js',
-          'sensormap-schema.json',
+          'src/settings.js',
+          'src/sensormap-schema.json',
           'js/*.js',
           '!js/*.spec.js',
         ],
@@ -241,12 +242,12 @@ module.exports = function(grunt) {
       },
 
       karma: {
-        files: ['js/*.js', 'settings.js'],
+        files: ['js/*.js', 'src/settings.js'],
         tasks: ['clean:karma', 'karma:dev:run'],
       },
 
       sass: {
-        files: ['scss/**/*.scss'],
+        files: ['src/**/*.scss'],
         tasks: ['sass:dev'],
       },
     }
