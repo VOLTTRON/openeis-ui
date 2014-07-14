@@ -100,8 +100,6 @@ module.exports = function(grunt) {
       build: {
         files: {
           '<%= buildDir %>js/app.js': [
-            'js/*.js',
-            '!js/*.spec.js',
             'src/**/*.js',
             '!src/**/*_test.js',
           ]
@@ -125,7 +123,7 @@ module.exports = function(grunt) {
         standalone: true,
       },
       build: {
-        src: ['partials/*.html', 'src/**/*.tpl.html'],
+        src: 'src/**/*.tpl.html',
         dest: '<%= buildDir %>js/app.templates.js',
       },
     },
@@ -175,8 +173,6 @@ module.exports = function(grunt) {
               'bower_components/ng-file-upload/angular-file-upload.js',
               'bower_components/autofill-event/src/autofill-event.js',
               'bower_components/tv4/tv4.js',
-              'js/*.js',
-              '!js/*.spec.js',
               'src/**/*.js',
               '!src/**/*_test.js',
               '!src/settings.js',
@@ -217,8 +213,6 @@ module.exports = function(grunt) {
       html: {
         files: [
           'src/index.html',
-          'js/*.js',
-          '!js/*.spec.js',
           'src/**/*.js',
           '!src/**/*_test.js',
         ],
@@ -229,21 +223,19 @@ module.exports = function(grunt) {
         files: [
           'src/settings.js',
           'src/sensormap-schema.json',
-          'js/*.js',
-          '!js/*.spec.js',
           'src/**/*.js',
           '!src/**/*_test.js',
         ],
         tasks: ['sync'],
       },
 
-      partials: {
-        files: ['partials/*.html'],
+      templates: {
+        files: 'src/**/*.tpl.html',
         tasks: ['ngtemplates'],
       },
 
       karma: {
-        files: ['js/*.js', 'src/**/*.js'],
+        files: 'src/**/*.js',
         tasks: ['clean:karma', 'karma:dev:run'],
       },
 
