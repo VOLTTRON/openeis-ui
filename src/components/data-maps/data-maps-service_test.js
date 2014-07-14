@@ -1,4 +1,4 @@
-describe('openeis-ui.projects.data-maps.data-maps-service', function () {
+describe('openeis-ui.data-maps.data-maps-service', function () {
     describe('DataMaps service', function () {
         var headUrlPattern = new RegExp('^' + settings.API_URL + 'files/\\d+/head(\\?rows=\\d+)?$'),
             testDataMaps = [
@@ -9,7 +9,7 @@ describe('openeis-ui.projects.data-maps.data-maps-service', function () {
             DataMaps, $httpBackend;
 
         beforeEach(function () {
-            module('openeis-ui.projects.data-maps.data-maps-service');
+            module('openeis-ui.data-maps.data-maps-service');
 
             inject(function (_DataMaps_, _$httpBackend_) {
                 DataMaps = _DataMaps_;

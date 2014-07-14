@@ -1,6 +1,6 @@
-angular.module('openeis-ui.projects.new-data-map-controller', [
+angular.module('openeis-ui.project.new-data-map-controller', [
     'openeis-ui.modals',
-    'openeis-ui.projects.data-maps',
+    'openeis-ui.data-maps',
 ])
 .controller('NewDataMapCtrl', function ($scope, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);

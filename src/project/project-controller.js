@@ -1,9 +1,8 @@
-angular.module('openeis-ui.projects.project-controller', [
+angular.module('openeis-ui.project.project-controller', [
     'angularFileUpload',
-    'openeis-ui.projects.data-reports',
-    'openeis-ui.projects.data-files',
-    'openeis-ui.projects.data-sets',
-    'openeis-ui.projects.projects-service',
+    'openeis-ui.data-files',
+    'openeis-ui.data-reports-service',
+    'openeis-ui.data-sets-service',
     'openeis-ui.modals'
 ])
 .controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {

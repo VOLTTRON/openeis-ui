@@ -1,6 +1,6 @@
-describe('openeis-ui.projects.data-maps.sensor-container-directive', function () {
+describe('openeis-ui.data-maps.sensor-container-directive', function () {
     beforeEach(function () {
-        module('openeis-ui.projects.data-maps.sensor-container-directive');
+        module('openeis-ui.data-maps.sensor-container-directive');
         module('openeis-ui.templates');
     });
 

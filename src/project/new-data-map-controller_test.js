@@ -1,8 +1,8 @@
-describe('openeis-ui.projects.new-data-map-controller', function () {
+describe('openeis-ui.project.new-data-map-controller', function () {
     var $httpBackend, $controller, controller, scope, DataMaps, Modals, resolve, reject;
 
     beforeEach(function () {
-        module('openeis-ui.projects.new-data-map-controller');
+        module('openeis-ui.project.new-data-map-controller');
 
         DataMaps = {
             ensureFileMetaData: function () {},

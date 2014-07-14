@@ -1,4 +1,4 @@
-describe('openeis-ui.projects.data-sets.data-sets-service', function () {
+describe('openeis-ui.data-sets-service', function () {
     var DataSets, $httpBackend,
         testDataSets = [
             { id: 1 },
@@ -7,7 +7,7 @@ describe('openeis-ui.projects.data-sets.data-sets-service', function () {
         ];
 
     beforeEach(function () {
-        module('openeis-ui.projects.data-sets.data-sets-service');
+        module('openeis-ui.data-sets-service');
 
         inject(function (_DataSets_, _$httpBackend_) {
             DataSets = _DataSets_;

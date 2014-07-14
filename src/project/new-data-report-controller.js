@@ -1,8 +1,8 @@
-angular.module('openeis-ui.projects.new-data-report-controller', [
+angular.module('openeis-ui.project.new-data-report-controller', [
     'openeis-ui.applications-service',
     'openeis-ui.filters',
     'openeis-ui.modals',
-    'openeis-ui.projects.data-maps',
+    'openeis-ui.data-maps',
 ])
 .controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q, Modals) {
     $scope.newDataReport = {};

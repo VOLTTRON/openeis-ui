@@ -1,8 +1,8 @@
-describe('openeis-ui.projects.configure-timestamp-controller', function () {
+describe('openeis-ui.project.configure-timestamp-controller', function () {
     var $httpBackend, controller, scope, DataFiles, $http, resolve, reject;
 
     beforeEach(function () {
-        module('openeis-ui.projects.configure-timestamp-controller');
+        module('openeis-ui.project.configure-timestamp-controller');
 
         DataFiles = { update: function () {
             return { then: function (successCallback, errorCallback) {

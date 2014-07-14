@@ -1,4 +1,4 @@
-angular.module('openeis-ui.projects.projects-service', ['ngResource'])
+angular.module('openeis-ui.projects-service', ['ngResource'])
 .service('Projects', function ($resource) {
     var Projects = this,
         resource = $resource(settings.API_URL + 'projects/:projectId', { projectId: '@id' }, {

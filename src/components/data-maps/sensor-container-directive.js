@@ -1,7 +1,7 @@
-angular.module('openeis-ui.projects.data-maps.sensor-container-directive', [
+angular.module('openeis-ui.data-maps.sensor-container-directive', [
     'RecursionHelper',
     'openeis-ui.filters',
-    'openeis-ui.projects.data-maps.data-maps-service',
+    'openeis-ui.data-maps.data-maps-service',
 ])
 .directive('sensorContainer', function (RecursionHelper) {
     return {
@@ -10,7 +10,7 @@ angular.module('openeis-ui.projects.data-maps.sensor-container-directive', [
             container: '=',
             files: '=',
         },
-        templateUrl: 'src/projects/data-maps/sensor-container-directive.tpl.html',
+        templateUrl: 'src/components/data-maps/sensor-container-directive.tpl.html',
         controller: function ($scope, DataMaps) {
             DataMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;

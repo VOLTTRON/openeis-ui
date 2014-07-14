@@ -1,6 +1,6 @@
-angular.module('openeis-ui.projects.data-maps.data-maps-service', [
+angular.module('openeis-ui.data-maps.data-maps-service', [
     'ngResource',
-    'openeis-ui.projects.data-files',
+    'openeis-ui.data-files',
 ])
 .service('DataMaps', function ($http, $resource, DataFiles) {
     var DataMaps = this,

@@ -1,4 +1,4 @@
-describe('openeis-ui.projects.projects-service', function () {
+describe('openeis-ui.projects-service', function () {
     var Projects, $httpBackend,
         testProjects = [
             { id: 1, name: 'Test project 1' },
@@ -7,7 +7,7 @@ describe('openeis-ui.projects.projects-service', function () {
         ];
 
     beforeEach(function () {
-        module('openeis-ui.projects.projects-service');
+        module('openeis-ui.projects-service');
 
         inject(function (_Projects_, _$httpBackend_) {
             Projects = _Projects_;

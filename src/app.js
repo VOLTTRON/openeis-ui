@@ -7,6 +7,7 @@ angular.module('openeis-ui', [
     'openeis-ui.account',
     'openeis-ui.auth-service',
     'openeis-ui.login',
+    'openeis-ui.project',
     'openeis-ui.projects',
     'openeis-ui.recovery',
     'openeis-ui.signup',

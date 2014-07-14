@@ -1,8 +1,8 @@
-describe('openeis-ui.projects.new-data-set-controller', function () {
+describe('openeis-ui.project.new-data-set-controller', function () {
     var $httpBackend, $controller, controller, scope, DataSets, DataMaps, Modals, resolve, reject;
 
     beforeEach(function () {
-        module('openeis-ui.projects.new-data-set-controller');
+        module('openeis-ui.project.new-data-set-controller');
 
         DataSets = { create: function () {
             return { $promise: { then: function (successCallback, errorCallback) {

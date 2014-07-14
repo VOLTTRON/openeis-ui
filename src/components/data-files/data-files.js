@@ -1,4 +1,4 @@
-angular.module('openeis-ui.projects.data-files', ['ngResource'])
+angular.module('openeis-ui.data-files', ['ngResource'])
 .service('DataFiles', function ($resource, $http) {
     var DataFiles = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {

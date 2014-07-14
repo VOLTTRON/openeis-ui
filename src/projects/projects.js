@@ -1,16 +1,7 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.auth-route-service',
-    'openeis-ui.file-upload-directive',
-    'openeis-ui.projects.configure-timestamp-controller',
-    'openeis-ui.projects.data-files',
-    'openeis-ui.projects.data-maps',
-    'openeis-ui.projects.data-sets',
-    'openeis-ui.projects.new-data-map-controller',
-    'openeis-ui.projects.new-data-report-controller',
-    'openeis-ui.projects.new-data-set-controller',
-    'openeis-ui.projects.project-controller',
+    'openeis-ui.projects-service',
     'openeis-ui.projects.projects-controller',
-    'openeis-ui.projects.projects-service',
 ])
 .config(function (authRouteProvider) {
     authRouteProvider
@@ -21,24 +12,6 @@ angular.module('openeis-ui.projects', [
                 projects: ['Projects', function(Projects) {
                     return Projects.query();
                 }]
-            },
-        })
-        .whenAuth('/projects/:projectId', {
-            controller: 'ProjectCtrl',
-            templateUrl: 'src/projects/project.tpl.html',
-            resolve: {
-                project: ['Projects', '$route', function(Projects, $route) {
-                    return Projects.get($route.current.params.projectId);
-                }],
-                dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
-                    return DataFiles.query($route.current.params.projectId);
-                }],
-                dataSets: ['DataSets', '$route', function(DataSets, $route) {
-                    return DataSets.query($route.current.params.projectId).$promise;
-                }],
-                dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
-                    return DataMaps.query($route.current.params.projectId).$promise;
-                }],
             },
         });
 });

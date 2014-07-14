@@ -1,4 +1,4 @@
-angular.module('openeis-ui.projects.data-sets.data-sets-service', ['ngResource'])
+angular.module('openeis-ui.data-sets-service', ['ngResource'])
 .service('DataSets', function ($resource, $http) {
     var DataSets = this,
         resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {

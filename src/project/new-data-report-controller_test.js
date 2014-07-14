@@ -1,4 +1,4 @@
-describe('openeis-ui.projects.new-data-report-controller', function () {
+describe('openeis-ui.project.new-data-report-controller', function () {
     var $httpBackend, controller, scope, DataMaps, Applications;
     var testMap = { map: { sensors: {
         'object': {},
@@ -36,7 +36,7 @@ describe('openeis-ui.projects.new-data-report-controller', function () {
     }];
 
     beforeEach(function () {
-        module('openeis-ui.projects.new-data-report-controller');
+        module('openeis-ui.project.new-data-report-controller');
 
         inject(function (_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;

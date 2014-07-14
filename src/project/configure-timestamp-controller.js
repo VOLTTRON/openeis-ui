@@ -1,6 +1,6 @@
-angular.module('openeis-ui.projects.configure-timestamp-controller', [
+angular.module('openeis-ui.project.configure-timestamp-controller', [
     'openeis-ui.modals',
-    'openeis-ui.projects.data-files',
+    'openeis-ui.data-files',
 ])
 .controller('ConfigureTimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = { columns: {}, };

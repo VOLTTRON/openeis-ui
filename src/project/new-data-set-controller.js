@@ -1,7 +1,7 @@
-angular.module('openeis-ui.projects.new-data-set-controller', [
+angular.module('openeis-ui.project.new-data-set-controller', [
     'openeis-ui.modals',
-    'openeis-ui.projects.data-maps',
-    'openeis-ui.projects.data-sets',
+    'openeis-ui.data-maps',
+    'openeis-ui.data-sets-service',
 ])
 .controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);

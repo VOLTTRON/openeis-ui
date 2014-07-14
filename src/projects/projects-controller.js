@@ -1,5 +1,5 @@
 angular.module('openeis-ui.projects.projects-controller', [
-    'openeis-ui.projects.projects-service',
+    'openeis-ui.projects-service',
 ])
 .controller('ProjectsCtrl', function ($scope, projects, Projects) {
     $scope.projects = projects;

@@ -1,7 +1,7 @@
-describe('openeis-ui.projects.data-files', function () {
+describe('openeis-ui.data-files', function () {
     var headUrlPattern = new RegExp('^' + settings.API_URL + 'files/\\d+/head(\\?rows=\\d+)?$');
 
-    beforeEach(module('openeis-ui.projects.data-files'));
+    beforeEach(module('openeis-ui.data-files'));
 
     describe('DataFiles service', function () {
         var DataFiles, $httpBackend,
