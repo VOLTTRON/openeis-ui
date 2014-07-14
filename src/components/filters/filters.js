@@ -1,6 +1,5 @@
 angular.module('openeis-ui.filters', [])
-// From https://gist.github.com/thomseddon/3511330
-.filter('bytes', function() {
+.filter('bytes', function() { // Based on https://gist.github.com/thomseddon/3511330
     return function(bytes, precision) {
         if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '--';
         if (typeof precision === 'undefined') precision = 0;
