@@ -5,6 +5,7 @@ angular.module('openeis-ui.projects', [
     'openeis-ui.projects.data-files',
     'openeis-ui.projects.data-maps',
     'openeis-ui.projects.data-sets',
+    'openeis-ui.projects.new-data-map-controller',
     'openeis-ui.projects.project-controller',
     'openeis-ui.projects.projects-controller',
     'openeis-ui.projects.projects-service',
