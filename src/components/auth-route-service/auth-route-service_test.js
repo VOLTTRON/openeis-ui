@@ -1,8 +1,8 @@
-describe('openeis-ui.auth-route', function () {
+describe('openeis-ui.auth-route-service', function () {
     var Auth;
 
     beforeEach(function () {
-        module('openeis-ui.auth-route');
+        module('openeis-ui.auth-route-service');
 
         module(function ($provide) {
             $provide.value('Auth', Auth);

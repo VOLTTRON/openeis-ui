@@ -1,6 +1,6 @@
-describe('openeis-ui.file-upload', function () {
+describe('openeis-ui.file-upload-directive', function () {
     beforeEach(function () {
-        module('openeis-ui.file-upload');
+        module('openeis-ui.file-upload-directive');
         module('openeis-ui.templates');
     });
 

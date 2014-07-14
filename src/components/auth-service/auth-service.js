@@ -1,4 +1,4 @@
-angular.module('openeis-ui.auth', ['ngResource'])
+angular.module('openeis-ui.auth-service', ['ngResource'])
 .service('Auth', function ($resource, $q, $location, $rootScope) {
     var Auth = this,
         account = null,

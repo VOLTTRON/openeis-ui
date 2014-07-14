@@ -1,6 +1,6 @@
 angular.module('openeis-ui.projects', [
-    'openeis-ui.auth-route',
-    'openeis-ui.file-upload',
+    'openeis-ui.auth-route-service',
+    'openeis-ui.file-upload-directive',
     'openeis-ui.projects.data-files',
     'openeis-ui.projects.project-controller',
     'openeis-ui.projects.projects-controller',

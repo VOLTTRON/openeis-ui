@@ -1,11 +1,11 @@
-describe('openeis-ui.auth', function () {
+describe('openeis-ui.auth-service', function () {
     var accountResourceUrl = settings.API_URL + 'account',
         loginResourceUrl = settings.API_URL + 'account/login',
         pwChangeResourceUrl = settings.API_URL + 'account/change_password',
         pwResetResourceUrl = settings.API_URL + 'account/password_reset';
 
     beforeEach(function () {
-        module('openeis-ui.auth');
+        module('openeis-ui.auth-service');
     });
 
     describe('Auth service', function () {

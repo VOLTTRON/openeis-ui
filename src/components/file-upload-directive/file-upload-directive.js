@@ -1,4 +1,4 @@
-angular.module('openeis-ui.file-upload', [])
+angular.module('openeis-ui.file-upload-directive', [])
 .directive('fileUpload', function ($parse) {
     return {
         restrict: 'E',

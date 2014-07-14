@@ -6,6 +6,7 @@ angular.module('openeis-ui', [
     'ngRoute',
     'openeis-ui.account',
     'openeis-ui.api',
+    'openeis-ui.auth-service',
     'openeis-ui.login',
     'openeis-ui.project',
     'openeis-ui.projects',
