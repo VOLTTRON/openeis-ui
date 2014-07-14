@@ -5,7 +5,6 @@ angular.module('openeis-ui', [
     'ngAnimate',
     'ngRoute',
     'openeis-ui.account',
-    'openeis-ui.api',
     'openeis-ui.auth-service',
     'openeis-ui.login',
     'openeis-ui.project',

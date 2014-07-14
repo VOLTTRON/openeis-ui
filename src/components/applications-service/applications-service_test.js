@@ -1,6 +1,6 @@
-describe('openeis-ui.api', function () {
+describe('openeis-ui.applications-service', function () {
     beforeEach(function () {
-        module('openeis-ui.api');
+        module('openeis-ui.applications-service');
     });
 
     describe('Applications service', function () {

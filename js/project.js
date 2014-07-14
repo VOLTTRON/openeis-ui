@@ -1,5 +1,5 @@
 angular.module('openeis-ui.project', [
-    'openeis-ui.api',
+    'openeis-ui.applications-service',
     'openeis-ui.filters',
     'openeis-ui.modals',
     'openeis-ui.projects.data-files',
