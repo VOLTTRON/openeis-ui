@@ -39,7 +39,6 @@ module.exports = function(grunt) {
         src: 'src/index.html',
         dest: '<%= buildDir %>',
         options: {
-          beautify: true,
           scripts: {
             app: '<%= buildDir %>js/app.min.js',
           },
