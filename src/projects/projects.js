@@ -1,5 +1,8 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.auth-route',
+    'openeis-ui.file-upload',
+    'openeis-ui.projects.project-controller',
+    'openeis-ui.projects.projects-controller',
     'openeis-ui.projects.projects-service',
 ])
 .config(function (authRouteProvider) {
@@ -12,37 +15,23 @@ angular.module('openeis-ui.projects', [
                     return Projects.query();
                 }]
             },
+        })
+        .whenAuth('/projects/:projectId', {
+            controller: 'ProjectCtrl',
+            templateUrl: 'src/projects/project.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataFiles: ['Files', '$route', function(Files, $route) {
+                    return Files.query($route.current.params.projectId);
+                }],
+                dataSets: ['DataSets', '$route', function(DataSets, $route) {
+                    return DataSets.query($route.current.params.projectId).$promise;
+                }],
+                dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
+                    return DataMaps.query($route.current.params.projectId).$promise;
+                }],
+            },
         });
-})
-.controller('ProjectsCtrl', function ($scope, projects, Projects) {
-    $scope.projects = projects;
-
-    $scope.newProject = {
-        name: '',
-        create: function () {
-            Projects.create({ name: $scope.newProject.name }).then(function (response) {
-                $scope.newProject.name = '';
-                $scope.projects.push(response);
-            });
-        },
-    };
-
-    $scope.renameProject = function ($index) {
-        var newName = prompt("New project name:");
-
-        if (!newName || !newName.length) {
-            return;
-        }
-
-        $scope.projects[$index].name = newName;
-        $scope.projects[$index].$save(function (response) {
-            $scope.projects[$index] = response;
-        });
-    };
-
-    $scope.deleteProject = function ($index) {
-        $scope.projects[$index].$delete(function () {
-            $scope.projects.splice($index, 1);
-        });
-    };
 });

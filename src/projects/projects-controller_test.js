@@ -1,8 +1,8 @@
-describe('openeis-ui.projects', function () {
+describe('openeis-ui.projects.projects-controller', function () {
     var $httpBackend, controller, scope;
 
     beforeEach(function () {
-        module('openeis-ui.projects');
+        module('openeis-ui.projects.projects-controller');
 
         inject(function (_$httpBackend_, $controller, $rootScope) {
             $httpBackend = _$httpBackend_;
