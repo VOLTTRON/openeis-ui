@@ -4,6 +4,7 @@ angular.module('openeis-ui.project', [
     'openeis-ui.modals',
     'openeis-ui.projects.data-files',
     'openeis-ui.projects.data-maps',
+    'openeis-ui.projects.data-sets',
 ])
 .controller('TimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = { columns: {}, };

@@ -2,6 +2,7 @@ angular.module('openeis-ui.projects.project-controller', [
     'angularFileUpload',
     'openeis-ui.api',
     'openeis-ui.projects.data-files',
+    'openeis-ui.projects.data-sets',
     'openeis-ui.projects.projects-service',
     'openeis-ui.modals'
 ])
