@@ -12,11 +12,13 @@ module.exports = function(config) {
       'js/*.js',
       'partials/*.html',
       'src/**/*.js',
+      'src/**/*.tpl.html',
     ],
     preprocessors: {
       'js/!(*.spec).js': ['coverage'],
       'partials/*.html': ['ng-html2js'],
       'src/**/!(*_test).js': ['coverage'],
+      'src/**/*.tpl.html': ['ng-html2js'],
     },
     ngHtml2JsPreprocessor: {
       moduleName: 'openeis-ui.templates',

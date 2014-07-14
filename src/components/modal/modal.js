@@ -3,7 +3,7 @@ angular.module('openeis-ui.modal', [])
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'partials/modal.html',
+        templateUrl: 'src/components/modal/modal.tpl.html',
     };
 })
 .service('Modals', function () {

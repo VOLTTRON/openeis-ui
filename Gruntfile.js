@@ -126,7 +126,7 @@ module.exports = function(grunt) {
         standalone: true,
       },
       build: {
-        src: 'partials/*.html',
+        src: ['partials/*.html', 'src/**/*.tpl.html'],
         dest: '<%= buildDir %>js/app.templates.js',
       },
     },
