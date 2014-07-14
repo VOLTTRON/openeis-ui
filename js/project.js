@@ -3,7 +3,6 @@ angular.module('openeis-ui.project', [
     'angularFileUpload',
     'openeis-ui.api',
     'openeis-ui.auth-route',
-    'openeis-ui.directives',
     'openeis-ui.file-upload',
     'openeis-ui.filters',
     'openeis-ui.modals',
