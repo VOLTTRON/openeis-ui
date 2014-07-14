@@ -6,44 +6,6 @@ angular.module('openeis-ui.project', [
     'openeis-ui.projects.data-maps',
     'openeis-ui.projects.data-sets',
 ])
-.controller('TimestampCtrl', function ($scope, DataFiles, $http, Modals) {
-    $scope.modal = { columns: {}, };
-
-    $scope.preview = function () {
-        $scope.selectedColumns = [];
-
-        angular.forEach($scope.modal.columns, function (selected, column) {
-            if (selected === true) {
-                $scope.selectedColumns.push(parseInt(column));
-            }
-        });
-
-        $http({
-            method: 'GET',
-            url: settings.API_URL + 'files/' + $scope.timestampFile.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
-            transformResponse: angular.fromJson,
-        }).then(function (response) {
-            $scope.modal.confirm = true;
-            $scope.modal.timestamps = response.data;
-        }, function (rejection) {
-            alert(angular.toJson(rejection.data));
-        });
-    };
-
-    $scope.save = function () {
-        var timestamp = { columns: $scope.selectedColumns };
-
-        DataFiles.update({
-            id: $scope.timestampFile.id,
-            timestamp: timestamp,
-        }).then(function (file) {
-            $scope.timestampFile.timestamp = timestamp;
-            Modals.closeModal('configureTimestamp');
-        }, function (rejection) {
-            alert(angular.toJson(rejection));
-        });
-    };
-})
 .controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 

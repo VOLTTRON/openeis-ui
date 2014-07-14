@@ -1,6 +1,7 @@
 angular.module('openeis-ui.projects', [
     'openeis-ui.auth-route-service',
     'openeis-ui.file-upload-directive',
+    'openeis-ui.projects.configure-timestamp-controller',
     'openeis-ui.projects.data-files',
     'openeis-ui.projects.data-maps',
     'openeis-ui.projects.data-sets',
