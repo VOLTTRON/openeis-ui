@@ -35,7 +35,7 @@
             </table>
         </div>
         <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
-            <ng-include src="'partials/configure-timestamp.html'" ng-controller="TimestampCtrl"></ng-include>
+            <ng-include src="'src/projects/configure-timestamp.tpl.html'" ng-controller="TimestampCtrl"></ng-include>
         </modal>
         <div class="layout">
             <div class="data-maps">
@@ -57,7 +57,7 @@
                 </table>
             </div>
             <modal class="modal--new-data-map" ng-if="Modals.modalOpen('newDataMap')">
-                <ng-include src="'partials/new-data-map.html'" ng-controller="NewDataMapCtrl"></ng-include>
+                <ng-include src="'src/projects/new-data-map.tpl.html'" ng-controller="NewDataMapCtrl"></ng-include>
             </modal>
             <div class="data-sets">
                 <h3>Data sets</h3>
@@ -101,7 +101,7 @@
                 <button ng-click="errorsModal.errors = []">Close</button>
             </modal>
             <modal class="modal--new-data-set" ng-if="Modals.modalOpen('newDataSet')">
-                <ng-include src="'partials/new-data-set.html'" ng-controller="NewDataSetCtrl"></ng-include>
+                <ng-include src="'src/projects/new-data-set.tpl.html'" ng-controller="NewDataSetCtrl"></ng-include>
             </modal>
         </div>
         <div class="data-reports">
@@ -123,7 +123,7 @@
             </table>
         </div>
         <modal class="modal--new-data-report" ng-if="Modals.modalOpen('newDataReport')">
-            <ng-include src="'partials/new-data-report.html'" ng-controller="NewDataReportCtrl"></ng-include>
+            <ng-include src="'src/projects/new-data-report.tpl.html'" ng-controller="NewDataReportCtrl"></ng-include>
         </modal>
     </div>
 </div>
