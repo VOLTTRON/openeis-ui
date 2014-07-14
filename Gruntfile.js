@@ -65,13 +65,6 @@ module.exports = function(grunt) {
     karma: {
       options: {
         configFile: 'karma.conf.js',
-        preprocessors: {
-          'js/!(*.spec).js': ['coverage'],
-          'partials/*.html': ['ng-html2js'],
-        },
-        ngHtml2JsPreprocessor: {
-          moduleName: 'openeis-ui.templates',
-        }
       },
       dev: {
         background: true,
@@ -110,6 +103,8 @@ module.exports = function(grunt) {
           '<%= buildDir %>js/app.js': [
             'js/*.js',
             '!js/*.spec.js',
+            'src/**/*.js',
+            '!src/**/*_test.js',
           ]
         },
       },
@@ -183,6 +178,9 @@ module.exports = function(grunt) {
               'bower_components/tv4/tv4.js',
               'js/*.js',
               '!js/*.spec.js',
+              'src/**/*.js',
+              '!src/**/*_test.js',
+              '!src/settings.js',
             ],
             dest: '<%= buildDir %>js/',
             flatten: true,
@@ -219,9 +217,11 @@ module.exports = function(grunt) {
 
       html: {
         files: [
-          'index.html',
+          'src/index.html',
           'js/*.js',
           '!js/*.spec.js',
+          'src/**/*.js',
+          '!src/**/*_test.js',
         ],
         tasks: ['htmlbuild:dev', 'livereload_snippet'],
       },
@@ -232,6 +232,8 @@ module.exports = function(grunt) {
           'src/sensormap-schema.json',
           'js/*.js',
           '!js/*.spec.js',
+          'src/**/*.js',
+          '!src/**/*_test.js',
         ],
         tasks: ['sync'],
       },
@@ -242,7 +244,7 @@ module.exports = function(grunt) {
       },
 
       karma: {
-        files: ['js/*.js', 'src/settings.js'],
+        files: ['js/*.js', 'src/**/*.js'],
         tasks: ['clean:karma', 'karma:dev:run'],
       },
 

@@ -3,6 +3,8 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
     browsers: ['PhantomJS'],
     files: [
+      // Order of files matter (settings and libraries must be first)
+      'src/settings.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-*/angular-*.js',
       'bower_components/ng-file-upload/angular-file-upload.js',
@@ -11,5 +13,13 @@ module.exports = function(config) {
       'partials/*.html',
       'src/**/*.js',
     ],
+    preprocessors: {
+      'js/!(*.spec).js': ['coverage'],
+      'partials/*.html': ['ng-html2js'],
+      'src/**/!(*_test).js': ['coverage'],
+    },
+    ngHtml2JsPreprocessor: {
+      moduleName: 'openeis-ui.templates',
+    }
   });
 };
