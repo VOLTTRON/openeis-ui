@@ -40,87 +40,83 @@ $inuit-btn-border-width: 0;
 @import "components/modals/modals-objects";
 @import "objects";
 
-.container {
-    width: 960px;
-    margin: auto;
-}
-
-.topbar {
+.top-bar {
     background-color: #333;
-}
 
-nav {
-    @extend %layout;
-    @extend %layout--flush;
-    color: #fff;
-    @include inuit-font-size(13px);
-
-    h1 {
-        @extend %layout__item;
-        @extend %box;
-        @extend %box--small;
-        @include inuit-font-size(17px);
-        width: 20%;
-        margin: 0;
-        padding: 0 $inuit-base-spacing-unit;
-        line-height: 2 * $inuit-base-spacing-unit;
-    }
-
-    a {
-        color: #fff;
-        white-space: nowrap;
-
-        &:hover {
-            text-decoration: none;
-        }
-    }
-
-    > ul {
-        @extend %layout__item;
+    nav {
         @extend %layout;
         @extend %layout--flush;
-        @extend %layout--right;
-        width: 80%;
-        padding: 0 $inuit-base-spacing-unit;
+        @extend %container;
+        color: #fff;
+        @include inuit-font-size(13px);
 
-        > li {
+        h1 {
             @extend %layout__item;
-            width: auto;
-            position: relative;
-            border-left: 1px solid #555;
+            @extend %box;
+            @extend %box--small;
+            @include inuit-font-size(17px);
+            width: 20%;
+            margin: 0;
+            padding: 0 $inuit-base-spacing-unit;
+            line-height: 2 * $inuit-base-spacing-unit;
+        }
 
-            &:last-child {
-                border-right: 1px solid #555;
+        a {
+            color: #fff;
+            white-space: nowrap;
+
+            &:hover {
+                text-decoration: none;
             }
+        }
 
-            a {
-                @extend %box;
-                @extend %box--small;
-                padding: 0 $inuit-base-spacing-unit;
-                line-height: 2 * $inuit-base-spacing-unit;
+        > ul {
+            @extend %layout__item;
+            @extend %layout;
+            @extend %layout--flush;
+            @extend %layout--right;
+            width: 80%;
+            padding: 0 $inuit-base-spacing-unit;
 
-                &:hover {
-                    background-color: #222;
+            > li {
+                @extend %layout__item;
+                width: auto;
+                position: relative;
+                border-left: 1px solid #555;
+
+                &:last-child {
+                    border-right: 1px solid #555;
+                }
+
+                a {
+                    @extend %box;
+                    @extend %box--small;
+                    padding: 0 $inuit-base-spacing-unit;
+                    line-height: 2 * $inuit-base-spacing-unit;
+
+                    &:hover {
+                        background-color: #222;
+                    }
                 }
             }
         }
-    }
 
-    .dropdown {
-        @extend %block-list;
-        @extend %block-list--small;
-        background-color: #333;
-        position: absolute;
-        width: 100%;
-        left: -9999px;
+        .dropdown {
+            @extend %block-list;
+            @extend %block-list--small;
+            background-color: #333;
+            position: absolute;
+            width: 100%;
+            left: -9999px;
 
-        li {
-            padding: 0;
+            li {
+                padding: 0;
+            }
         }
-    }
 
-    li:hover .dropdown {
-        left: 0;
+        li:hover .dropdown {
+            left: 0;
+        }
     }
 }
 
