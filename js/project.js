@@ -66,32 +66,6 @@ angular.module('openeis-ui.project', [
         });
     };
 })
-.filter('hasSignature', function () {
-    return function (items, signature) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (angular.equals(signature, item.signature)) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
-    };
-})
-.filter('hasTimestamp', function () {
-    return function (items) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (item.timestamp) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
-    };
-})
 .controller('NewDataMapCtrl', function ($scope, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 

@@ -1,5 +1,7 @@
 angular.module('openeis-ui.sensor-container', [
-    'openeis-ui.api', 'openeis-ui.filters', 'RecursionHelper',
+    'RecursionHelper',
+    'openeis-ui.api',
+    'openeis-ui.filters',
 ])
 .directive('sensorContainer', function (RecursionHelper) {
     return {

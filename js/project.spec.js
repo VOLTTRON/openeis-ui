@@ -155,27 +155,6 @@ describe('openeis-ui.project', function () {
         });
     });
 
-    describe('hasSignature filter', function () {
-        it('should only return files matching specified signature', inject(function (hasSignatureFilter) {
-            var signature = 'signature',
-                fileWith = { signature: 'signature' },
-                fileWithout = { signature: 'notsignature' };
-
-            expect(hasSignatureFilter([fileWith], signature)).toEqual([fileWith]);
-            expect(hasSignatureFilter([fileWithout], signature)).toEqual([]);
-        }));
-    });
-
-    describe('hasTimestamp filter', function () {
-        it('should only return files with timestamp configurations', inject(function (hasTimestampFilter) {
-            var fileWith = { timestamp: true },
-                fileWithout = {};
-
-            expect(hasTimestampFilter([fileWith])).toEqual([fileWith]);
-            expect(hasTimestampFilter([fileWithout])).toEqual([]);
-        }));
-    });
-
     describe('NewDataMapCtrl controller', function () {
         var $controller, controller, scope, DataMaps, Modals, resolve, reject;
 
