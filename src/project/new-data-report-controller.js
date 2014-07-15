@@ -115,6 +115,10 @@ angular.module('openeis-ui.project.new-data-report-controller', [
         $scope.newDataReport.configuration.inputs[inputName].push({});
     };
 
+    $scope.deleteInputSensor = function (inputName, index) {
+        $scope.newDataReport.configuration.inputs[inputName].splice(index, 1);
+    }
+
     $scope.run = function () {
         alert(angular.toJson({
             dataset: $scope.newDataReport.dataSet.id,
