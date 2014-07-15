@@ -116,14 +116,31 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="dataReport in dataReports">
-                        <td>{{dataReport.name}}</td>
-                        <td>{{dataReport.status}}</td>
+                        <td ng-if="dataReport.status !== 'complete'">{{dataReport.name}}</td>
+                        <td ng-if="dataReport.status === 'complete'"><a ng-click="viewDataReport($index)">{{dataReport.name}}</a></td>
+                        <td>{{dataReport.status | capitalize}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <modal class="modal--new-data-report" ng-if="Modals.modalOpen('newDataReport')">
             <ng-include src="'src/project/new-data-report.tpl.html'" ng-controller="NewDataReportCtrl"></ng-include>
+        </modal>
+        <modal class="modal--data-report" ng-if="Modals.modalOpen('dataReport')">
+            <h4>{{dataReport.name}}</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th ng-repeat="colLabel in dataReport.labels">{{colLabel}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in dataReport.data">
+                        <td ng-repeat="colVal in row">{{colVal}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button ng-click="Modals.closeModal('dataReport')">Close</button>
         </modal>
     </div>
 </div>

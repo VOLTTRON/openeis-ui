@@ -119,4 +119,9 @@ angular.module('openeis-ui.project.project-controller', [
             $scope.dataMaps.splice($index, 1);
         });
     };
+
+    $scope.viewDataReport = function (index) {
+        $scope.dataReport = DataReports.query()[index];
+        Modals.openModal('dataReport');
+    }
 });

@@ -254,6 +254,10 @@ $inuit-btn-border-width: 0;
         .data-reports {
             padding-top: $inuit-base-spacing-unit;
             border-top: 1px solid #ddd;
+
+            > table {
+                width: 100%;
+            }
         }
 
         file-upload {

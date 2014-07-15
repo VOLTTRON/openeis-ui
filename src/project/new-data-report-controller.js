@@ -3,8 +3,9 @@ angular.module('openeis-ui.project.new-data-report-controller', [
     'openeis-ui.filters',
     'openeis-ui.modals',
     'openeis-ui.data-maps',
+    'openeis-ui.data-reports-service',
 ])
-.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q, Modals) {
+.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q, Modals, DataReports) {
     $scope.newDataReport = {};
 
     $scope.$watch('newDataReport.dataSet', function () {
@@ -120,11 +121,12 @@ angular.module('openeis-ui.project.new-data-report-controller', [
     }
 
     $scope.run = function () {
-        alert(angular.toJson({
+        DataReports.create({
+            name: 'Data set ' + $scope.newDataReport.dataSet.id + ' - ' + $scope.newDataReport.application.name,
             dataset: $scope.newDataReport.dataSet.id,
             application: $scope.newDataReport.application.name,
             configuration: $scope.newDataReport.configuration,
-        }, true));
+        });
         Modals.closeModal('newDataReport');
     };
 });
