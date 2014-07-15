@@ -24,6 +24,6 @@ angular.module('openeis-ui.data-reports-service', [])
                 ['x8', 'y8'],
                 ['x9', 'y9'],
             ];
-        }, 3000);
+        }, 10000);
     };
 });
