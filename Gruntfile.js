@@ -22,6 +22,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= buildDir %>js/app.min.js': [
+            'bower_components/d3/d3.min.js',
             'bower_components/angular/angular.min.js',
             'bower_components/angular-*/angular-*.min.js',
             'bower_components/ng-file-upload/angular-file-upload.min.js',
@@ -50,6 +51,7 @@ module.exports = function(grunt) {
         options: {
           scripts: {
             app: [
+              '<%= buildDir %>js/d3.js',
               '<%= buildDir %>js/angular.js',
               '<%= buildDir %>js/angular*.js',
               '<%= buildDir %>js/autofill-event.js',
@@ -168,6 +170,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             src: [
+              'bower_components/d3/d3.js',
               'bower_components/angular*/angular*.js',
               '!bower_components/angular*/angular*.min.js',
               'bower_components/ng-file-upload/angular-file-upload.js',
