@@ -1,7 +1,7 @@
 angular.module('openeis-ui.project.project-controller', [
     'angularFileUpload',
     'openeis-ui.data-files',
-    'openeis-ui.data-reports-service',
+    'openeis-ui.data-reports',
     'openeis-ui.data-sets-service',
     'openeis-ui.modals'
 ])
@@ -123,5 +123,5 @@ angular.module('openeis-ui.project.project-controller', [
     $scope.viewDataReport = function (index) {
         $scope.dataReport = DataReports.query()[index];
         Modals.openModal('dataReport');
-    }
+    };
 });

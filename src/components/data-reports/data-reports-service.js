@@ -1,4 +1,4 @@
-angular.module('openeis-ui.data-reports-service', [])
+angular.module('openeis-ui.data-reports.data-reports-service', [])
 .service('DataReports', function ($timeout) {
     var DataReports = this,
         reports = [];

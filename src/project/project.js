@@ -2,7 +2,7 @@ angular.module('openeis-ui.project', [
     'openeis-ui.auth-route-service',
     'openeis-ui.file-upload-directive',
     'openeis-ui.filters',
-    'openeis-ui.data-reports-service',
+    'openeis-ui.data-reports',
     'openeis-ui.projects-service',
     'openeis-ui.data-files',
     'openeis-ui.data-maps',
