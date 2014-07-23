@@ -1,4 +1,16 @@
 .line-plot {
+    &__axis path,
+    &__axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    &__line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
 }
 
 .bar-chart {
