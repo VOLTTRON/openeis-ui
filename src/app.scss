@@ -11,7 +11,7 @@ $inuit-base-font-size: 14px;
 $inuit-base-line-height: 20px;
 $primary-action-color: #58b;
 $error-color: #f04124;
-$inuit-enable-block-list--small: true;
+$inuit-enable-list-block--small: true;
 $inuit-enable-box--small: true;
 $inuit-enable-layout--flush: true;
 $inuit-enable-layout--right: true;
@@ -24,7 +24,6 @@ $inuit-btn-border-width: 0;
 @import "inuit-functions/tools.functions";
 @import "inuit-mixins/tools.mixins";
 
-@import "inuit-clearfix/generic.clearfix";
 @import "inuit-normalize/generic.normalize";
 @import "inuit-box-sizing/generic.box-sizing";
 
@@ -32,8 +31,8 @@ $inuit-btn-border-width: 0;
 @import "inuit-lists/base.lists";
 @import "base";
 
-@import "inuit-bare-list/objects.bare-list";
-@import "inuit-block-list/objects.block-list";
+@import "inuit-list-bare/objects.list-bare";
+@import "inuit-list-block/objects.list-block";
 @import "inuit-box/objects.box";
 @import "inuit-buttons/objects.buttons";
 @import "inuit-layout/objects.layout";
@@ -103,8 +102,8 @@ $inuit-btn-border-width: 0;
         }
 
         .dropdown {
-            @extend %block-list;
-            @extend %block-list--small;
+            @extend %list-block;
+            @extend %list-block--small;
             background-color: #333;
             position: absolute;
             width: 100%;
@@ -122,7 +121,7 @@ $inuit-btn-border-width: 0;
 }
 
 .breadcrumbs {
-    @extend %bare-list;
+    @extend %list-bare;
     @extend %panel;
     @include inuit-font-size(11px);
     text-transform: uppercase;
@@ -373,3 +372,5 @@ $inuit-btn-border-width: 0;
     font-size: 20px;
     cursor: pointer;
 }
+
+@import "inuit-clearfix/_trumps.clearfix";
