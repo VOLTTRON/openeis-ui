@@ -4,50 +4,27 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         restrict: 'E',
         terminal: true,
         scope: {
-            reportObject: '=',
+            arReport: '=',
         },
         link: function (scope, element, attrs) {
-            // Fake report object for now
-            scope.reportObject = {
-                reportElements: [
-                    {
-                        type: 'TextBlurb',
-                        title: 'Text Title',
-                        text: 'This is a text blurb.',
-                    },
-                    {
-                        type: 'LinePlot',
-                        title: 'Line plot',
-                        x_label: 'Time',
-                        y_label: 'Temperature',
-                    },
-                    {
-                        type: 'BarChart',
-                        title: 'Bar chart',
-                        x_label: 'Time',
-                        y_label: 'Temperature',
-                    },
-                    {
-                        type: 'ScatterPlot',
-                        title: 'Scatter plot',
-                        x_label: 'Time',
-                        y_label: 'Temperature',
-                    },
-                    {
-                        type: 'HeatMap',
-                        title: 'Heat map',
-                        x_label: 'Time',
-                        y_label: 'Temperature',
-                    },
-                ],
-            };
+            if (scope.arReport.description) {
+                element.append('<p>' + scope.arReport.description + '</p>');
+            }
 
-            angular.forEach(scope.reportObject.reportElements, function (reportElement) {
+            angular.forEach(scope.arReport.elements, function (reportElement) {
                 if (reportElement.title) {
                     element.append('<h1>' + reportElement.title + '</h1>');
                 }
 
                 switch (reportElement.type) {
+                case 'Table':
+                    var table = angular.element('<table><thead><tr/></thead><tbody/></table>');
+                    angular.forEach(reportElement.column_info, function (column) {
+                        table.find('tr').append('<th>' + column[1] + '</th>');
+                    });
+                    // TODO: add data rows
+                    element.append(table);
+                    break;
                 case 'TextBlurb':
                     element.append('<p class="text-blurb">' + reportElement.text + '</p>');
                     break;

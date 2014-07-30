@@ -133,8 +133,8 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
-    $scope.viewAnalysis = function (index) {
-        $scope.analysis = Analyses.query()[index];
-        Modals.openModal('analysis');
+    $scope.viewAnalysis = function (analysis) {
+        $scope.viewingAnalysis = analysis;
+        Modals.openModal('viewAnalysis');
     };
 });

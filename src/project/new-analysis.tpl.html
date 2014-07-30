@@ -2,7 +2,7 @@
 
 <div ng-if="!newAnalysis.application">
     <div class="form__group">
-        <label class="label--inline">Create analysis with</label>&nbsp;
+        <label class="label--inline">Run analysis on</label>&nbsp;
         <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newAnalysis.dataSet">
             <option value="">-- Choose data set --</option>
         </select>
@@ -33,7 +33,7 @@
 </div>
 
 <form class="form--stacked" ng-if="newAnalysis.application" ng-submit="run()">
-    <h5>Configure run of <em>{{newAnalysis.application.name}}</em> with data set {{newAnalysis.dataSet.id}}</h5>
+    <h5>Configure run of <em>{{newAnalysis.application.name}}</em> on data set {{newAnalysis.dataSet.id}}</h5>
     <div class="layout">
         <div class="layout__item" style="width: 50%">
             <fieldset>
