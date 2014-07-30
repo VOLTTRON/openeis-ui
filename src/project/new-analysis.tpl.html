@@ -1,14 +1,14 @@
-<h4>New data report</h4>
+<h4>New analysis</h4>
 
-<div ng-if="!newDataReport.application">
+<div ng-if="!newAnalysis.application">
     <div class="form__group">
-        <label class="label--inline">Create data report with</label>&nbsp;
-        <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newDataReport.dataSet">
+        <label class="label--inline">Create analysis with</label>&nbsp;
+        <select ng-options="dataSet as ('Data set ' + dataSet.id) for dataSet in dataSets" ng-model="newAnalysis.dataSet">
             <option value="">-- Choose data set --</option>
         </select>
     </div>
 
-    <table class="table--app-list" ng-if="newDataReport.dataSet">
+    <table class="table--app-list" ng-if="newAnalysis.dataSet">
         <thead>
             <tr>
                 <th>Application</th>
@@ -19,7 +19,7 @@
         <tbody>
             <tr ng-repeat="app in availableApps">
                 <td>{{app.name}}</td>
-                <td><button ng-disabled="app.missingInputs" ng-click="newDataReport.application = app">Configure</button></td>
+                <td><button ng-disabled="app.missingInputs" ng-click="newAnalysis.application = app">Configure</button></td>
                 <td>
                     <ul class="missing-inputs" ng-if="app.missingInputs">
                         <li ng-repeat="missingInput in app.missingInputs">{{missingInput}}</li>
@@ -29,22 +29,22 @@
         </tbody>
     </table>
 
-    <button ng-click="Modals.closeModal('newDataReport')">Cancel</button>
+    <button ng-click="Modals.closeModal('newAnalysis')">Cancel</button>
 </div>
 
-<form class="form--stacked" ng-if="newDataReport.application" ng-submit="run()">
-    <h5>Configure run of <em>{{newDataReport.application.name}}</em> with data set {{newDataReport.dataSet.id}}</h5>
+<form class="form--stacked" ng-if="newAnalysis.application" ng-submit="run()">
+    <h5>Configure run of <em>{{newAnalysis.application.name}}</em> with data set {{newAnalysis.dataSet.id}}</h5>
     <div class="layout">
         <div class="layout__item" style="width: 50%">
             <fieldset>
                 <legend>Parameters</legend>
-                <div class="form__group" ng-repeat="(paramName, param) in newDataReport.application.parameters">
+                <div class="form__group" ng-repeat="(paramName, param) in newAnalysis.application.parameters">
                     <label>{{param.display_name}}<span ng-if="param.optional">&nbsp;(optional)</label>
                     <input value="{{param.value_default}}"
                            type="text"
                            ng-if="param.config_type === 'str'"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[paramName]">
+                           ng-model="newAnalysis.configuration.parameters[paramName]">
                     <input value="{{param.value_default}}"
                            type="number"
                            step="1"
@@ -52,7 +52,7 @@
                            min="{{param.value_min}}"
                            max="{{param.value_max}}"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[paramName]">
+                           ng-model="newAnalysis.configuration.parameters[paramName]">
                     <input value="{{param.value_default}}"
                            type="number"
                            step="0.01"
@@ -60,23 +60,23 @@
                            min="{{param.value_min}}"
                            max="{{param.value_max}}"
                            ng-required="!param.optional"
-                           ng-model="newDataReport.configuration.parameters[paramName]">
+                           ng-model="newAnalysis.configuration.parameters[paramName]">
                 </div>
             </fieldset>
         </div>
         <div class="layout__item" style="width: 50%">
             <fieldset>
                 <legend>Inputs</legend>
-                <div class="form__group" ng-repeat="(inputName, input) in newDataReport.application.inputs">
+                <div class="form__group" ng-repeat="(inputName, input) in newAnalysis.application.inputs">
                     <label>{{input.display_name}} ({{input.sensor_type}})</label>
-                    <div ng-repeat="multiInput in newDataReport.configuration.inputs[inputName]" style="position: relative">
+                    <div ng-repeat="multiInput in newAnalysis.configuration.inputs[inputName]" style="position: relative">
                         <select required
                                 ng-options="topic for topic in availableSensors[input.sensor_type]"
-                                ng-model="newDataReport.configuration.inputs[inputName][$index]">
+                                ng-model="newAnalysis.configuration.inputs[inputName][$index]">
                             <option value="">-- Choose sensor --</option>
                         </select>
                         <div class="app-input-delete"
-                             ng-if="newDataReport.configuration.inputs[inputName].length > input.count_min"
+                             ng-if="newAnalysis.configuration.inputs[inputName].length > input.count_min"
                              ng-click="deleteInputSensor(inputName, $index)">
                              &times;
                          </div>
@@ -87,5 +87,5 @@
         </div>
     </div>
 
-    <button type="button" ng-click="newDataReport.application = null">Back</button> <button>Run</button> <button type="button" ng-click="Modals.closeModal('newDataReport')">Cancel</button>
+    <button type="button" ng-click="newAnalysis.application = null">Back</button> <button>Run</button> <button type="button" ng-click="Modals.closeModal('newAnalysis')">Cancel</button>
 </form>

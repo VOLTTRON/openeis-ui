@@ -1,5 +1,5 @@
-angular.module('openeis-ui.data-reports.app-report-directive', [])
-.directive('appReport', function () {
+angular.module('openeis-ui.analyses.analysis-report-directive', [])
+.directive('analysisReport', function () {
     return {
         restrict: 'E',
         terminal: true,

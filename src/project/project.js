@@ -2,14 +2,14 @@ angular.module('openeis-ui.project', [
     'openeis-ui.auth-route-service',
     'openeis-ui.file-upload-directive',
     'openeis-ui.filters',
-    'openeis-ui.data-reports',
     'openeis-ui.projects-service',
+    'openeis-ui.analyses',
     'openeis-ui.data-files',
     'openeis-ui.data-maps',
     'openeis-ui.data-sets-service',
     'openeis-ui.project.configure-timestamp-controller',
+    'openeis-ui.project.new-analysis-controller',
     'openeis-ui.project.new-data-map-controller',
-    'openeis-ui.project.new-data-report-controller',
     'openeis-ui.project.new-data-set-controller',
     'openeis-ui.project.project-controller',
 ])
@@ -30,6 +30,9 @@ angular.module('openeis-ui.project', [
                 }],
                 dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
                     return DataMaps.query($route.current.params.projectId).$promise;
+                }],
+                analyses: ['Analyses', '$route', function(Analyses, $route) {
+                    return Analyses.query($route.current.params.projectId).$promise;
                 }],
             },
         });
