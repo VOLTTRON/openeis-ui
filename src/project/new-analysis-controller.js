@@ -126,6 +126,7 @@ angular.module('openeis-ui.project.new-analysis-controller', [
             configuration: $scope.newAnalysis.configuration,
         }).$promise.then(function (analysis) {
             $scope.analyses.push(analysis);
+            $scope.statusCheck();
             Modals.closeModal('newAnalysis');
         }, function (rejection) {
             alert(angular.toJson(rejection.data, true));

@@ -5,6 +5,10 @@ angular.module('openeis-ui.analyses.analyses-service', ['ngResource'])
             create: { method: 'POST' },
         });
 
+    Analyses.get = function (analysisId) {
+        return resource.get({ analysisId: analysisId });
+    };
+
     Analyses.query = function (projectId) {
         return resource.query({ project: projectId });
     };

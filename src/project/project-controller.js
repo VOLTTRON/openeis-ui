@@ -43,6 +43,19 @@ angular.module('openeis-ui.project.project-controller', [
                 });
             }
         });
+
+        angular.forEach($scope.analyses, function (analysis) {
+            if (analysis.status !== 'complete' && analysis.status !== 'error') {
+                Analyses.get(analysis.id).$promise.then(function (updatedAnalysis) {
+                    angular.extend(analysis, updatedAnalysis);
+
+                    if (analysis.status !== 'complete' && analysis.status !== 'error') {
+                        $timeout.cancel(statusCheckPromise);
+                        statusCheckPromise = $timeout($scope.statusCheck, 1000);
+                    }
+                });
+            }
+        });
     };
 
     $scope.statusCheck();
