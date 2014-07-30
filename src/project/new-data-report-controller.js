@@ -83,13 +83,11 @@ angular.module('openeis-ui.project.new-data-report-controller', [
 
             // Initialize multi-sensor inputs
             angular.forEach(newValue.inputs, function (input, inputName) {
-                if (input.count_min !== 1 || input.count_max !== 1) {
-                    $scope.newDataReport.configuration.inputs[inputName] = [];
+                $scope.newDataReport.configuration.inputs[inputName] = [];
 
-                    var i = 0;
-                    while (i++ < input.count_min) {
-                        $scope.newDataReport.configuration.inputs[inputName].push({});
-                    }
+                var i = 0;
+                while (i++ < input.count_min) {
+                    $scope.newDataReport.configuration.inputs[inputName].push({});
                 }
             });
 
@@ -126,6 +124,8 @@ angular.module('openeis-ui.project.new-data-report-controller', [
             dataset: $scope.newDataReport.dataSet.id,
             application: $scope.newDataReport.application.name,
             configuration: $scope.newDataReport.configuration,
+        }).$promise.then(function (dataReport) {
+            $scope.dataReports.push(dataReport);
         });
         Modals.closeModal('newDataReport');
     };

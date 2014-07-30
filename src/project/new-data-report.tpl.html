@@ -69,27 +69,19 @@
                 <legend>Inputs</legend>
                 <div class="form__group" ng-repeat="(inputName, input) in newDataReport.application.inputs">
                     <label>{{input.display_name}} ({{input.sensor_type}})</label>
-                    <select required
-                            ng-if="input.count_min === 1 && input.count_max === 1"
-                            ng-options="topic for topic in availableSensors[input.sensor_type]"
-                            ng-model="newDataReport.configuration.inputs[inputName]">
-                        <option value="">-- Choose sensor --</option>
-                    </select>
-                    <div ng-if="input.count_min !== 1 || input.count_min !== 1 || input.count_max !== 1">
-                        <div ng-repeat="multiInput in newDataReport.configuration.inputs[inputName]" style="position: relative">
-                            <select required
-                                    ng-options="topic for topic in availableSensors[input.sensor_type]"
-                                    ng-model="newDataReport.configuration.inputs[inputName][$index]">
-                                <option value="">-- Choose sensor --</option>
-                            </select>
-                            <div class="app-input-delete"
-                                 ng-if="newDataReport.configuration.inputs[inputName].length > input.count_min"
-                                 ng-click="deleteInputSensor(inputName, $index)">
-                                 &times;
-                             </div>
-                        </div>
-                        <a ng-if="canAddSensor(inputName, input.sensor_type)" ng-click="addInputSensor(inputName)">+ Add sensor</a>
+                    <div ng-repeat="multiInput in newDataReport.configuration.inputs[inputName]" style="position: relative">
+                        <select required
+                                ng-options="topic for topic in availableSensors[input.sensor_type]"
+                                ng-model="newDataReport.configuration.inputs[inputName][$index]">
+                            <option value="">-- Choose sensor --</option>
+                        </select>
+                        <div class="app-input-delete"
+                             ng-if="newDataReport.configuration.inputs[inputName].length > input.count_min"
+                             ng-click="deleteInputSensor(inputName, $index)">
+                             &times;
+                         </div>
                     </div>
+                    <a ng-if="canAddSensor(inputName, input.sensor_type)" ng-click="addInputSensor(inputName)">+ Add sensor</a>
                 </div>
             </fieldset>
         </div>
