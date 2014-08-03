@@ -42,7 +42,7 @@
                             <option value="">-- Choose column --</option>
                         </select>
                     </div>
-                    <div class="form__group" ng-if="newSensor.name && definition.sensors[newSensor.name].unit_type != 'dimensionless'">
+                    <div class="form__group" ng-if="newSensor.name">
                         <label>Value unit</label>
                         <select required ng-model="newSensor.unit" ng-options="key as unit.value for (key, unit) in units[definition.sensors[newSensor.name].unit_type]">
                             <option value="">-- Choose unit  --</option>
