@@ -87,22 +87,16 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
                 $scope.container.sensors.splice(index, 1);
             };
 
-            $scope.newSystem = {};
+            $scope.addChild = function (childLevel) {
+                var name = prompt('Name:');
 
-            $scope.addSystem = function () {
-                $scope.newSystem.level = 'system';
-                $scope.container.children = $scope.container.children || [];
-                $scope.container.children.unshift(angular.copy($scope.newSystem));
-                $scope.newSystem = {};
-            };
-
-            $scope.newChild = {};
-
-            $scope.addChild = function () {
-                $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-                $scope.container.children = $scope.container.children || [];
-                $scope.container.children.unshift(angular.copy($scope.newChild));
-                $scope.newChild = {};
+                if (name) {
+                    $scope.container.children = $scope.container.children || [];
+                    $scope.container.children.unshift({
+                        level: childLevel,
+                        name: name,
+                    });
+                }
             };
         },
         compile: function(element) {
