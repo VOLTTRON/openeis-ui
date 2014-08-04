@@ -30,11 +30,14 @@ angular.module('openeis-ui.project.new-data-map-controller', [
         });
     };
 
-    $scope.newChild = {};
+    $scope.addChild = function (childLevel) {
+        var name = prompt('Name:');
 
-    $scope.addChild = function () {
-        $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-        $scope.newDataMap.map.sensors.unshift(angular.copy($scope.newChild));
-        $scope.newChild = {};
+        if (name) {
+            $scope.newDataMap.map.sensors.unshift({
+                level: childLevel,
+                name: name,
+            });
+        }
     };
 });
