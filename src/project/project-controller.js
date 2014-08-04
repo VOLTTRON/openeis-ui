@@ -1,20 +1,20 @@
 angular.module('openeis-ui.project.project-controller', [
     'angularFileUpload',
     'openeis-ui.data-files',
-    'openeis-ui.data-reports',
+    'openeis-ui.analyses',
     'openeis-ui.data-sets-service',
     'openeis-ui.modals'
 ])
-.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, DataReports) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, analyses, Analyses) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
     $scope.dataMaps = dataMaps;
     $scope.Modals = Modals;
-    $scope.dataReports = DataReports.query();
+    $scope.analyses = analyses;
 
     $scope.add = function(){
-        DataReports.create({"name": "Run1", "status":"Error"});
+        Analyses.create({"name": "Run1", "status":"Error"});
     };
     var statusCheckPromise;
 
@@ -37,6 +37,19 @@ angular.module('openeis-ui.project.project-controller', [
 
                 $q.all(promises).then(function () {
                     if (dataSet.status.status !== 'complete') {
+                        $timeout.cancel(statusCheckPromise);
+                        statusCheckPromise = $timeout($scope.statusCheck, 1000);
+                    }
+                });
+            }
+        });
+
+        angular.forEach($scope.analyses, function (analysis) {
+            if (analysis.status !== 'complete' && analysis.status !== 'error') {
+                Analyses.get(analysis.id).$promise.then(function (updatedAnalysis) {
+                    angular.extend(analysis, updatedAnalysis);
+
+                    if (analysis.status !== 'complete' && analysis.status !== 'error') {
                         $timeout.cancel(statusCheckPromise);
                         statusCheckPromise = $timeout($scope.statusCheck, 1000);
                     }
@@ -120,8 +133,8 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
-    $scope.viewDataReport = function (index) {
-        $scope.dataReport = DataReports.query()[index];
-        Modals.openModal('dataReport');
+    $scope.viewAnalysis = function (analysis) {
+        $scope.viewingAnalysis = analysis;
+        Modals.openModal('viewAnalysis');
     };
 });

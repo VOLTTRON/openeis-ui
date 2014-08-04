@@ -1,23 +1,23 @@
-angular.module('openeis-ui.project.new-data-report-controller', [
+angular.module('openeis-ui.project.new-analysis-controller', [
     'openeis-ui.applications-service',
     'openeis-ui.filters',
     'openeis-ui.modals',
     'openeis-ui.data-maps',
-    'openeis-ui.data-reports',
+    'openeis-ui.analyses',
 ])
-.controller('NewDataReportCtrl', function ($scope, Applications, DataMaps, $q, Modals, DataReports) {
-    $scope.newDataReport = {};
+.controller('NewAnalysisCtrl', function ($scope, Applications, DataMaps, $q, Modals, Analyses) {
+    $scope.newAnalysis = {};
 
-    $scope.$watch('newDataReport.dataSet', function () {
+    $scope.$watch('newAnalysis.dataSet', function () {
         $scope.availableApps = [];
 
-        if (!$scope.newDataReport.dataSet) {
+        if (!$scope.newAnalysis.dataSet) {
             return;
         }
 
         // Data set has been selected, generate lists of available and required sensors
         // and compare for compatibility
-        var mapPromise = DataMaps.get($scope.newDataReport.dataSet.map).$promise,
+        var mapPromise = DataMaps.get($scope.newAnalysis.dataSet.map).$promise,
             appsPromise = Applications.query().$promise;
 
         $q.all({ map: mapPromise, apps: appsPromise }).then(function (resolve) {
@@ -76,20 +76,18 @@ angular.module('openeis-ui.project.new-data-report-controller', [
 
     var previousApp;
 
-    $scope.$watch('newDataReport.application', function (newValue, oldValue) {
+    $scope.$watch('newAnalysis.application', function (newValue, oldValue) {
         // Reset configuration if application has changed
         if (newValue && newValue !== previousApp) {
-            $scope.newDataReport.configuration = { parameters: {}, inputs: {} };
+            $scope.newAnalysis.configuration = { parameters: {}, inputs: {} };
 
             // Initialize multi-sensor inputs
             angular.forEach(newValue.inputs, function (input, inputName) {
-                if (input.count_min !== 1 || input.count_max !== 1) {
-                    $scope.newDataReport.configuration.inputs[inputName] = [];
+                $scope.newAnalysis.configuration.inputs[inputName] = [];
 
-                    var i = 0;
-                    while (i++ < input.count_min) {
-                        $scope.newDataReport.configuration.inputs[inputName].push({});
-                    }
+                var i = 0;
+                while (i++ < input.count_min) {
+                    $scope.newAnalysis.configuration.inputs[inputName].push({});
                 }
             });
 
@@ -98,8 +96,8 @@ angular.module('openeis-ui.project.new-data-report-controller', [
     });
 
     $scope.canAddSensor = function (inputName, inputType) {
-        var app = $scope.newDataReport.application,
-            config = $scope.newDataReport.configuration;
+        var app = $scope.newAnalysis.application,
+            config = $scope.newAnalysis.configuration;
 
         if (config.inputs[inputName].length >= $scope.availableSensors[inputType].length) {
             return false;
@@ -113,20 +111,26 @@ angular.module('openeis-ui.project.new-data-report-controller', [
     };
 
     $scope.addInputSensor = function (inputName) {
-        $scope.newDataReport.configuration.inputs[inputName].push({});
+        $scope.newAnalysis.configuration.inputs[inputName].push({});
     };
 
     $scope.deleteInputSensor = function (inputName, index) {
-        $scope.newDataReport.configuration.inputs[inputName].splice(index, 1);
-    }
+        $scope.newAnalysis.configuration.inputs[inputName].splice(index, 1);
+    };
 
     $scope.run = function () {
-        DataReports.create({
-            name: 'Data set ' + $scope.newDataReport.dataSet.id + ' - ' + $scope.newDataReport.application.name,
-            dataset: $scope.newDataReport.dataSet.id,
-            application: $scope.newDataReport.application.name,
-            configuration: $scope.newDataReport.configuration,
+        Analyses.create({
+            name: 'Data set ' + $scope.newAnalysis.dataSet.id + ' - ' + $scope.newAnalysis.application.name,
+            dataset: $scope.newAnalysis.dataSet.id,
+            application: $scope.newAnalysis.application.name,
+            configuration: $scope.newAnalysis.configuration,
+        }).$promise.then(function (analysis) {
+            $scope.analyses.push(analysis);
+            $scope.statusCheck();
+            Modals.closeModal('newAnalysis');
+        }, function (rejection) {
+            alert(angular.toJson(rejection.data, true));
         });
-        Modals.closeModal('newDataReport');
+
     };
 });

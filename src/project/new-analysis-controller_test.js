@@ -1,4 +1,4 @@
-describe('openeis-ui.project.new-data-report-controller', function () {
+describe('openeis-ui.project.new-analysis-controller', function () {
     var $httpBackend, controller, scope, DataMaps, Applications;
     var testMap = { map: { sensors: {
         'object': {},
@@ -36,12 +36,12 @@ describe('openeis-ui.project.new-data-report-controller', function () {
     }];
 
     beforeEach(function () {
-        module('openeis-ui.project.new-data-report-controller');
+        module('openeis-ui.project.new-analysis-controller');
 
         inject(function (_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
             scope = $rootScope.$new();
-            controller = $controller('NewDataReportCtrl', { $scope: scope });
+            controller = $controller('NewAnalysisCtrl', { $scope: scope });
 
             $httpBackend.expectGET(settings.API_URL + 'sensormaps/1').respond(angular.toJson(testMap));
             $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
@@ -52,10 +52,10 @@ describe('openeis-ui.project.new-data-report-controller', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
-    describe('NewDataReportCtrl controller', function () {
+    describe('NewAnalysisCtrl controller', function () {
         describe('upon data set selection', function () {
             beforeEach(function () {
-                scope.newDataReport.dataSet = { map: 1 };
+                scope.newAnalysis.dataSet = { map: 1 };
             });
 
             it('should create list of available sensors', function () {
@@ -81,33 +81,33 @@ describe('openeis-ui.project.new-data-report-controller', function () {
 
                 beforeEach(function () {
                     scope.$digest();
-                    scope.newDataReport.application = testApps[0];
+                    scope.newAnalysis.application = testApps[0];
                 });
 
                 it('should create empty configuration', function () {
-                    expect(scope.newDataReport.configuration).not.toBeDefined();
+                    expect(scope.newAnalysis.configuration).not.toBeDefined();
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
+                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
                 });
 
                 it('should preserve configuration if same application is re-selected', function () {
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
+                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
 
                     var testConfig = {
                         parameters: { param1: 'value1', param2: 'value2' },
                         inputs: { input1: 'value1', input2: 'value2' },
                     };
-                    scope.newDataReport.configuration = testConfig;
-                    scope.newDataReport.application = null;
+                    scope.newAnalysis.configuration = testConfig;
+                    scope.newAnalysis.application = null;
                     scope.$digest();
-                    scope.newDataReport.application = testApps[0];
+                    scope.newAnalysis.application = testApps[0];
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toBe(testConfig);
+                    expect(scope.newAnalysis.configuration).toBe(testConfig);
 
-                    scope.newDataReport.application = testApps[1];
+                    scope.newAnalysis.application = testApps[1];
                     scope.$digest();
-                    expect(scope.newDataReport.configuration).toEqual(blankAppConfig);
+                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
                 });
             });
         });

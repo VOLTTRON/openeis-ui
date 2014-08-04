@@ -36,7 +36,7 @@ $inuit-btn-border-width: 0;
 @import "inuit-box/objects.box";
 @import "inuit-buttons/objects.buttons";
 @import "inuit-layout/objects.layout";
-@import "components/data-reports/data-reports-objects";
+@import "components/analyses/analysis-report-objects";
 @import "components/modals/modals-objects";
 @import "objects";
 
@@ -251,7 +251,7 @@ $inuit-btn-border-width: 0;
             }
         }
 
-        .data-reports {
+        .analyses {
             padding-top: $inuit-base-spacing-unit;
             border-top: 1px solid #ddd;
 
@@ -317,7 +317,7 @@ $inuit-btn-border-width: 0;
 
 .modal--new-data-set,
 .modal--new-data-map,
-.modal--new-data-report {
+.modal--new-analysis {
     .modal__dialog {
         width: 900px;
     }

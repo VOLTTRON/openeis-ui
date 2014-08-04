@@ -104,10 +104,10 @@
                 <ng-include src="'src/project/new-data-set.tpl.html'" ng-controller="NewDataSetCtrl"></ng-include>
             </modal>
         </div>
-        <div class="data-reports">
-            <h3>Data reports</h3>
-            <p><button ng-click="Modals.openModal('newDataReport')">Create new data report</button></p>
-            <table ng-if="dataReports.length">
+        <div class="analyses">
+            <h3>Analyses</h3>
+            <p><button ng-click="Modals.openModal('newAnalysis')">Run analysis</button></p>
+            <table ng-if="analyses.length">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -115,33 +115,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="dataReport in dataReports">
-                        <td ng-if="dataReport.status !== 'complete'">{{dataReport.name}}</td>
-                        <td ng-if="dataReport.status === 'complete'"><a ng-click="viewDataReport($index)">{{dataReport.name}}</a></td>
-                        <td>{{dataReport.status | capitalize}}</td>
+                    <tr ng-repeat="analysis in analyses">
+                        <td ng-if="analysis.status !== 'complete'">{{analysis.name}}</td>
+                        <td ng-if="analysis.status === 'complete'"><a ng-click="viewAnalysis(analysis)">{{analysis.name}}</a></td>
+                        <td>{{analysis.status | capitalize}}</td>
                     </tr>
                 </tbody>
             </table>
-            <app-report report-object="dataReport"></app-report>
         </div>
-        <modal class="modal--new-data-report" ng-if="Modals.modalOpen('newDataReport')">
-            <ng-include src="'src/project/new-data-report.tpl.html'" ng-controller="NewDataReportCtrl"></ng-include>
+        <modal class="modal--new-analysis" ng-if="Modals.modalOpen('newAnalysis')">
+            <ng-include src="'src/project/new-analysis.tpl.html'" ng-controller="NewAnalysisCtrl"></ng-include>
         </modal>
-        <modal class="modal--data-report" ng-if="Modals.modalOpen('dataReport')">
-            <h4>{{dataReport.name}}</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th ng-repeat="colLabel in dataReport.labels">{{colLabel}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="row in dataReport.data">
-                        <td ng-repeat="colVal in row">{{colVal}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button ng-click="Modals.closeModal('dataReport')">Close</button>
+        <modal class="modal--analysis" ng-if="Modals.modalOpen('viewAnalysis')">
+            <h4>{{viewingAnalysis.name}}</h4>
+            <analysis-report ng-repeat="report in viewingAnalysis.reports" ar-report="report"></analysis-report>
+            <button ng-click="Modals.closeModal('viewAnalysis')">Close</button>
         </modal>
     </div>
 </div>

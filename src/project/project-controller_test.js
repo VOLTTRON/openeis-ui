@@ -9,6 +9,7 @@ describe('openeis-ui.project.project-controller', function () {
             $provide.value('dataFiles', []);
             $provide.value('dataSets', []);
             $provide.value('dataMaps', []);
+            $provide.value('analyses', []);
         });
 
         inject(function (_$httpBackend_, $rootScope, _$controller_) {
