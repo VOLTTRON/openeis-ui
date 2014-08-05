@@ -48,7 +48,14 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
                     element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(getXYDataSetForBarChart(), reportElement.x_label, reportElement.y_label)));
                     break;
                 case 'ScatterPlot':
-                    element.append(angular.element('<div class="scatter-plot" />').append(scatterPlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
+                    // TODO: plot all datasets on a single scatterplot
+                    angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="scatter-plot" />').append(scatterPlotSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
                     break;
                 case 'HeatMap':
                     //element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(getXYZDataSet(), reportElement.x_label, reportElement.y_label)));
