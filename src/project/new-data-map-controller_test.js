@@ -84,8 +84,12 @@ describe('openeis-ui.project.new-data-map-controller', function () {
         it('should add child objects', function () {
             expect(scope.newDataMap.map.sensors.length).toBe(0);
 
-            scope.newChild = { name: 'NameWith/Slash' };
-            scope.addChild();
+            var newChild = {
+                    level: 'site',
+                    name: 'NameWith/Slash',
+                };
+            spyOn(window, 'prompt').andReturn(newChild.name);
+            scope.addChild(newChild.level);
             expect(scope.newDataMap.map.sensors.length).toBe(1);
             // Slashes should be replaced with dashes
             expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');

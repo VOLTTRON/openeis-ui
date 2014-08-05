@@ -148,29 +148,6 @@ describe('openeis-ui.data-maps.sensor-container-directive', function () {
             expect(directive.find('dt').length).toBe(0);
         });
 
-        it('should add system objects', function () {
-            definition = { site: {} };
-            scope.rootContainer = { level: 'site', name: 'Site1' };
-            compile();
-
-            expect(isolateScope.container.children).not.toBeDefined();
-
-            isolateScope.newSystem = {
-                name: 'System1',
-            };
-            isolateScope.addSystem();
-
-            // System should be added to children
-            expect(isolateScope.container.children[0].name).toBe('System1');
-            expect(isolateScope.container.children[0].level).toBe('system');
-
-            expect(directive.find('sensor-container').length).toBe(0);
-            scope.$digest();
-            // System should be added to view
-            expect(directive.find('sensor-container').length).toBe(1);
-            expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^System: System1/);
-        });
-
         it('should add child objects', function () {
             definition = { site: {} };
             scope.rootContainer = { level: 'site', name: 'Site1' };
@@ -178,15 +155,16 @@ describe('openeis-ui.data-maps.sensor-container-directive', function () {
 
             expect(isolateScope.container.children).not.toBeDefined();
 
-            isolateScope.newChild = {
-                level: 'building',
-                name: 'Building/WithSlash',
-            };
-            isolateScope.addChild();
+            var newChild = {
+                    level: 'building',
+                    name: 'Building/WithSlash',
+                };
+            spyOn(window, 'prompt').andReturn(newChild.name);
+            isolateScope.addChild(newChild.level);
 
             // Building should be added to children, slashes replaced by dashes
             expect(isolateScope.container.children[0].name).toBe('Building-WithSlash');
-            expect(isolateScope.container.children[0].level).toBe('building');
+            expect(isolateScope.container.children[0].level).toBe(newChild.level);
 
             expect(directive.find('sensor-container').length).toBe(0);
             scope.$digest();
