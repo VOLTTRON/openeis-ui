@@ -5,6 +5,7 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         terminal: true,
         scope: {
             arReport: '=',
+            arData: '=',
         },
         link: function (scope, element, attrs) {
             if (scope.arReport.description) {
@@ -18,11 +19,23 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
                 switch (reportElement.type) {
                 case 'Table':
-                    var table = angular.element('<table><thead><tr/></thead><tbody/></table>');
+                    var table = angular.element('<table><thead><tr/></thead><tbody/></table>'),
+                        tbody = table.find('tbody');
+
                     angular.forEach(reportElement.column_info, function (column) {
                         table.find('tr').append('<th>' + column[1] + '</th>');
                     });
-                    // TODO: add data rows
+
+                    angular.forEach(scope.arData[reportElement.table_name], function (row) {
+                        var tr = angular.element('<tr/>');
+
+                        angular.forEach(reportElement.column_info, function (column) {
+                            tr.append('<td>' + row[column[0]] + '</td>');
+                        });
+
+                        tbody.append(tr);
+                    });
+
                     element.append(table);
                     break;
                 case 'TextBlurb':
