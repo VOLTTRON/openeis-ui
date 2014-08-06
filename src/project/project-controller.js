@@ -13,9 +13,6 @@ angular.module('openeis-ui.project.project-controller', [
     $scope.Modals = Modals;
     $scope.analyses = analyses;
 
-    $scope.add = function(){
-        Analyses.create({"name": "Run1", "status":"Error"});
-    };
     var statusCheckPromise;
 
     $scope.statusCheck = function () {

@@ -87,22 +87,26 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
                 $scope.container.sensors.splice(index, 1);
             };
 
-            $scope.newSystem = {};
+            $scope.addChild = function (childLevel) {
+                var name,
+                    promptMessage = 'Name:',
+                    hasName = function (element) {
+                        return (element.name === name);
+                    };
 
-            $scope.addSystem = function () {
-                $scope.newSystem.level = 'system';
                 $scope.container.children = $scope.container.children || [];
-                $scope.container.children.unshift(angular.copy($scope.newSystem));
-                $scope.newSystem = {};
-            };
 
-            $scope.newChild = {};
+                do {
+                    name = prompt(promptMessage);
+                    if (!name) { return; }
+                    name = name.replace('/', '-');
+                    promptMessage = 'Error: "' + name + '" already exists. Name:';
+                } while ($scope.container.children.some(hasName));
 
-            $scope.addChild = function () {
-                $scope.newChild.name = $scope.newChild.name.replace('/', '-');
-                $scope.container.children = $scope.container.children || [];
-                $scope.container.children.unshift(angular.copy($scope.newChild));
-                $scope.newChild = {};
+                $scope.container.children.unshift({
+                    level: childLevel,
+                    name: name,
+                });
             };
         },
         compile: function(element) {

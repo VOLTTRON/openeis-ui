@@ -26,7 +26,7 @@ describe('openeis-ui.project.project-controller', function () {
 
     describe('ProjectCtrl controller', function () {
         describe('statusCheck function', function () {
-            var DataSets, statusResolve, errorsResolve;
+            var DataSets, statusResolve, errorsResolve, getAnalysisResolve;
 
             beforeEach(function () {
                 DataSets = {
@@ -37,7 +37,18 @@ describe('openeis-ui.project.project-controller', function () {
                         then: function (successCallback) { errorsResolve = successCallback; },
                     }),
                 };
-                controller = $controller('ProjectCtrl', { $scope: scope, DataSets: DataSets });
+                Analyses = {
+                    get: jasmine.createSpy('Analyses.get').andReturn({
+                        $promise: {
+                            then: function (successCallback) { getAnalysisResolve = successCallback; },
+                        },
+                    }),
+                };
+                controller = $controller('ProjectCtrl', {
+                    $scope: scope,
+                    DataSets: DataSets,
+                    Analyses: Analyses,
+                });
             });
 
             it('should check status and errors of incomplete data set ingests', function () {
@@ -72,25 +83,48 @@ describe('openeis-ui.project.project-controller', function () {
                 expect(scope.dataSets[0].errors).toBe('errors');
             });
 
-            it('should check again after a delay if any files are not complete', function () {
+            it('should check status of incomplete analyses', function () {
+                scope.analyses = [
+                    { id: 1, status: 'complete' },
+                    { id: 2, status: 'running' },
+                    { id: 3, status: 'queued' },
+                ];
+
+                scope.statusCheck();
+                expect(Analyses.get).not.toHaveBeenCalledWith(1);
+                expect(Analyses.get).toHaveBeenCalledWith(2);
+                expect(Analyses.get).toHaveBeenCalledWith(3);
+            });
+
+            it('should check again after a delay if any are not complete', function () {
                 var timeout = jasmine.createSpy('timeout');
                 timeout.cancel = jasmine.createSpy('timeout.cancel');
-                controller = $controller('ProjectCtrl', { $scope: scope, DataSets: DataSets, $timeout: timeout });
+                controller = $controller('ProjectCtrl', {
+                    $scope: scope,
+                    DataSets: DataSets,
+                    Analyses: Analyses,
+                    $timeout: timeout,
+                });
 
                 scope.dataSets = [{ status: { status: 'processing' } }];
+                scope.analyses = [{ status: 'running' }];
                 scope.statusCheck();
                 statusResolve({ data: { status: 'complete', percent: '100' } });
                 errorsResolve({ data: 0 });
+                getAnalysisResolve({ status: 'complete' });
                 scope.$digest();
                 expect(timeout.cancel).not.toHaveBeenCalled();
                 expect(timeout).not.toHaveBeenCalled();
 
                 scope.dataSets = [{ status: { status: 'processing' } }];
+                scope.analyses = [{ status: 'running' }];
                 scope.statusCheck();
                 statusResolve({ data: { status: 'processing', percent: '42.42' } });
                 errorsResolve({ data: 0 });
+                getAnalysisResolve({ status: 'running' });
                 scope.$digest();
-                expect(timeout.cancel).toHaveBeenCalled();
+                expect(timeout.cancel.callCount).toBe(2);
+                expect(timeout.callCount).toBe(2);
                 expect(timeout).toHaveBeenCalledWith(scope.statusCheck, 1000);
             });
         });

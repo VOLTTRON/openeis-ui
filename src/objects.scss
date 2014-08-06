@@ -153,17 +153,3 @@
         color: $error-color;
     }
 }
-
-sensor-container {
-    @extend %box;
-    border: 1px solid #ddd;
-    margin-bottom: $inuit-base-spacing-unit;
-
-    h1 {
-        @include inuit-font-size(16px);
-    }
-
-    dt {
-        font-weight: bold;
-    }
-}

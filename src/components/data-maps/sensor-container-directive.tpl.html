@@ -58,24 +58,9 @@
         </div>
     </div>
 
-    <form ng-submit="addSystem()" ng-if="objectDefinition.system_list">
-        <button>Add</button>&nbsp;
-        <select class="select--inline" required ng-model="newSystem.name" ng-options="system for system in objectDefinition.system_list">
-            <option value="">-- Choose system --</option>
-        </select>
-        &nbsp;system to {{container.level}}
-    </form>
-
-    <form ng-submit="addChild()" ng-if="objectDefinition.child_list">
-        <button>Add</button>
-        <span ng-if="objectDefinition.child_list.length === 1" ng-init="newChild.level = objectDefinition.child_list.0">{{objectDefinition.child_list.0}}</span>
-        <select class="select--inline" required ng-if="objectDefinition.child_list.length > 1" ng-model="newChild.level">
-            <option value="{{child}}" ng-repeat="child in objectDefinition.child_list">{{child}}</option>
-        </select>
-        &nbsp;
-        <input class="input--inline" required placeholder="{{newChild.level | capitalize}} name" ng-model="newChild.name">
-        &nbsp;to {{container.level}}
-    </form>
+    <div class="form__group">
+        Add under {{container.name}}:<span ng-repeat="child in objectDefinition.child_list">&nbsp;<button ng-click="addChild(child)">{{child}}</button></span>
+    </div>
 
     <sensor-container ng-repeat="child in container.children" container="child" files="files"></sensor-container>
 </div>
