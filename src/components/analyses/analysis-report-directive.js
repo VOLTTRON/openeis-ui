@@ -32,13 +32,13 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
                     element.append(angular.element('<div class="line-plot" />').append(linePlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
                     break;
                 case 'BarChart':
-                    element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
+                    element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(getXYDataSetForBarChart(), reportElement.x_label, reportElement.y_label)));
                     break;
                 case 'ScatterPlot':
                     element.append(angular.element('<div class="scatter-plot" />').append(scatterPlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
                     break;
                 case 'HeatMap':
-                    // element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(getXYZDataSet(), reportElement.x_label, reportElement.y_label)));
+                    //element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(getXYZDataSet(), reportElement.x_label, reportElement.y_label)));
                     break;
                 }
             });
@@ -53,6 +53,20 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
             data.push({
                 x: i,
                 y: i % (100 / i),
+            });
+        }
+
+        return data;
+    }
+    
+    // Used to generate fake data for development
+    function getXYDataSetForBarChart() {
+        var i, data = [];
+
+        for (i = 0; i < 12; i++) {
+            data.push({
+                x: i,
+                y: i % (12 / i),
             });
         }
 
@@ -114,6 +128,59 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
     function barChartSVG(data, xLabel, yLabel) {
         // TODO: create (with D3.js) and return SVG
+    
+        var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        	width = 920 - margin.left - margin.right,
+        	height = 300 - margin.top - margin.bottom;
+
+		var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+		
+		var y = d3.scale.linear().range([height, 0]);
+		
+		var xAxis = d3.svg.axis()
+		    .scale(x)
+		    .orient("bottom");
+		
+		var yAxis = d3.svg.axis()
+		    .scale(y)
+		    .orient("left");
+		
+		var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+    	    
+		var graph = svg.append('g')
+				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+				
+		x.domain(data.map(function(d) { return d.x; }));
+        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+				
+		  graph.append("g")
+		      .attr("class", "bar-chart__axis bar-chart__axis--x")
+		      .attr("transform", "translate(0," + height + ")")
+		      .call(xAxis);
+		
+		  graph.append("g")
+		      .attr("class", "bar-chart__axis bar-chart__axis--y")
+		      .call(yAxis)
+		    .append("text")
+		      .attr("transform", "rotate(-90)")
+		      .attr("y", 6)
+		      .attr("dy", ".71em")
+		      .style("text-anchor", "end")
+		      .text("Power");
+		
+		  graph.selectAll("bar-chart__bar")
+		      .data(data)
+		    .enter().append("rect")
+		      .attr("class", "bar-chart__bar")
+		      .attr("x", function(d) { return x(d.x); })
+		      .attr("width", x.rangeBand())
+		      .attr("y", function(d) { return y(d.y); })
+		      .attr("height", function(d) { return height - y(d.y); });
+		  
+		  
+		  return svg[0];
     }
 
     function scatterPlotSVG(data, xLabel, yLabel) {

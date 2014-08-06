@@ -14,6 +14,28 @@
 }
 
 .bar-chart {
+	&__bar {
+  		fill: steelblue;
+	}
+
+	&__bar:hover {
+  		fill: brown;
+	}
+
+	&__axis {
+  		font: 10px sans-serif;
+	}
+
+	&__axis path,
+	&__axis line {
+  		fill: none;
+  		stroke: #000;
+  		shape-rendering: crispEdges;
+	}
+
+	&__x.axis path {
+  		display: none;
+	}
 }
 
 .scatter-plot {
