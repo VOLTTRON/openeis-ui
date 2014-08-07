@@ -42,7 +42,14 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
                     element.append('<p class="text-blurb">' + reportElement.text + '</p>');
                     break;
                 case 'LinePlot':
-                    element.append(angular.element('<div class="line-plot" />').append(linePlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
+                    // TODO: plot all datasets on a single lineplot
+                    angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="line-plot" />').append(linePlotSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
                     break;
                 case 'BarChart':
                     element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(getXYDataSetForBarChart(), reportElement.x_label, reportElement.y_label)));
@@ -78,7 +85,7 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
         return data;
     }
-    
+
     // Used to generate fake data for development
     function getXYDataSetForBarChart() {
         var i, data = [];
@@ -148,38 +155,38 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
     function barChartSVG(data, xLabel, yLabel) {
         // TODO: create (with D3.js) and return SVG
-    
+
         var margin = {top: 20, right: 20, bottom: 30, left: 50},
         	width = 920 - margin.left - margin.right,
         	height = 300 - margin.top - margin.bottom;
 
 		var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-		
+
 		var y = d3.scale.linear().range([height, 0]);
-		
+
 		var xAxis = d3.svg.axis()
 		    .scale(x)
 		    .orient("bottom");
-		
+
 		var yAxis = d3.svg.axis()
 		    .scale(y)
 		    .orient("left");
-		
+
 		var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom);
-    	    
+
 		var graph = svg.append('g')
 				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-				
+
 		x.domain(data.map(function(d) { return d.x; }));
         y.domain([0, d3.max(data, function(d) { return d.y; })]);
-				
+
 		  graph.append("g")
 		      .attr("class", "bar-chart__axis bar-chart__axis--x")
 		      .attr("transform", "translate(0," + height + ")")
 		      .call(xAxis);
-		
+
 		  graph.append("g")
 		      .attr("class", "bar-chart__axis bar-chart__axis--y")
 		      .call(yAxis)
@@ -189,7 +196,7 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 		      .attr("dy", ".71em")
 		      .style("text-anchor", "end")
 		      .text("Power");
-		
+
 		  graph.selectAll("bar-chart__bar")
 		      .data(data)
 		    .enter().append("rect")
@@ -198,8 +205,8 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) { return y(d.y); })
 		      .attr("height", function(d) { return height - y(d.y); });
-		  
-		  
+
+
 		  return svg[0];
     }
 
