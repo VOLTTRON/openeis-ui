@@ -42,6 +42,24 @@
 }
 
 .heat-map {
+	&__rect.bordered {
+        stroke: #E6E6E6;
+        stroke-width:2px;   
+      }
+
+	&__text.mono {
+        font-size: 9pt;
+        font-family: Consolas, courier;
+        fill: #aaa;
+      }
+
+    &__text.axis-workweek {
+        fill: #000;
+      }
+
+    &__text.axis-worktime {
+        fill: #000;
+      }
 }
 
 .data-table {
