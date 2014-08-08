@@ -76,19 +76,11 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
                     break;
 
                 case 'HeatMap':
-                    var data = [], x_array = [] , y_array = [];
+                    var data = [];
                     angular.forEach(scope.arData[reportElement.table_name], function (row) {
-                        data.push({ x: row[reportElement.x_column], y: row[reportElement.y_column], value: row[reportElement.z_column] });
-                        if(x_array.indexOf(row[reportElement.x_column])==-1){
-                            x_array.push(row[reportElement.x_column]);
-                        }
-                        if(y_array.indexOf(row[reportElement.y_column])==-1){
-                            y_array.push(row[reportElement.y_column]);
-                        }
+                        data.push({ x: row[reportElement.x_column], y: row[reportElement.y_column], z: row[reportElement.z_column] });
                     });
-                    //y_array = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-                    //x_array = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p", "12p"];
-                    element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(data, reportElement.x_label, reportElement.y_label, x_array, y_array)));
+                    element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(data, reportElement.x_label, reportElement.y_label)));
                     break;
                 }
             });
@@ -290,7 +282,7 @@ function scatterPlotSVG(data, xLabel, yLabel) {
     return svg[0];
 }
 
-function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
+function heatMapSVG(data, xLabel, yLabel) {
     // Adapted from http://bl.ocks.org/tjdecke/5558084
 
     var margin = { top: 50, right: 0, bottom: 100, left: 100 },
@@ -303,7 +295,7 @@ function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
 
     var colorScale = d3.scale.quantile()
         //.domain([buckets, d3.max(data, function (d) { return d.value; })])
-        .domain(d3.extent(data, function(d) { return d.value; }))
+        .domain(d3.extent(data, function(d) { return d.z; }))
         .range(colors);
 
     var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
@@ -314,7 +306,7 @@ function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     var yLabels = graph.selectAll(".yLabel")
-        .data(y_array)
+        .data(d3.set(data.map(function (d) { return d.y; })).values())
         .enter().append("text")
         .text(function (d) { return d; })
         .attr("x", 0)
@@ -324,7 +316,7 @@ function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
         .attr("class", "yLabel");
 
     var xLabels = graph.selectAll(".xLabel")
-        .data(x_array)
+        .data(d3.set(data.map(function (d) { return d.x; })).values())
         .enter().append("text")
         .text(function(d) { return d; })
         .attr("x", function(d, i) { return i * gridSize; })
@@ -347,9 +339,9 @@ function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
         .style("fill", colors[0]);
 
     heatMap.transition().duration(1000)
-        .style("fill", function(d) { return colorScale(d.value); });
+        .style("fill", function(d) { return colorScale(d.z); });
 
-    heatMap.append("title").text(function(d) { return d.value; });
+    heatMap.append("title").text(function(d) { return d.z; });
 
     var legend = graph.selectAll(".legend")
         .data([0].concat(colorScale.quantiles()), function(d) { return d; })
