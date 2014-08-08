@@ -5,6 +5,7 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         terminal: true,
         scope: {
             arReport: '=',
+            arData: '=',
         },
         link: function (scope, element, attrs) {
             if (scope.arReport.description) {
@@ -18,31 +19,75 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
                 switch (reportElement.type) {
                 case 'Table':
-                    var table = angular.element('<table><thead><tr/></thead><tbody/></table>');
+                    var table = angular.element('<table><thead><tr/></thead><tbody/></table>'),
+                        tbody = table.find('tbody');
+
                     angular.forEach(reportElement.column_info, function (column) {
                         table.find('tr').append('<th>' + column[1] + '</th>');
                     });
-                    // TODO: add data rows
+
+                    angular.forEach(scope.arData[reportElement.table_name], function (row) {
+                        var tr = angular.element('<tr/>');
+
+                        angular.forEach(reportElement.column_info, function (column) {
+                            tr.append('<td>' + row[column[0]] + '</td>');
+                        });
+
+                        tbody.append(tr);
+                    });
+
                     element.append(table);
                     break;
                 case 'TextBlurb':
                     element.append('<p class="text-blurb">' + reportElement.text + '</p>');
                     break;
                 case 'LinePlot':
-                    element.append(angular.element('<div class="line-plot" />').append(linePlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
+                    // TODO: plot all datasets on a single lineplot
+                    angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="line-plot" />').append(linePlotSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
                     break;
                 case 'BarChart':
-                    element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(getXYDataSetForBarChart(), reportElement.x_label, reportElement.y_label)));
+                	angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="bar-chart" />').append(barChartSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
                     break;
                 case 'ScatterPlot':
-                    element.append(angular.element('<div class="scatter-plot" />').append(scatterPlotSVG(getXYDataSet(), reportElement.x_label, reportElement.y_label)));
+                    // TODO: plot all datasets on a single scatterplot
+                    angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="scatter-plot" />').append(scatterPlotSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
                     break;
                 case 'HeatMap':
-                    element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(getXYZDataSet(), reportElement.x_label, reportElement.y_label)));
+                	    var data = [], x_array = [] , y_array = [];
+                        angular.forEach(scope.arData[reportElement.table_name], function (row) {
+                            data.push({ x: row[reportElement.x_column], y: row[reportElement.y_column], value: row[reportElement.z_column] });
+                            if(x_array.indexOf(row[reportElement.x_column])==-1){
+                            	x_array.push(row[reportElement.x_column])
+                        	}
+                            if(y_array.indexOf(row[reportElement.y_column])==-1){
+                            	y_array.push(row[reportElement.y_column])
+                        	}
+                        });
+                	    //y_array = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+                    	//x_array = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p", "12p"];
+                		element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(data, reportElement.x_label, reportElement.y_label, x_array, y_array)));
                     break;
                 }
             });
-        },
+        }
     };
 
     // Used to generate fake data for development
@@ -58,7 +103,6 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
         return data;
     }
-    
     // Used to generate fake data for development
     function getXYDataSetForBarChart() {
         var i, data = [];
@@ -145,38 +189,39 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 
     function barChartSVG(data, xLabel, yLabel) {
         // Adapte from http://bl.ocks.org/mbostock/3885304
-    
+
         var margin = {top: 20, right: 20, bottom: 30, left: 50},
         	width = 920 - margin.left - margin.right,
         	height = 300 - margin.top - margin.bottom;
 
 		var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-		
+
 		var y = d3.scale.linear().range([height, 0]);
-		
+
 		var xAxis = d3.svg.axis()
 		    .scale(x)
 		    .orient("bottom");
-		
+
 		var yAxis = d3.svg.axis()
 		    .scale(y)
 		    .orient("left");
-		
+
 		var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom);
-    	    
+
 		var graph = svg.append('g')
 				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-				
+
 		x.domain(data.map(function(d) { return d.x; }));
         y.domain([0, d3.max(data, function(d) { return d.y; })]);
-				
+
 		  graph.append("g")
 		      .attr("class", "bar-chart__axis bar-chart__axis--x")
 		      .attr("transform", "translate(0," + height + ")")
-		      .call(xAxis);
-		
+		      .call(xAxis)
+		      .text(xLabel);
+
 		  graph.append("g")
 		      .attr("class", "bar-chart__axis bar-chart__axis--y")
 		      .call(yAxis)
@@ -185,8 +230,8 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 		      .attr("y", 6)
 		      .attr("dy", ".71em")
 		      .style("text-anchor", "end")
-		      .text("Power");
-		
+		      .text(yLabel);
+
 		  graph.selectAll("bar-chart__bar")
 		      .data(data)
 		    .enter().append("rect")
@@ -195,8 +240,8 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) { return y(d.y); })
 		      .attr("height", function(d) { return height - y(d.y); });
-		  
-		  
+
+
 		  return svg[0];
     }
 
@@ -322,22 +367,20 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
             return svg[0];
     }
 
-    function heatMapSVG(data, xLabel, yLabel) {
+    function heatMapSVG(data, xLabel, yLabel, x_array, y_array) {
     	// Adapted from http://bl.ocks.org/tjdecke/5558084
-    	var margin = { top: 50, right: 0, bottom: 100, left: 30 },
+    	var margin = { top: 50, right: 0, bottom: 100, left: 100 },
         	width = 960 - margin.left - margin.right,
-        	height = 430 - margin.top - margin.bottom,
+        	height = 1200 - margin.top - margin.bottom,
         	gridSize = Math.floor(width / 24),
         	legendElementWidth = gridSize*2,
         	buckets = 9,
-        	colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
-        	y_array = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-        	x_array = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-
-
+        	colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"] // alternatively colorbrewer.YlGnBu[9]
+        	
     	var colorScale = d3.scale.quantile()
-            .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
-            .range(colors);
+            //.domain([buckets, d3.max(data, function (d) { return d.value; })])
+    		.domain(d3.extent(data, function(d) { return d.value; }))
+    		.range(colors);
 
         var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
             .attr("width", width + margin.left + margin.right)
@@ -349,29 +392,30 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         
         var yLabels = graph.selectAll(".yLabel")
             .data(y_array)
-            .enter().append("text")
+        	.enter().append("text")
               .text(function (d) { return d; })
               .attr("x", 0)
               .attr("y", function (d, i) { return i * gridSize; })
               .style("text-anchor", "end")
               .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-              .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "yLabel mono axis axis-workweek" : "yLabel mono axis"); });
+              .attr("class", "yLabel");
 
         var xLabels = graph.selectAll(".xLabel")
             .data(x_array)
-            .enter().append("text")
+        	.enter().append("text")
               .text(function(d) { return d; })
               .attr("x", function(d, i) { return i * gridSize; })
               .attr("y", 0)
               .style("text-anchor", "middle")
               .attr("transform", "translate(" + gridSize / 2 + ", -6)")
-              .attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "xLabel mono axis axis-worktime" : "xLabel mono axis"); });
+              .attr("class", "xLabel");
 
         var heatMap = graph.selectAll(".value")
             .data(data)
             .enter().append("rect")
-            .attr("x", function(d) { return (d.x - 1) * gridSize; })
-            .attr("y", function(d) { return (d.y - 1) * gridSize; })
+            .attr("x", function(d) { return (d.x ) * gridSize; })
+            //.attr("y", function(d) { return (d.y) * gridSize; })
+            .attr("y", function(d) { return (((d.y).substr((d.y).lastIndexOf("-")+1)) -1 ) * gridSize; })
             .attr("rx", 4)
             .attr("ry", 4)
             .attr("class", "value bordered")
@@ -383,6 +427,8 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
             .style("fill", function(d) { return colorScale(d.value); });
 
         heatMap.append("title").text(function(d) { return d.value; });
+        
+        
             
         var legend = graph.selectAll(".legend")
             .data([0].concat(colorScale.quantiles()), function(d) { return d; })
