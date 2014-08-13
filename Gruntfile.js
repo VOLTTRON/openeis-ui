@@ -7,6 +7,8 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     buildDir: 'openeis/ui/static/openeis-ui/',
+    wheelDir: 'openeis/',
+    wheelDestDir: '../openeis/lib/openeis-ui/', // assumes backend working copy is sibling dir called 'openeis'
 
     clean: {
       build: ['<%= buildDir %>'],
@@ -157,7 +159,7 @@ module.exports = function(grunt) {
     },
 
     sync: {
-      build: {
+      static: {
         files: [
           {
             cwd: 'src/',
@@ -189,6 +191,14 @@ module.exports = function(grunt) {
           },
         ],
       },
+      package: {
+        files: [
+          {
+            src: '<%= wheelDir %>/**',
+            dest: '<%= wheelDestDir %>',
+          }
+        ],
+      }
     },
 
     uglify: {
@@ -229,7 +239,7 @@ module.exports = function(grunt) {
           'src/**/*.js',
           '!src/**/*_test.js',
         ],
-        tasks: ['sync'],
+        tasks: ['sync:static', 'sync:dev'],
       },
 
       sass: {
@@ -263,13 +273,15 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('build', [
-    'clean:build', 'sass:build', 'sync:build', 'ngmin', 'ngtemplates',
+    'clean:build', 'sass:build', 'sync:static', 'ngmin', 'ngtemplates',
     'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
   grunt.registerTask('build-dev', [
-    'clean:build', 'sass:dev', 'sync', 'ngtemplates', 'htmlbuild:dev',
+    'clean:build', 'sass:dev', 'sync:static', 'sync:dev', 'ngtemplates', 'htmlbuild:dev',
   ]);
+
+  grunt.registerTask('package', ['build', 'sync:package']);
 
   grunt.registerTask('default', [
     'karma:dev:start', 'build-dev', 'livereload_snippet', 'watch',
