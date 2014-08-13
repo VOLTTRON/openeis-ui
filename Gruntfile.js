@@ -1,4 +1,8 @@
 module.exports = function(grunt) {
+  require('jit-grunt')(grunt, {
+    htmlbuild: 'grunt-html-build',
+    ngtemplates: 'grunt-angular-templates',
+  });
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -213,13 +217,9 @@ module.exports = function(grunt) {
         ],
       },
 
-      html: {
-        files: [
-          'src/index.html',
-          'src/**/*.js',
-          '!src/**/*_test.js',
-        ],
-        tasks: ['htmlbuild:dev', 'livereload_snippet'],
+      templates: {
+        files: 'src/**/*.tpl.html',
+        tasks: ['ngtemplates'],
       },
 
       sync: {
@@ -232,34 +232,35 @@ module.exports = function(grunt) {
         tasks: ['sync'],
       },
 
-      templates: {
-        files: 'src/**/*.tpl.html',
-        tasks: ['ngtemplates'],
+      sass: {
+        files: ['src/**/*.scss'],
+        tasks: ['sass:dev'],
+      },
+
+      html: {
+        files: [
+          'src/index.html',
+        ],
+        tasks: ['htmlbuild:dev', 'livereload_snippet'],
+      },
+
+      htmlJs: {
+        options: {
+          event: ['added', 'deleted'],
+        },
+        files: [
+          'src/**/*.js',
+          '!src/**/*_test.js',
+        ],
+        tasks: ['htmlbuild:dev', 'livereload_snippet'],
       },
 
       karma: {
         files: 'src/**/*.js',
         tasks: ['clean:karma', 'karma:dev:run'],
       },
-
-      sass: {
-        files: ['src/**/*.scss'],
-        tasks: ['sass:dev'],
-      },
     }
   });
-
-  grunt.loadNpmTasks('grunt-angular-templates');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-sass');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-html-build');
-  grunt.loadNpmTasks('grunt-livereload-snippet');
-  grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-ngmin');
-  grunt.loadNpmTasks('grunt-sync');
 
   grunt.registerTask('build', [
     'clean:build', 'sass:build', 'sync:build', 'ngmin', 'ngtemplates',

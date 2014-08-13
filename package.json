@@ -13,6 +13,7 @@
     "grunt-livereload-snippet": "https://github.com/timdouglas/grunt-livereload-snippet/tarball/master",
     "grunt-ngmin": "^0.0.3",
     "grunt-sync": "^0.0.6",
+    "jit-grunt": "^0.7.0",
     "karma": "^0.12.16",
     "karma-coverage": "^0.2.4",
     "karma-jasmine": "^0.1.5",
