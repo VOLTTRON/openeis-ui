@@ -6,7 +6,7 @@ angular.module('openeis-ui.project.new-analysis-controller', [
     'openeis-ui.analyses',
 ])
 .controller('NewAnalysisCtrl', function ($scope, Applications, DataMaps, $q, Modals, Analyses) {
-    $scope.newAnalysis = {};
+    $scope.newAnalysis = { debug: false };
 
     $scope.$watch('newAnalysis.dataSet', function () {
         $scope.availableApps = [];
@@ -124,6 +124,7 @@ angular.module('openeis-ui.project.new-analysis-controller', [
             dataset: $scope.newAnalysis.dataSet.id,
             application: $scope.newAnalysis.application.name,
             configuration: $scope.newAnalysis.configuration,
+            debug: $scope.newAnalysis.debug,
         }).$promise.then(function (analysis) {
             $scope.analyses.push(analysis);
             $scope.statusCheck();

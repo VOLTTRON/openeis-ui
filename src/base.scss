@@ -47,11 +47,12 @@ legend {
     margin-left: halve(-$inuit-base-spacing-unit);
 }
 
-label:after {
+label:first-child:after,
+:not(input) + label:after {
     content: ":";
 }
 
-input {
+input:not([type="checkbox"]) {
     height: 2 * $inuit-base-spacing-unit;
     border: 1px solid #ddd;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);

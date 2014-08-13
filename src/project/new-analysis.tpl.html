@@ -34,6 +34,9 @@
 
 <form class="form--stacked" ng-if="newAnalysis.application" ng-submit="run()">
     <h5>Configure run of <em>{{newAnalysis.application.name}}</em> on data set {{newAnalysis.dataSet.id}}</h5>
+    <div class="form__group">
+        <input type="checkbox" id="debug" ng-model="newAnalysis.debug">&nbsp;<label for="debug">Generate debug output</label>
+    </div>
     <div class="layout">
         <div class="layout__item" style="width: 50%">
             <fieldset>

@@ -48,14 +48,15 @@
 
 .form--aligned,
 %form--aligned {
-    label {
+    label:first-child,
+    :not(input) + label {
         @extend %label--inline;
         margin-right: halve($inuit-base-spacing-unit);
         width: 8 * $inuit-base-spacing-unit;
         text-align: right;
     }
 
-    input {
+    input:not([type="checkbox"]) {
         @extend %input--inline;
         width: 16 * $inuit-base-spacing-unit;
     }
@@ -77,11 +78,12 @@
 
 .form--stacked,
 %form--stacked {
-    label {
+    label:first-child,
+    :not(input) + label {
         @extend %label--block;
     }
 
-    input {
+    input:not([type="checkbox"]) {
         @extend %input--block;
     }
 
@@ -99,7 +101,7 @@
         display: none;
     }
 
-    :not(label) + input,
+    :not(label) + input:not([type="checkbox"]),
     :not(label) + select {
         margin-top: halve($inuit-base-spacing-unit);
     }
