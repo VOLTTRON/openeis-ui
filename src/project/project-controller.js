@@ -5,13 +5,14 @@ angular.module('openeis-ui.project.project-controller', [
     'openeis-ui.data-sets-service',
     'openeis-ui.modals'
 ])
-.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, analyses, Analyses) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, analyses, Analyses, sharedAnalyses, SharedAnalyses) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
     $scope.dataMaps = dataMaps;
     $scope.Modals = Modals;
     $scope.analyses = analyses;
+    $scope.sharedAnalyses = sharedAnalyses;
 
     var statusCheckPromise;
 
@@ -136,5 +137,33 @@ angular.module('openeis-ui.project.project-controller', [
             $scope.viewingAnalysisData = outputData;
             Modals.openModal('viewAnalysis');
         });
+    };
+
+    $scope.shareAnalysis = function (analysis) {
+        SharedAnalyses.create(analysis.id).$promise.then(function (sharedAnalysis) {
+            $scope.sharedAnalyses.push(sharedAnalysis);
+            $scope.viewLink(analysis.id);
+        });
+    };
+
+    $scope.viewLink = function (analysisId) {
+        angular.forEach($scope.sharedAnalyses, function (sharedAnalysis) {
+            if (sharedAnalysis.analysis === analysisId) {
+                $scope.viewingLink = {
+                    url: window.location.protocol + '//' + window.location.host + '/shared-analyses/' + analysisId + '/' + sharedAnalysis.key,
+                    sharedAnalysis: sharedAnalysis,
+                };
+                Modals.openModal('viewLink');
+            }
+        });
+    };
+
+    $scope.revokeLink = function (link) {
+        if (confirm('Revoke sharing?')) {
+            link.sharedAnalysis.$delete(function () {
+                $scope.sharedAnalyses.splice($scope.sharedAnalyses.indexOf(link.sharedAnalysis), 1);
+            });
+            Modals.closeModal('viewLink');
+        }
     };
 });

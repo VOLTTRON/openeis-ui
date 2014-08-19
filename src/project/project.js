@@ -34,6 +34,9 @@ angular.module('openeis-ui.project', [
                 analyses: ['Analyses', '$route', function(Analyses, $route) {
                     return Analyses.query($route.current.params.projectId).$promise;
                 }],
+                sharedAnalyses: ['SharedAnalyses', '$route', function(SharedAnalyses, $route) {
+                    return SharedAnalyses.query($route.current.params.projectId).$promise;
+                }],
             },
         });
 });
