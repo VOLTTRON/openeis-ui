@@ -118,7 +118,10 @@
                 <tbody>
                     <tr ng-repeat="analysis in analyses">
                         <td ng-if="analysis.status !== 'complete'">Analysis {{analysis.id}}: {{analysis.name}}</td>
-                        <td ng-if="analysis.status === 'complete'"><a ng-click="viewAnalysis(analysis)">Analysis {{analysis.id}}: {{analysis.name}}</a></td>
+                        <td ng-if="analysis.status === 'complete'">
+                            <a ng-click="viewAnalysis(analysis)">Analysis {{analysis.id}}: {{analysis.name}}</a>
+                            <span ng-if="analysis.debug">(<a href="{{analysis.debug}}" target="_self">download debug output</a>)</span>
+                        </td>
                         <td>{{analysis.status | capitalize}}</td>
                         <td ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length">
                             <a ng-click="shareAnalysis(analysis)">Share</a>
