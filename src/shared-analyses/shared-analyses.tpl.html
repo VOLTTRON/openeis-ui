@@ -1,0 +1,7 @@
+<div class="container">
+    <div class="view view--shared-analysis" ng-if="valid">
+        <h1>{{sharedAnalysis.name}}</h1>
+        <analysis-report ng-repeat="report in sharedAnalysis.reports" ar-report="report" ar-data="data"></analysis-report>
+    </div>
+    <p ng-if="!valid">Invalid shared analysis link.</p>
+</div>

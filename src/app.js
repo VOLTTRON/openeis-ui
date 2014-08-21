@@ -10,6 +10,7 @@ angular.module('openeis-ui', [
     'openeis-ui.project',
     'openeis-ui.projects',
     'openeis-ui.recovery',
+    'openeis-ui.shared-analyses',
     'openeis-ui.signup',
     'openeis-ui.templates',
 ])

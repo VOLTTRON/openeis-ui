@@ -20,13 +20,13 @@ describe('openeis-ui.analyses.shared-analyses-service', function () {
     });
 
     describe('SharedAnalyses service', function () {
-        it('should get shared analyses by analysis ID', function () {
+        it('should get shared analyses by analysis ID and key', function () {
             var sharedAnalysis;
 
             expect(SharedAnalyses.get).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + 'shared-analyses/' + testSharedAnalyses[0].id).respond(angular.toJson(testSharedAnalyses[0]));
-            SharedAnalyses.get(testSharedAnalyses[0].id).$promise.then(function (response) {
+            $httpBackend.expectGET(settings.API_URL + 'shared-analyses/' + testSharedAnalyses[0].id + '?key=' + 'abc123').respond(angular.toJson(testSharedAnalyses[0]));
+            SharedAnalyses.get(testSharedAnalyses[0].id, 'abc123').$promise.then(function (response) {
                 sharedAnalysis = response;
             });
             $httpBackend.flush();
@@ -66,6 +66,24 @@ describe('openeis-ui.analyses.shared-analyses-service', function () {
             $httpBackend.flush();
 
             expect(newSharedAnalysis.analysis).toBe(1);
+        });
+
+        it('should retrieve analysis output data by analysis ID and key', function () {
+            var sharedAnalysisData,
+                table1Data = [ {x: 't1x1', y: 't1y1'}, {x: 't1x2', y: 't1y2'} ],
+                table2Data = [ {x: 't2x1', y: 't2y1'}, {x: 't2x2', y: 't2y2'} ];
+
+            $httpBackend.expectGET(settings.API_URL + 'shared-analyses/1/data?key=abc123').respond(angular.toJson({ 'table1': {}, 'table2': {} }));
+            $httpBackend.expectGET(settings.API_URL + 'shared-analyses/1/data?key=abc123&output=table1').respond(angular.toJson(table1Data));
+            $httpBackend.expectGET(settings.API_URL + 'shared-analyses/1/data?key=abc123&output=table2').respond(angular.toJson(table2Data));
+            SharedAnalyses.getData(1, 'abc123').then(function (data) {
+                sharedAnalysisData = data;
+            });
+            $httpBackend.flush();
+
+            // Compare JSON since .toEqual() doesn't work here for some reason
+            // expect(sharedAnalysisData).toEqual({ table1: table1Data, table2: table2Data });
+            expect(angular.toJson(sharedAnalysisData)).toBe(angular.toJson({ table1: table1Data, table2: table2Data }));
         });
     });
 });

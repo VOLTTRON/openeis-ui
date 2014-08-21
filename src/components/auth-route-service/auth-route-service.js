@@ -16,6 +16,11 @@ angular.module('openeis-ui.auth-route-service', ['openeis-ui.auth-service', 'ngR
         return this;
     };
 
+    this.when = function (path, route) {
+        $routeProvider.when(path, route);
+        return this;
+    };
+
     this.$get = function (Auth, $q, $location) {
         return {
             requireAnon: function () {
