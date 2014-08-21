@@ -261,5 +261,78 @@ describe('openeis-ui.project.project-controller', function () {
                 expect(scope.errorsModal.errors).toBe('errors');
             });
         });
+
+        describe('viewAnalysis function', function () {
+            var getDataResolve;
+
+            beforeEach(function () {
+                Analyses = {
+                    getData: jasmine.createSpy('Analyses.getData').andReturn({
+                        then: function (successCallback) { getDataResolve = successCallback; },
+                    }),
+                };
+                controller = $controller('ProjectCtrl', {
+                    $scope: scope,
+                    Analyses: Analyses,
+                });
+            });
+
+            it('should retrieve analysis data', function () {
+                var analysis = { id: 1 };
+
+                scope.viewAnalysis(analysis);
+                getDataResolve('analysis1Data');
+
+                expect(scope.viewingAnalysis).toBe(analysis);
+                expect(scope.viewingAnalysisData).toBe('analysis1Data');
+            });
+        });
+
+        describe('shareAnalysis function', function () {
+            var createResolve;
+
+            beforeEach(function () {
+                SharedAnalyses = {
+                    create: jasmine.createSpy('SharedAnalyses.create').andReturn({
+                        $promise: {
+                            then: function (successCallback) { createResolve = successCallback; },
+                        },
+                    }),
+                };
+                controller = $controller('ProjectCtrl', {
+                    $scope: scope,
+                    SharedAnalyses: SharedAnalyses,
+                });
+            });
+
+            it('should create shared analysis and add it to sharedAnalyses', function () {
+                spyOn(scope, 'viewLink');
+                expect(scope.sharedAnalyses.length).toBe(0);
+
+                scope.shareAnalysis({ id: 1 });
+                createResolve('newSharedAnalyses');
+
+                expect(scope.sharedAnalyses.length).toBe(1);
+                expect(scope.sharedAnalyses[0]).toBe('newSharedAnalyses');
+                expect(scope.viewLink).toHaveBeenCalled();
+            });
+        });
+
+        describe('viewLink function', function () {
+            it('should generate URL from correspoding sharedAnalysis', function () {
+                scope.sharedAnalyses = [
+                    { analysis: 1, key: '1111' },
+                    { analysis: 2, key: '2222' },
+                    { analysis: 3, key: '3333' },
+                ];
+
+                scope.viewLink(2);
+
+                expect(scope.viewingLink).toEqual({
+                    url: 'http://localhost:9876/shared-analyses/2/2222',
+                    sharedAnalysis: scope.sharedAnalyses[1],
+                });
+            });
+        });
     });
 });
