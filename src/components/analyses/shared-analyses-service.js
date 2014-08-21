@@ -1,13 +1,10 @@
 angular.module('openeis-ui.analyses.shared-analyses-service', ['ngResource'])
 .service('SharedAnalyses', function ($resource, $q) {
     var SharedAnalyses = this,
-        resource = $resource(settings.API_URL + 'shared-analyses/:id', { id: '@analysis' }, {
-            // Don't append ID to URL for POST requests
-            create: { method: 'POST', url: settings.API_URL + 'shared-analyses' },
-        });
+        resource = $resource(settings.API_URL + 'shared-analyses/:analysisId', { analysisId: '@analysis' });
 
     SharedAnalyses.get = function (analysisId) {
-        return resource.get({ id: analysisId });
+        return resource.get({ analysisId: analysisId });
     };
 
     SharedAnalyses.query = function (projectId) {
@@ -15,6 +12,7 @@ angular.module('openeis-ui.analyses.shared-analyses-service', ['ngResource'])
     };
 
     SharedAnalyses.create = function(analysisId) {
-        return resource.create({ analysis: analysisId });
+        // Don't append ID to URL
+        return resource.save({ analysisId: null }, { analysis: analysisId });
     };
 });
