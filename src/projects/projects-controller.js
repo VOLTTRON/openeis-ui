@@ -32,4 +32,16 @@ angular.module('openeis-ui.projects.projects-controller', [
             $scope.projects.splice($index, 1);
         });
     };
+
+    $scope.cloneProject = function ($index) {
+        var newName = prompt("Cloned project name:");
+
+        if (!newName || !newName.length) {
+            return;
+        }
+
+        Projects.clone($scope.projects[$index].id, newName).then(function (clone) {
+            $scope.projects.push(clone);
+        });
+    };
 });

@@ -70,5 +70,17 @@ describe('openeis-ui.projects-service', function () {
 
             expect(project.name).toEqual(newProject.name);
         });
+
+        it('should clone projects', function () {
+            var project;
+
+            $httpBackend.expectPOST(settings.API_URL + 'projects/1/clone', { name: 'New project' }).respond('{"id":2}');
+            Projects.clone(1, 'New project').then(function (response) {
+                project = response;
+            });
+            $httpBackend.flush();
+
+            expect(project.id).toBe(2);
+        });
     });
 });

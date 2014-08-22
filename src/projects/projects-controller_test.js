@@ -59,7 +59,7 @@ describe('openeis-ui.projects.projects-controller', function () {
             }));
 
             it('should validate new project name', inject(function (Projects) {
-                scope.projects = [{ id: 1, name: 'Test project', $save: function () {} }];
+                scope.projects = [{ id: 1, name: 'Test project', $save: angular.noop }];
 
                 angular.forEach(['', false, null], function (v, k) {
                     window.prompt = function () { return v; };
@@ -100,5 +100,40 @@ describe('openeis-ui.projects.projects-controller', function () {
             // Assert project deleted
             expect(scope.projects[0]).not.toBeDefined();
         }));
+
+        describe('cloneProject function', function () {
+            it('should clone projects by array index', inject(function (Projects) {
+                scope.projects = [{ id: 1, name: 'Test project' }];
+
+                expect(scope.renameProject).toBeDefined();
+
+                spyOn(window, 'prompt').andReturn('Test project 2');
+
+                $httpBackend.expectPOST(settings.API_URL + 'projects/1/clone').respond('{"id":2,"name":"Test project 2"}');
+                scope.cloneProject(0);
+                $httpBackend.flush();
+
+                expect(scope.projects[1].id).toBe(2);
+                expect(scope.projects[1].name).toBe('Test project 2');
+            }));
+
+            it('should validate new project name', inject(function (Projects) {
+                spyOn(Projects, 'clone').andReturn({ then: angular.noop });
+                scope.projects = [{ id: 1, name: 'Test project' }];
+
+                angular.forEach(['', false, null], function (v, k) {
+                    window.prompt = function () { return v; };
+                    scope.cloneProject(0);
+                    expect(Projects.clone).not.toHaveBeenCalled();
+                });
+
+                // Non-empty strings should always be valid
+                angular.forEach(['false', 'null', '0'], function (v, k) {
+                    window.prompt = function () { return v; };
+                    scope.cloneProject(0);
+                    expect(Projects.clone).toHaveBeenCalledWith(1, v);
+                });
+            }));
+        });
     });
 });

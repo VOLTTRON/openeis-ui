@@ -10,6 +10,7 @@
                 <a ng-href="projects/{{project.id}}">{{project.name}}</a>
                 &mdash; <a ng-click="renameProject($index)">Rename</a>
                 &mdash; <a ng-click="deleteProject($index)">Delete</a>
+                &mdash; <a ng-click="cloneProject($index)">Clone</a>
             </li>
         </ul>
         <form ng-submit="newProject.create()">
