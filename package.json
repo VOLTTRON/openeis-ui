@@ -11,7 +11,7 @@
     "grunt-html-build": "^0.3.2",
     "grunt-karma": "^0.8.2",
     "grunt-livereload-snippet": "https://github.com/timdouglas/grunt-livereload-snippet/tarball/master",
-    "grunt-ngmin": "^0.0.3",
+    "grunt-ng-annotate": "^0.3.2",
     "grunt-sync": "^0.0.6",
     "jit-grunt": "^0.7.0",
     "karma": "^0.12.16",

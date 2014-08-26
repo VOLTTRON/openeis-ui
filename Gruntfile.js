@@ -159,7 +159,7 @@ module.exports = function(grunt) {
       src: '<%= buildDir %>index.html',
     },
 
-    ngmin: {
+    ngAnnotate: {
       build: {
         files: {
           '<%= buildDir %>js/app.js': [
@@ -328,7 +328,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('build', [
-    'clean:build', 'sass:build', 'sync:static', 'ngmin', 'ngtemplates',
+    'clean:build', 'sass:build', 'sync:static', 'ngAnnotate', 'ngtemplates',
     'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
