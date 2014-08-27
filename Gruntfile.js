@@ -66,6 +66,7 @@ module.exports = function(grunt) {
         '<%= buildDir %>js/app.js',
         '<%= buildDir %>js/app.templates.js',
         '<%= buildDir %>js/autofill-event.min.js',
+        'normalize.css.license',
       ],
       karma: ['coverage'],
     },
@@ -120,6 +121,22 @@ module.exports = function(grunt) {
         files: {
           '<%= buildDir %>js/d3.min.js': [
             'bower_components/d3/d3.min.js',
+          ],
+        },
+      },
+      css: {
+        options: {
+          process: function (src) {
+            return src.replace(/\/\*\!(?:.*\n)*.+\*\//m, '');
+          }
+        },
+        files: {
+          '<%= buildDir %>css/app.css': [
+            '<%= buildDir %>css/app.css',
+          ],
+          '<%= buildDir %>css/normalize.css': [
+            'normalize.css.license',
+            '<%= buildDir %>css/normalize.css',
           ],
         },
       },
@@ -239,6 +256,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= buildDir %>css/app.css': 'src/app.scss',
+          '<%= buildDir %>css/normalize.css': 'src/normalize.scss',
         },
       },
       dev: {
@@ -247,6 +265,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= buildDir %>css/app.css': 'src/app.scss',
+          '<%= buildDir %>css/normalize.css': 'src/normalize.scss',
         },
       }
     },
@@ -376,12 +395,23 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'clean:build', 'sass:build', 'sync:static', 'ngAnnotate', 'ngtemplates',
-    'uglify', 'concat', 'htmlbuild:build', 'clean:artifacts',
+    'uglify', 'get-license', 'concat', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
   grunt.registerTask('build-dev', [
     'clean:build', 'sass:dev', 'sync:static', 'sync:dev', 'ngtemplates', 'htmlbuild:dev',
   ]);
+
+  /* inuit-normalize doesn't include MIT license for normalize.css, so we'll retrieve it */
+  grunt.registerTask('get-license', 'Downloads license of normalize.css', function () {
+    var done = this.async();
+    require('https').get('https://raw.githubusercontent.com/necolas/normalize.css/3.0.1/LICENSE.md', function (r) {
+      r.on('data', function (d) {
+        grunt.file.write('normalize.css.license', '/*\n' + d.toString() + '*/');
+        done();
+      })
+    });
+  });
 
   grunt.registerTask('package', ['build', 'sync:package']);
 
