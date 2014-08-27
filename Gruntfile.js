@@ -65,26 +65,63 @@ module.exports = function(grunt) {
       artifacts: [
         '<%= buildDir %>js/app.js',
         '<%= buildDir %>js/app.templates.js',
+        '<%= buildDir %>js/autofill-event.min.js',
       ],
       karma: ['coverage'],
     },
 
     concat: {
-      build: {
+      options: {
+        process: function(src) {
+          return src.replace(/\n+\/\/# sourceMappingURL=.+\n+/mg, '');
+        },
+      },
+      angular: {
         options: {
-          process: function(src) {
-            return src.replace(/^\/\/# sourceMappingURL=.+\n/mg, '');
-          },
+          stripBanners: true,
+          banner: '/*\n' + grunt.file.read('bower_components/angular/README.md').replace(/(.*\n)+The MIT License/gm, 'The MIT License') + '*/\n',
         },
         files: {
-          '<%= buildDir %>js/app.min.js': [
-            'bower_components/d3/d3.min.js',
+          '<%= buildDir %>js/angular.min.js': [
             'bower_components/angular/angular.min.js',
-            'bower_components/angular-*/angular-*.min.js',
-            'bower_components/ng-file-upload/angular-file-upload.min.js',
-            '<%= buildDir %>js/app.min.js',
+            'bower_components/angular-animate/angular-animate.min.js',
+            'bower_components/angular-cookies/angular-cookies.min.js',
+            'bower_components/angular-resource/angular-resource.min.js',
+            'bower_components/angular-route/angular-route.min.js',
+            '<%= buildDir %>js/autofill-event.min.js',
           ],
-        }
+        },
+      },
+      angularRecursion: {
+        options: {
+          banner: '/*\n' + grunt.file.read('bower_components/angular-recursion/LICENSE') + '*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/angular-recursion.min.js': [
+            'bower_components/angular-recursion/angular-recursion.min.js',
+          ],
+        },
+      },
+      angularFileUpload: {
+        options: {
+          stripBanners: { block: true },
+          banner: '/*\n' + grunt.file.read('bower_components/ng-file-upload/LICENSE') + '*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/angular-file-upload.min.js': [
+            'bower_components/ng-file-upload/angular-file-upload.min.js',
+          ],
+        },
+      },
+      d3: {
+        options: {
+          banner: '/*\n' + grunt.file.read('bower_components/d3/LICENSE') + '*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/d3.min.js': [
+            'bower_components/d3/d3.min.js',
+          ],
+        },
       },
     },
 
@@ -97,7 +134,13 @@ module.exports = function(grunt) {
         dest: '<%= buildDir %>',
         options: {
           scripts: {
-            app: '<%= buildDir %>js/app.min.js',
+            app: [
+              '<%= buildDir %>js/d3.min.js',
+              '<%= buildDir %>js/angular.min.js',
+              '<%= buildDir %>js/angular-file-upload.min.js',
+              '<%= buildDir %>js/angular-recursion.min.js',
+              '<%= buildDir %>js/app.min.js',
+            ]
           },
         },
       },
@@ -252,13 +295,22 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      build: {
+      app: {
+        options: {
+          banner: '/*\n' + grunt.file.read('README.md').replace(/(.*\n)+License\n-+\n\n/gm, '') + '*/\n',
+        },
         files: {
           '<%= buildDir %>js/app.min.js': [
-            'bower_components/autofill-event/src/autofill-event.js',
             'bower_components/tv4/tv4.js',
             '<%= buildDir %>js/app.js',
             '<%= buildDir %>js/app.templates.js',
+          ],
+        },
+      },
+      app: {
+        files: {
+          '<%= buildDir %>js/autofill-event.min.js': [
+            'bower_components/autofill-event/src/autofill-event.js',
           ],
         },
       },
@@ -324,7 +376,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'clean:build', 'sass:build', 'sync:static', 'ngAnnotate', 'ngtemplates',
-    'uglify', 'concat:build', 'htmlbuild:build', 'clean:artifacts',
+    'uglify', 'concat', 'htmlbuild:build', 'clean:artifacts',
   ]);
 
   grunt.registerTask('build-dev', [
