@@ -159,9 +159,9 @@ angular.module('openeis-ui.data-maps.data-maps-service', [
                 DataFiles.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
                     file.columns = [];
-                    file.hasHeader = headResponse.data.has_header;
+                    file.hasHeader = headResponse.has_header;
 
-                    angular.forEach(headResponse.data.rows[0], function (v, k) {
+                    angular.forEach(headResponse.rows[0], function (v, k) {
                         if (file.hasHeader) {
                             file.signature.headers.push(v);
                             file.columns.push(v);

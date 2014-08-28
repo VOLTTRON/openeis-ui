@@ -181,35 +181,40 @@ describe('openeis-ui.project.project-controller', function () {
         });
 
         describe('configureTimestamp function', function () {
-            it('should retrieve first rows of file', inject(function (DataFiles) {
-                spyOn(DataFiles, 'head').andReturn({ then: function () {} });
+            it('should retrieve first rows of file and list of timezones', inject(function (DataFiles, $q) {
+                spyOn(DataFiles, 'head').andReturn($q.defer().promise);
+                $httpBackend.expectGET(settings.TIMEZONES_URL).respond('["tz1","tz2"]');
                 scope.dataFiles = { 0: { id: 1 } };
                 scope.configureTimestamp(0);
+                $httpBackend.flush();
                 expect(DataFiles.head).toHaveBeenCalledWith(1);
             }));
 
-            it('should set timestampFile and open a modal', inject(function (DataFiles, Modals) {
-                var resolve;
-                spyOn(DataFiles, 'head').andReturn({ then: function (successCallback) {
-                    resolve = successCallback;
-                }});
+            it('should set timestampFile and open a modal', inject(function (DataFiles, Modals, $q, $rootScope) {
+                var headResponse = {};
+                spyOn(DataFiles, 'head').andReturn($q.when(headResponse));
                 spyOn(Modals, 'openModal');
                 scope.dataFiles = { 0: { id: 1 } };
-                scope.configureTimestamp(0);
+                $httpBackend.whenGET(settings.TIMEZONES_URL).respond('["tz1","tz2"]');
 
-                resolve({ data: {
-                    has_header: false, rows: [['val1', 'val2', 'val3']]
-                }});
+                headResponse.has_header = false;
+                headResponse.rows = [['val1', 'val2', 'val3']];
+                scope.configureTimestamp(0);
+                $httpBackend.flush();
+                $rootScope.$apply();
+                expect(DataFiles.head).toHaveBeenCalledWith(1);
                 expect(scope.timestampFile.head).toEqual({
                     has_header: false,
                     rows: [['val1', 'val2', 'val3']],
                 });
                 expect(scope.timestampFile.cols).toEqual([0, 1, 2]);
 
-                resolve({ data: {
-                    has_header: true,
-                    rows: [['col1', 'col2'], ['val1', 'val2']],
-                }});
+                delete scope.dataFiles[0].head;
+                headResponse.has_header = true;
+                headResponse.rows = [['col1', 'col2'], ['val1', 'val2']];
+                scope.configureTimestamp(0);
+                $httpBackend.flush();
+                $rootScope.$apply();
                 expect(scope.timestampFile.head).toEqual({
                     has_header: true,
                     header: ['col1', 'col2'],

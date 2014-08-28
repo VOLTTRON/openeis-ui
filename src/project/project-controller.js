@@ -55,7 +55,7 @@ angular.module('openeis-ui.project.project-controller', [
     'openeis-ui.data-sets-service',
     'openeis-ui.modals'
 ])
-.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, Modals, analyses, Analyses, sharedAnalyses, SharedAnalyses) {
+.controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, $http, Modals, analyses, Analyses, sharedAnalyses, SharedAnalyses) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.dataSets = dataSets;
@@ -109,18 +109,28 @@ angular.module('openeis-ui.project.project-controller', [
     $scope.statusCheck();
 
     $scope.configureTimestamp = function ($index) {
-        DataFiles.head($scope.dataFiles[$index].id).then(function (headResponse) {
-            if (headResponse.data.has_header) {
-                headResponse.data.header = headResponse.data.rows.shift();
+        var promises = { timeZones: $http.get(settings.TIMEZONES_URL) };
+
+        if (!$scope.dataFiles[$index].head) {
+            promises.head = DataFiles.head($scope.dataFiles[$index].id);
+        }
+
+        $q.all(promises).then(function (responses) {
+            if (responses.head) {
+                if (responses.head.has_header) {
+                    responses.head.header = responses.head.rows.shift();
+                }
+
+                $scope.dataFiles[$index].head = responses.head;
+                $scope.dataFiles[$index].cols = [];
+                angular.forEach($scope.dataFiles[$index].head.rows[0], function (v, k) {
+                    $scope.dataFiles[$index].cols.push(k);
+                });
             }
 
-            $scope.dataFiles[$index].head = headResponse.data;
-            $scope.dataFiles[$index].cols = [];
-            angular.forEach($scope.dataFiles[$index].head.rows[0], function (v, k) {
-                $scope.dataFiles[$index].cols.push(k);
-            });
-
             $scope.timestampFile = $scope.dataFiles[$index];
+            $scope.timeZones = responses.timeZones.data;
+
             Modals.openModal('configureTimestamp');
         });
     };

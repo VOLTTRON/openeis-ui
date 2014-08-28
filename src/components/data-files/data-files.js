@@ -52,6 +52,7 @@ angular.module('openeis-ui.data-files', ['ngResource'])
 .service('DataFiles', function ($resource, $http) {
     var DataFiles = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
+            head: { method: 'GET', url: settings.API_URL + 'files/:fileId/head' },
             update: { method: 'PATCH' },
         });
 
@@ -68,10 +69,18 @@ angular.module('openeis-ui.data-files', ['ngResource'])
     };
 
     DataFiles.head = function (fileId) {
-        return $http({
-            method: 'GET',
-            url: settings.API_URL + 'files/' + fileId + '/head?rows=5',
+        return resource.head({fileId: fileId, rows: 5}).$promise;
+    };
+
+    DataFiles.timestamps = function (fileId, timeZone, columns) {
+        return $http.get(settings.API_URL + 'files/' + fileId + '/timestamps', {
             transformResponse: angular.fromJson,
+            params: {
+                time_zone: timeZone,
+                columns: columns
+            },
+        }).then(function (response) {
+            return response.data;
         });
     };
 })

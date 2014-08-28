@@ -56,6 +56,7 @@ module.exports = function(config) {
       // Order of files matter (settings and libraries must be first)
       'src/settings.js',
       'bower_components/d3/d3.min.js',
+      'bower_components/jstzdetect/jstz.min.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-*/angular-*.js',
       'bower_components/ng-file-upload/angular-file-upload.js',

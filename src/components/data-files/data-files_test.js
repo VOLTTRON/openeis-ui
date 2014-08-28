@@ -126,7 +126,7 @@ describe('openeis-ui.data-files', function () {
 
             $httpBackend.expectGET(headUrlPattern).respond(angular.toJson(testHead));
             DataFiles.head(1).then(function (response) {
-                head = response.data;
+                head = response;
             });
             $httpBackend.flush();
 
@@ -135,6 +135,21 @@ describe('openeis-ui.data-files', function () {
             for (var i = 0; i < testHead.rows.length; i++) {
                 expect(head.rows[i]).toEqual(testHead.rows[i]);
             }
+        });
+
+        it('should retrieve preview of parsed timestamps', function () {
+            var preview,
+                testPreview = [['raw1', 'parse1'], ['raw2', 'parsed2']];
+
+            expect(DataFiles.timestamps).toBeDefined();
+
+            $httpBackend.expectGET(settings.API_URL + 'files/1/timestamps?columns=0&time_zone=UTC').respond(angular.toJson(testPreview));
+            DataFiles.timestamps(1, 'UTC', '0').then(function (response) {
+                preview = response;
+            });
+            $httpBackend.flush();
+
+            expect(preview).toEqual(testPreview);
         });
     });
 

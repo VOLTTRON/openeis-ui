@@ -124,6 +124,17 @@ module.exports = function(grunt) {
           ],
         },
       },
+      jstz: {
+        options: {
+          stripBanners: { block: true },
+          banner: '/*\n' + grunt.file.read('bower_components/jstzdetect/LICENCE.txt') + '\n*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/jstz.min.js': [
+            'bower_components/jstzdetect/jstz.min.js',
+          ],
+        },
+      },
       css: {
         options: {
           process: function (src) {
@@ -153,6 +164,7 @@ module.exports = function(grunt) {
           scripts: {
             app: [
               '<%= buildDir %>js/d3.min.js',
+              '<%= buildDir %>js/jstz.min.js',
               '<%= buildDir %>js/angular.min.js',
               '<%= buildDir %>js/angular-file-upload.min.js',
               '<%= buildDir %>js/angular-recursion.min.js',
@@ -168,6 +180,7 @@ module.exports = function(grunt) {
           scripts: {
             app: [
               '<%= buildDir %>js/d3.js',
+              '<%= buildDir %>js/jstz.js',
               '<%= buildDir %>js/angular.js',
               '<%= buildDir %>js/angular*.js',
               '<%= buildDir %>js/autofill-event.js',
@@ -289,6 +302,7 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'bower_components/d3/d3.js',
+              'bower_components/jstzdetect/jstz.js',
               'bower_components/angular*/angular*.js',
               '!bower_components/angular*/angular*.min.js',
               'bower_components/ng-file-upload/angular-file-upload.js',

@@ -53,7 +53,7 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
     'openeis-ui.data-files',
 ])
 .controller('ConfigureTimestampCtrl', function ($scope, DataFiles, $http, Modals) {
-    $scope.modal = { columns: {}, };
+    $scope.modal = { columns: {}, timeZone: jstz.determine().name() };
 
     $scope.preview = function () {
         $scope.selectedColumns = [];
@@ -64,13 +64,13 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
             }
         });
 
-        $http({
-            method: 'GET',
-            url: settings.API_URL + 'files/' + $scope.timestampFile.id + '/timestamps?columns=' + $scope.selectedColumns.join(','),
-            transformResponse: angular.fromJson,
-        }).then(function (response) {
+        DataFiles.timestamps(
+            $scope.timestampFile.id,
+            $scope.modal.timeZone,
+            $scope.selectedColumns.join(',')
+        ).then(function (response) {
             $scope.modal.confirm = true;
-            $scope.modal.timestamps = response.data;
+            $scope.modal.timestamps = response;
         }, function (rejection) {
             alert(angular.toJson(rejection.data));
         });
@@ -82,8 +82,10 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
         DataFiles.update({
             id: $scope.timestampFile.id,
             timestamp: timestamp,
+            time_zone: $scope.modal.timeZone,
         }).then(function (file) {
             $scope.timestampFile.timestamp = timestamp;
+            $scope.timestampFile.time_zone = $scope.modal.timeZone;
             Modals.closeModal('configureTimestamp');
         }, function (rejection) {
             alert(angular.toJson(rejection));

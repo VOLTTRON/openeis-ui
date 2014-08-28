@@ -19,9 +19,12 @@
             </tr>
         </tbody>
     </table>
-    <div>
-        <button ng-click="preview()">Continue</button> <button ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
+    <div class="form__group">
+        <label class="label--inline">If unable to determine time zone, use</label>&nbsp;
+        <select class="select--inline" required ng-options="timeZone for timeZone in timeZones" ng-model="modal.timeZone">
+        </select>
     </div>
+    <button ng-click="preview()">Continue</button> <button ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
 </div>
 <div ng-if="modal.confirm">
     <table>
