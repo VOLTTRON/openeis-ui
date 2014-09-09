@@ -72,10 +72,11 @@ angular.module('openeis-ui.data-files', ['ngResource'])
         return resource.head({fileId: fileId, rows: 5}).$promise;
     };
 
-    DataFiles.timestamps = function (fileId, timeZone, columns) {
+    DataFiles.timestamps = function (fileId, timeOffset, timeZone, columns) {
         return $http.get(settings.API_URL + 'files/' + fileId + '/timestamps', {
             transformResponse: angular.fromJson,
             params: {
+                time_offset: timeOffset,
                 time_zone: timeZone,
                 columns: columns
             },

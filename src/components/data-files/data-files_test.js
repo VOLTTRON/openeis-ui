@@ -143,8 +143,8 @@ describe('openeis-ui.data-files', function () {
 
             expect(DataFiles.timestamps).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + 'files/1/timestamps?columns=0&time_zone=UTC').respond(angular.toJson(testPreview));
-            DataFiles.timestamps(1, 'UTC', '0').then(function (response) {
+            $httpBackend.expectGET(settings.API_URL + 'files/1/timestamps?columns=0&time_offset=0&time_zone=UTC').respond(angular.toJson(testPreview));
+            DataFiles.timestamps(1, 0, 'UTC', '0').then(function (response) {
                 preview = response;
             });
             $httpBackend.flush();

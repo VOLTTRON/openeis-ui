@@ -1,5 +1,5 @@
 <h4>Configure timestamp: {{timestampFile.file}}</h4>
-<div ng-if="!modal.confirm">
+<form ng-if="!modal.confirm" ng-submit="preview()">
     <table class="table--file-preview">
         <thead>
             <tr>
@@ -20,12 +20,16 @@
         </tbody>
     </table>
     <div class="form__group">
+        <label class="label--inline">Apply offset to timestamps</label>&nbsp;
+        <input type="number" step="0.000001" required ng-model="modal.timeOffset">&nbsp;seconds
+    </div>
+    <div class="form__group">
         <label class="label--inline">If unable to determine time zone, use</label>&nbsp;
         <select class="select--inline" required ng-options="timeZone for timeZone in timeZones" ng-model="modal.timeZone">
         </select>
     </div>
-    <button ng-click="preview()">Continue</button> <button ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
-</div>
+    <button>Continue</button> <button type="button" ng-click="Modals.closeModal('configureTimestamp')">Cancel</button>
+</form>
 <div ng-if="modal.confirm">
     <table>
         <thead>

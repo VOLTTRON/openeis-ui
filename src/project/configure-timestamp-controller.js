@@ -53,7 +53,11 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
     'openeis-ui.data-files',
 ])
 .controller('ConfigureTimestampCtrl', function ($scope, DataFiles, $http, Modals) {
-    $scope.modal = { columns: {}, timeZone: jstz.determine().name() };
+    $scope.modal = {
+        columns: {},
+        timeOffset: 0,
+        timeZone: jstz.determine().name(),
+    };
 
     $scope.preview = function () {
         $scope.selectedColumns = [];
@@ -66,6 +70,7 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
 
         DataFiles.timestamps(
             $scope.timestampFile.id,
+            $scope.modal.timeOffset,
             $scope.modal.timeZone,
             $scope.selectedColumns.join(',')
         ).then(function (response) {
@@ -82,6 +87,7 @@ angular.module('openeis-ui.project.configure-timestamp-controller', [
         DataFiles.update({
             id: $scope.timestampFile.id,
             timestamp: timestamp,
+            time_offset: $scope.modal.timeOffset,
             time_zone: $scope.modal.timeZone,
         }).then(function (file) {
             $scope.timestampFile.timestamp = timestamp;
