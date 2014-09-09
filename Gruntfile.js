@@ -262,6 +262,7 @@ module.exports = function(grunt) {
     sass: {
       options: {
         loadPath: ['bower_components'],
+        sourcemap: 'none',
       },
       build: {
         options: {
@@ -340,7 +341,7 @@ module.exports = function(grunt) {
           ],
         },
       },
-      app: {
+      autofillEvent: {
         files: {
           '<%= buildDir %>js/autofill-event.min.js': [
             'bower_components/autofill-event/src/autofill-event.js',
@@ -423,7 +424,7 @@ module.exports = function(grunt) {
       r.on('data', function (d) {
         grunt.file.write('normalize.css.license', '/*\n' + d.toString() + '*/');
         done();
-      })
+      });
     });
   });
 
