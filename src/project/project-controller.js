@@ -191,6 +191,14 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
+    $scope.deleteAnalysis = function ($index) {
+        $scope.analyses[$index].$delete(function () {
+            $scope.analyses.splice($index, 1);
+
+            $scope.sharedAnalyses = SharedAnalyses.query(project.id);
+        });
+    };
+
     $scope.viewAnalysis = function (analysis) {
         $scope.viewingAnalysisData = Analyses.getData(analysis.id).then(function (outputData) {
             $scope.viewingAnalysis = analysis;
@@ -218,10 +226,14 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
-    $scope.revokeLink = function (link) {
+    $scope.revokeLink = function (analysisId) {
         if (confirm('Revoke sharing?')) {
-            link.sharedAnalysis.$delete(function () {
-                $scope.sharedAnalyses.splice($scope.sharedAnalyses.indexOf(link.sharedAnalysis), 1);
+            angular.forEach($scope.sharedAnalyses, function (sharedAnalysis) {
+                if (sharedAnalysis.analysis === analysisId) {
+                    sharedAnalysis.$delete(function () {
+                        $scope.sharedAnalyses.splice($scope.sharedAnalyses.indexOf(sharedAnalysis), 1);
+                    });
+                }
             });
             Modals.closeModal('viewLink');
         }

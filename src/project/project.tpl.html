@@ -113,6 +113,7 @@
                         <th>Name</th>
                         <th>Status</th>
                         <th>Report</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,11 +124,16 @@
                             <span ng-if="analysis.debug">(<a href="{{analysis.debug}}" target="_self">download debug output</a>)</span>
                         </td>
                         <td>{{analysis.status | capitalize}}</td>
-                        <td ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length">
-                            <a ng-click="shareAnalysis(analysis)">Share</a>
+                        <td>
+                            <span ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length">
+                                <a ng-click="shareAnalysis(analysis)">Share</a>
+                            </span>
+                            <span ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length">
+                                <a ng-click="viewLink(analysis.id)">Shared</a> (<a ng-click="revokeLink(analysis.id)">revoke</a>)
+                            </span>
                         </td>
-                        <td ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length">
-                            Shared (<a ng-click="viewLink(analysis.id)">link</a>)
+                        <td>
+                            <a ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="deleteAnalysis($index)">Delete</a>
                         </td>
                     </tr>
                 </tbody>
@@ -143,7 +149,7 @@
         </modal>
         <modal class="modal--view-link" ng-if="Modals.modalOpen('viewLink')">
             <p><a href="{{viewingLink.url}}">{{viewingLink.url}}</a></p>
-            <button ng-click="revokeLink(viewingLink)">Revoke</button> <button ng-click="Modals.closeModal('viewLink')">Close</button>
+            <button ng-click="revokeLink(viewingLink.sharedAnalysis.analysis)">Revoke</button> <button ng-click="Modals.closeModal('viewLink')">Close</button>
         </modal>
     </div>
 </div>
