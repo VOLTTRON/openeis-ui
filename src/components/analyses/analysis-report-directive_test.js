@@ -166,6 +166,23 @@ describe('openeis-ui.analyses.analysis-report-directive', function () {
         expect(element.children().hasClass('scatter-plot')).toBe(true);
     });
 
+    it('should render datetime scatter plots', function () {
+        scope.report.elements = [{
+            type: 'DatetimeScatterPlot',
+            xy_dataset_list: [
+                { table_name: 'data_table1', x_column: 'col1', y_column: 'col2' },
+                { table_name: 'data_table2', x_column: 'col1', y_column: 'col2' },
+            ],
+        }];
+
+        scope.data = { data_table1: [{ col1: 'r1c1', col2: 'r1c2' }] };
+
+        $compile(element)(scope);
+
+        expect(element.children().length).toBe(2);
+        expect(element.children().hasClass('scatter-plot')).toBe(true);
+    });
+
     it('should render heat maps', function () {
         scope.report.elements = [{
             type: 'HeatMap',

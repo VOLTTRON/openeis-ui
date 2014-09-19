@@ -125,6 +125,17 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
                     });
                     break;
 
+                case 'DatetimeScatterPlot':
+                    // TODO: plot all datasets on a single scatterplot
+                    angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        var data = [];
+                        angular.forEach(scope.arData[dataset.table_name], function (row) {
+                            data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
+                        });
+                        element.append(angular.element('<div class="scatter-plot scatter-plot--datetime" />').append(datetimeScatterPlotSVG(data, reportElement.x_label, reportElement.y_label)));
+                    });
+                    break;
+
                 case 'HeatMap':
                     var data = [];
                     angular.forEach(scope.arData[reportElement.table_name], function (row) {
@@ -327,7 +338,94 @@ function scatterPlotSVG(data, xLabel, yLabel) {
         .attr("r", 3.5)
         .attr("cx", xMap)
         .attr("cy", yMap)
-        .style("fill", function(d) { return color(cValue(d));});
+        .style("fill", function(d) { return color(cValue(d));})
+        .append("svg:title")
+        .text(function (d) { return xLabel + ': ' + d.x + '\n' + yLabel + ': ' + d.y; });
+
+    return svg[0];
+}
+
+function datetimeScatterPlotSVG(data, xLabel, yLabel) {
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 920 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
+
+    /*
+     * value accessor - returns the value to encode for a given data object.
+     * scale - maps value to a visual display encoding, such as a pixel position.
+     * map function - maps from data value to display value
+     * axis - sets up axis
+     */
+
+    // setup x
+    var xValue = function(d) { return Date.parse(d.x);}, // data -> value
+        xScale = d3.time.scale().range([0, width]), // value -> display
+        xMap = function(d) { return xScale(xValue(d));}, // data -> display
+        xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+    // setup y
+    var yValue = function(d) { return d.y;}, // data -> value
+        yScale = d3.scale.linear().range([height, 0]), // value -> display
+        yMap = function(d) { return yScale(yValue(d));}, // data -> display
+        yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+    // setup fill color
+    var cValue = function(d) { return 0;},
+        color = d3.scale.category10();
+
+    // add the graph canvas to the body of the webpage
+    var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom);
+
+    var graph = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        //replace svg with graph
+
+    // add the tooltip area to the webpage
+    var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+    // don't want dots overlapping axis, so add in buffer to data domain
+    xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+    yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+    // x-axis
+    graph.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text(xLabel);
+
+    // y-axis
+    graph.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(yLabel);
+
+    // draw dots
+    graph.selectAll(".dot")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
+        .attr("cx", xMap)
+        .attr("cy", yMap)
+        .style("fill", function(d) { return color(cValue(d));})
+        .append("svg:title")
+        .text(function (d) { return xLabel + ': ' + d.x + '\n' + yLabel + ': ' + d.y; });
 
     return svg[0];
 }
