@@ -59,6 +59,7 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
         scope: {
             container: '=',
             files: '=',
+            parent: '=',
         },
         templateUrl: 'src/components/data-maps/sensor-container-directive.tpl.html',
         controller: function ($scope, DataMaps) {
@@ -77,6 +78,22 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
 
                     $scope.objectDefinition.sensor_list.sort();
                 }
+
+                if ($scope.objectDefinition.attribute_list) {
+                    if ($scope.objectDefinition.attribute_list === '*') {
+                        $scope.objectDefinition.attribute_list = [];
+                        angular.forEach(definition.attributes, function (def, name) {
+                            $scope.objectDefinition.attribute_list.push(name);
+                        });
+                    }
+
+                    // Time zone is only allowed on top-level objects
+                    if ($scope.parent && $scope.objectDefinition.attribute_list.indexOf('timezone') >  -1) {
+                        $scope.objectDefinition.attribute_list.splice($scope.objectDefinition.attribute_list.indexOf('timezone'), 1);
+                    }
+
+                    $scope.objectDefinition.attribute_list.sort();
+                }
             });
 
             DataMaps.getUnits().then(function (units) {
@@ -86,17 +103,8 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
             $scope.newAttribute = {};
 
             $scope.addAttribute = function () {
-                if ($scope.newAttribute.name === 'address') {
-                    $scope.newAttribute.value = {
-                        address: '123 Anystreet',
-                        city: 'Anytown',
-                        state: 'US',
-                        zip_code: '12345',
-                    };
-                }
-
                 $scope.container.attributes = $scope.container.attributes || {};
-                $scope.container.attributes[$scope.newAttribute.name] = angular.copy($scope.newAttribute.value);
+                $scope.container.attributes[$scope.newAttribute.name] = $scope.newAttribute.value;
                 $scope.objectDefinition.attribute_list.splice(
                     $scope.objectDefinition.attribute_list.indexOf($scope.newAttribute.name), 1
                 );

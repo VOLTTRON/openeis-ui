@@ -98,10 +98,15 @@ describe('openeis-ui.data-maps.sensor-container-directive', function () {
             expect(directive[0].querySelectorAll('sensor-container sensor-container sensor-container').length).toBe(1);
         });
 
-        it('should replace asterisk string with array of all sensors', function () {
+        it('should replace asterisk string with array of all attributes or sensors', function () {
             definition = {
-                site: { sensor_list: ['sensor2'] },
-                building: { sensor_list: '*' },
+                site: { attribute_list: '*', sensor_list: ['sensor2'] },
+                building: { attribute_list: ['attribute3'], sensor_list: '*' },
+                attributes: {
+                    attribute1: {},
+                    attribute2: {},
+                    attribute3: {},
+                },
                 sensors: {
                     sensor1: {},
                     sensor2: {},
@@ -113,16 +118,51 @@ describe('openeis-ui.data-maps.sensor-container-directive', function () {
             ]};
             compile();
 
-            var siteSensors = directive.find('select')[0].querySelectorAll('option:not([value=""])'),
-                buildingSensors = directive.find('select')[1].querySelectorAll('option:not([value=""])');
+            var siteAttributes = directive.find('select')[0].querySelectorAll('option:not([value=""])'),
+                siteSensors = directive.find('select')[1].querySelectorAll('option:not([value=""])'),
+                buildingAttributes = directive.find('select')[2].querySelectorAll('option:not([value=""])');
+                buildingSensors = directive.find('select')[3].querySelectorAll('option:not([value=""])');
+
+            expect(siteAttributes.length).toBe(3);
+            expect(siteAttributes[0].innerHTML).toBe('attribute1');
+            expect(siteAttributes[1].innerHTML).toBe('attribute2');
+            expect(siteAttributes[2].innerHTML).toBe('attribute3');
 
             expect(siteSensors.length).toBe(1);
             expect(siteSensors[0].innerHTML).toBe('sensor2');
+
+            expect(buildingAttributes.length).toBe(1);
+            expect(buildingAttributes[0].innerHTML).toBe('attribute3');
 
             expect(buildingSensors.length).toBe(3);
             expect(buildingSensors[0].innerHTML).toBe('sensor1');
             expect(buildingSensors[1].innerHTML).toBe('sensor2');
             expect(buildingSensors[2].innerHTML).toBe('sensor3');
+        });
+
+        it('should remove timezone attribute from child objects', function () {
+            definition = {
+                site: { attribute_list: '*' },
+                building: { attribute_list: '*' },
+                attributes: {
+                    address: {},
+                    timezone: {},
+                }
+            };
+            scope.rootContainer = { level: 'site', name: 'Site1', children: [
+                { level: 'building', name: 'Building1' },
+            ]};
+            compile();
+
+            var siteAttributes = directive.find('select')[0].querySelectorAll('option:not([value=""])'),
+                buildingAttributes = directive.find('select')[1].querySelectorAll('option:not([value=""])');
+
+            expect(siteAttributes.length).toBe(2);
+            expect(siteAttributes[0].innerHTML).toBe('address');
+            expect(siteAttributes[1].innerHTML).toBe('timezone');
+
+            expect(buildingAttributes.length).toBe(1);
+            expect(buildingAttributes[0].innerHTML).toBe('address');
         });
 
         it('should add attributes', function () {

@@ -15,6 +15,15 @@
                             <option value="">-- Choose attribute --</option>
                         </select>
                     </div>
+                    <div class="form__group" ng-if="newAttribute.name && definition.attributes[newAttribute.name].data_type === 'enum'">
+                        <select required ng-options="value for value in definition.attributes[newAttribute.name].data_values" ng-model="newAttribute.value">
+                            <option value="">--- Choose value---</option>
+                        </select>
+                    </div>
+                    <div class="form__group" ng-if="newAttribute.name && !definition.attributes[newAttribute.name].data_type" ng-init="newAttribute.value = {}">
+                        <label ng-repeat-start="(name, property) in definition.attributes[newAttribute.name]">{{name}}</label>
+                        <input ng-model="newAttribute.value[name]"><br ng-repeat-end>
+                    </div>
                     <button>Add</button>
                 </form>
                 <dl ng-if="container.attributes">
@@ -62,5 +71,5 @@
         Add under {{container.name}}:<span ng-repeat="child in objectDefinition.child_list">&nbsp;<button ng-click="addChild(child)">{{child}}</button></span>
     </div>
 
-    <sensor-container ng-repeat="child in container.children" container="child" files="files"></sensor-container>
+    <sensor-container ng-repeat="child in container.children" parent="container" container="child" files="files"></sensor-container>
 </div>
