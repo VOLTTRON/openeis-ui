@@ -65,11 +65,7 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
             DataMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;
 
-                if ($scope.container.level === 'system') {
-                    $scope.objectDefinition = definition.systems[$scope.container.name];
-                } else {
-                    $scope.objectDefinition = definition[$scope.container.level];
-                }
+                $scope.objectDefinition = definition[$scope.container.level];
 
                 if ($scope.objectDefinition.sensor_list) {
                     if ($scope.objectDefinition.sensor_list === '*') {

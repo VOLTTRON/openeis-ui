@@ -81,20 +81,20 @@ describe('openeis-ui.data-maps.sensor-container-directive', function () {
             definition = {
                 site: {},
                 building: {},
-                systems: { System1: {} },
+                RTU: {},
             };
             scope.rootContainer = { level: 'site', name: 'Site1', children: [
                 { level: 'building', name: 'Building1' },
                 { level: 'building', name: 'Building2' },
                 { level: 'building', name: 'Building3', children: [
-                    { level: 'system', name: 'System1' },
+                    { level: 'RTU', name: 'RTU1' },
                 ]},
             ]};
             compile();
 
-            // 3 buildings + 1 system
+            // 3 buildings + 1 RTU
             expect(directive[0].querySelectorAll('sensor-container').length).toBe(4);
-            // 1 system
+            // 1 RTU
             expect(directive[0].querySelectorAll('sensor-container sensor-container sensor-container').length).toBe(1);
         });
 
