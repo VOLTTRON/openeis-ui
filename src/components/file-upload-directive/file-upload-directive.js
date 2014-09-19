@@ -72,7 +72,10 @@ angular.module('openeis-ui.file-upload-directive', [])
                     scope.$apply(function () {
                         clickFn(scope, {
                             $event: event,
-                            fileInput: fileInput,
+                            files: fileInput[0].files,
+                            onUpload: function () {
+                                fileInput.val('').triggerHandler('change');
+                            },
                         });
                     });
                 });

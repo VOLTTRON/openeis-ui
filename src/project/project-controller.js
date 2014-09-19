@@ -135,8 +135,8 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
-    $scope.upload = function (fileInput) {
-        angular.forEach(fileInput[0].files, function(file) {
+    $scope.upload = function (files, onUpload) {
+        angular.forEach(files, function(file) {
             $upload.upload({
                 url: settings.API_URL + 'projects/' + project.id + '/add_file',
                 file: file,
@@ -147,7 +147,7 @@ angular.module('openeis-ui.project.project-controller', [
                     $scope.configureTimestamp($scope.dataFiles.length - 1);
                 });
 
-                fileInput.val('').triggerHandler('change');
+                onUpload();
             });
         });
     };

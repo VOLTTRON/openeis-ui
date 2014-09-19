@@ -246,23 +246,23 @@ describe('openeis-ui.project.project-controller', function () {
             });
 
             it('should upload selected files with $upload', function () {
-                scope.upload([{ files: ['file1', 'file2', 'file2'] }]);
+                scope.upload(['file1', 'file2', 'file2']);
                 expect(upload.upload.callCount).toBe(3);
             });
 
             it('should retrieve file and add it to array', function () {
+                var onUpload = jasmine.createSpy('onUpload');
+
                 scope.dataFiles = [];
                 scope.configureTimestamp = jasmine.createSpy('configureTimestamp');
-                scope.upload({
-                    0: { files: ['file1', 'file2', 'file2'] },
-                    val: function () { return { triggerHandler: function () {} }; }
-                });
+                scope.upload(['file1', 'file2', 'file2'], onUpload);
                 resolve({ data: { id: 1 }});
                 resolve('file');
                 expect(scope.dataFiles.length).toBe(1);
                 expect(scope.dataFiles[0]).toBe('file');
                 expect(DataFiles.get).toHaveBeenCalledWith(1);
                 expect(scope.configureTimestamp).toHaveBeenCalledWith(0);
+                expect(onUpload.callCount).toBe(1);
             });
         });
 

@@ -10,7 +10,7 @@
             <h3>Data files</h3>
             <p>
                 <label class="label--inline">Upload file</label>&nbsp;
-                <file-upload file-upload-click="upload(fileInput)"></file-upload>
+                <file-upload file-upload-click="upload(files, onUpload)"></file-upload>
             </p>
             <table ng-if="dataFiles.length">
                 <thead>
