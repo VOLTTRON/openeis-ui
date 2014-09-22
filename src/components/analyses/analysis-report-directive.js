@@ -345,9 +345,9 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
     }
 
     function datetimeScatterPlotSVG(data, xLabel, yLabel) {
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        var margin = {top: 20, right: 20, bottom: 180, left: 40},
             width = 920 - margin.left - margin.right,
-            height = 300 - margin.top - margin.bottom;
+            height = 450 - margin.top - margin.bottom;
 
         /*
          * value accessor - returns the value to encode for a given data object.
@@ -360,7 +360,7 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         var xValue = function(d) { return Date.parse(d.x);}, // data -> value
             xScale = d3.time.scale().range([0, width]), // value -> display
             xMap = function(d) { return xScale(xValue(d));}, // data -> display
-            xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+            xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(30);
 
         // setup y
         var yValue = function(d) { return d.y;}, // data -> value
@@ -390,6 +390,24 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
         xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
         yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
 
+        var formats = [
+                // [format, test function] in order of granularity
+                ['%Y-%m', function (d) { return d.getMonth(); }],
+                ['%Y-%m-%d', function (d) { return d.getDate(); }],
+                ['%Y-%m-%d %H:%M', function (d) { return d.getHours(); }],
+                ['%Y-%m-%d %H:%M:%S', function (d) { return d.getSeconds(); }],
+            ];
+
+        xAxis.tickFormat(d3.time.format('%Y')); // default format
+        xScale.ticks.apply(xScale, xAxis.ticks()).forEach(function (tick) {
+            while (formats.length && formats[0][1](tick)) {
+                // test returned true, update tickFormat
+                xAxis.tickFormat(d3.time.format(formats[0][0]));
+                // remove format from list
+                formats.shift();
+            }
+        });
+
         // x-axis
         graph.append("g")
             .attr("class", "x axis")
@@ -401,6 +419,12 @@ angular.module('openeis-ui.analyses.analysis-report-directive', [])
             .attr("y", -6)
             .style("text-anchor", "end")
             .text(xLabel);
+
+        graph.selectAll(".x.axis > .tick > text")
+            .style("text-anchor", "end")
+            .attr("transform", "rotate(-90)")
+            .attr("dx", "-.5em")
+            .attr("dy", "-.5em");
 
         // y-axis
         graph.append("g")
