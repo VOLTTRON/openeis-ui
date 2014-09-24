@@ -118,10 +118,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="analysis in analyses">
-                        <td ng-if="analysis.status !== 'complete'">Analysis {{analysis.id}}: {{analysis.name}}</td>
-                        <td ng-if="analysis.status === 'complete'">
-                            <a ng-click="viewAnalysis(analysis)">Analysis {{analysis.id}}: {{analysis.name}}</a>
-                            <span ng-if="analysis.debug">(<a href="{{analysis.debug}}" target="_self">download debug output</a>)</span>
+                        <td>
+                            <span ng-if="analysis.status !== 'complete'">Analysis {{analysis.id}}: {{analysis.name}}</span>
+                            <a ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">Analysis {{analysis.id}}: {{analysis.name}}</a>
+                            <span ng-if="analysis.status === 'complete' && analysis.debug">(<a href="{{analysis.debug}}" target="_self">download debug output</a>)</span>
+                            <span ng-if="analysis.status === 'error' && analysis.debug">(download debug output)</span>
                         </td>
                         <td>{{analysis.status | capitalize}}</td>
                         <td>
