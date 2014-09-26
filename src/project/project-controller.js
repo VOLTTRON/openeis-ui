@@ -185,6 +185,19 @@ angular.module('openeis-ui.project.project-controller', [
         });
     };
 
+    $scope.renameDataMap = function ($index) {
+        var newName = prompt("New data map name:");
+
+        if (!newName || !newName.length) {
+            return;
+        }
+
+        $scope.dataMaps[$index].name = newName;
+        $scope.dataMaps[$index].$save(function (response) {
+            $scope.dataMaps[$index] = response;
+        });
+    };
+
     $scope.deleteDataMap = function ($index) {
         $scope.dataMaps[$index].$delete(function () {
             $scope.dataMaps.splice($index, 1);

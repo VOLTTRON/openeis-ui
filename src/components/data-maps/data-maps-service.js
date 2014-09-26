@@ -56,6 +56,7 @@ angular.module('openeis-ui.data-maps.data-maps-service', [
     var DataMaps = this,
         resource = $resource(settings.API_URL + 'sensormaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
+            save: { method: 'PUT' },
         });
 
     DataMaps.get = function (mapId) {
