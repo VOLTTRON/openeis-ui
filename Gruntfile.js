@@ -264,7 +264,7 @@ module.exports = function(grunt) {
 
     sass: {
       options: {
-        loadPath: ['bower_components'],
+        loadPath: ['src/scss', 'bower_components'],
         sourcemap: 'none',
       },
       build: {

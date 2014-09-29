@@ -35,9 +35,9 @@ $inuit-btn-border-width: 0;
 @import "inuit-box/objects.box";
 @import "inuit-buttons/objects.buttons";
 @import "inuit-layout/objects.layout";
-@import "components/analyses/analysis-report-objects";
-@import "components/modals/modals-objects";
-@import "components/data-maps/sensor-container-objects";
+@import "objects.analysis-report";
+@import "objects.modals";
+@import "objects.sensor-container";
 @import "objects";
 
 .top-bar {
