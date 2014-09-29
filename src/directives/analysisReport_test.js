@@ -48,11 +48,11 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.analyses.analysis-report-directive', function () {
+describe('analysisReport directive', function () {
     var $compile, scope, element;
 
     beforeEach(function () {
-        module('openeis-ui.analyses.analysis-report-directive');
+        module('openeis-ui.directives.analysis-report');
 
         inject(function($rootScope, _$compile_) {
             $compile = _$compile_;

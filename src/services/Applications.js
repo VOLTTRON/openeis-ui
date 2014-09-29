@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.applications-service', ['ngResource'])
+angular.module('openeis-ui.services.applications', ['ngResource'])
 .service('Applications', function ($resource) {
     var Applications = this,
         resource = $resource(settings.API_URL + 'applications');

@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.analyses.shared-analyses-service', ['ngResource'])
+angular.module('openeis-ui.services.shared-analyses', ['ngResource'])
 .service('SharedAnalyses', function ($resource, $q) {
     var SharedAnalyses = this,
         resource = $resource(settings.API_URL + 'shared-analyses/:analysisId', { analysisId: '@analysis' }),

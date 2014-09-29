@@ -48,33 +48,29 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.applications-service', function () {
+describe('Applications service', function () {
+    var Applications, $httpBackend,
+        testApplications = [
+            { id: 1 },
+            { id: 2 },
+            { id: 3 },
+        ];
+
     beforeEach(function () {
-        module('openeis-ui.applications-service');
+        module('openeis-ui.services.applications');
+
+        inject(function (_Applications_, _$httpBackend_) {
+            Applications = _Applications_;
+            $httpBackend = _$httpBackend_;
+        });
     });
 
-    describe('Applications service', function () {
-        var Applications, $httpBackend,
-            testApplications = [
-                { id: 1 },
-                { id: 2 },
-                { id: 3 },
-            ];
+    it('should retrieve list of applications', function () {
+        $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApplications));
 
-        beforeEach(function () {
-            inject(function (_Applications_, _$httpBackend_) {
-                Applications = _Applications_;
-                $httpBackend = _$httpBackend_;
-            });
-        });
+        var applications = Applications.query();
+        $httpBackend.flush();
 
-        it('should retrieve list of applications', function () {
-            $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApplications));
-
-            var applications = Applications.query();
-            $httpBackend.flush();
-
-            expect(applications.length).toBe(3);
-        });
+        expect(applications.length).toBe(3);
     });
 });
