@@ -54,13 +54,24 @@ describe('openeis-ui.components.modals', function () {
     });
 
     describe('modal directive', function () {
-        var directive;
+        var directive, isolateScope, Modals, modalOpen;
 
-        beforeEach(inject(function($rootScope, $compile) {
-            directive = angular.element('<modal><contents></modal>');
-            $compile(directive)($rootScope);
-            $rootScope.$digest();
-        }));
+        beforeEach(function () {
+            module(function ($provide) {
+                $provide.value('Modals', Modals);
+            });
+
+            Modals = {
+                modalOpen: function () { return true; },
+            };
+
+            inject(function($rootScope, $compile) {
+                directive = angular.element('<modal><contents></modal>');
+                $compile(directive)($rootScope);
+                isolateScope = directive.isolateScope();
+                isolateScope.$digest();
+            });
+        });
 
         it('should have a backdrop', function () {
             expect(directive[0].querySelectorAll('.modal__backdrop').length).toBe(1);
@@ -73,6 +84,17 @@ describe('openeis-ui.components.modals', function () {
         it('should transclude', function () {
             expect(directive[0].querySelectorAll('contents').length).toBe(1);
         });
+
+        it('should watch and update modal status', inject(function (Modals) {
+            expect(isolateScope.modalOpen).toBe(true);
+            expect(directive[0].querySelectorAll('contents').length).toBe(1);
+
+            spyOn(Modals, 'modalOpen').andReturn(false);
+            isolateScope.$digest();
+            expect(Modals.modalOpen).toHaveBeenCalled();
+            expect(isolateScope.modalOpen).toBe(false);
+            expect(directive[0].querySelectorAll('contents').length).toBe(0);
+        }));
     });
 
     describe('Modals service', function () {

@@ -49,17 +49,29 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui.components.modals', [])
-.directive('modal', function () {
+.directive('modal', function (Modals, $document) {
     return {
         restrict: 'E',
         transclude: true,
         template: [
-            '<div class="modal__backdrop">',
-                '<div class="modal__dialog">',
-                    '<div ng-transclude></div>',
-                '</div>',
+            '<div class="modal__backdrop" ng-if="modalOpen">',
+                '<div class="modal__dialog" ng-transclude></div>',
             '</div>',
         ].join(''),
+        scope: {},
+        link: function (scope, element, attrs) {
+            var body = $document.find('body');
+
+            scope.$watch(function () { return Modals.modalOpen(attrs.modalId); }, function (modalOpen) {
+                if (modalOpen) {
+                    body.addClass('body--modal-open');
+                } else {
+                    body.removeClass('body--modal-open');
+                }
+
+                scope.modalOpen = modalOpen;
+            });
+        },
     };
 })
 .service('Modals', function () {
