@@ -57,7 +57,7 @@ angular.module('openeis-ui.projects', [
     authRouteProvider
         .whenAuth('/projects', {
             controller: 'ProjectsCtrl',
-            templateUrl: 'src/projects/projects.tpl.html',
+            templateUrl: 'projects.tpl.html',
             resolve: {
                 projects: ['Projects', function(Projects) {
                     return Projects.query();

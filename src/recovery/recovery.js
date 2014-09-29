@@ -56,7 +56,7 @@ angular.module('openeis-ui.recovery', [
     authRouteProvider
         .whenAnon('/recovery', {
             controller: 'RecoveryCtrl',
-            templateUrl: 'src/recovery/recovery.tpl.html',
+            templateUrl: 'recovery.tpl.html',
         });
 })
 .controller('RecoveryCtrl', function ($scope, Auth, $routeParams) {

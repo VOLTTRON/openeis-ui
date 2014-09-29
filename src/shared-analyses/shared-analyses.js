@@ -57,6 +57,6 @@ angular.module('openeis-ui.shared-analyses', [
     authRouteProvider
         .when('/shared-analyses/:analysisId/:key', {
             controller: 'SharedAnalysesCtrl',
-            templateUrl: 'src/shared-analyses/shared-analyses.tpl.html',
+            templateUrl: 'shared-analyses.tpl.html',
         });
 });

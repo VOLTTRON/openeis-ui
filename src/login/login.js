@@ -56,7 +56,7 @@ angular.module('openeis-ui.login', [
     authRouteProvider
         .whenAnon('/', {
             controller: 'LoginCtrl',
-            templateUrl: 'src/login/login.tpl.html',
+            templateUrl: 'login.tpl.html',
         });
 })
 .controller('LoginCtrl', function ($scope, Auth) {

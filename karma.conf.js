@@ -69,7 +69,8 @@ module.exports = function(config) {
       'src/**/*.tpl.html': ['ng-html2js'],
     },
     ngHtml2JsPreprocessor: {
+      stripPrefix: 'src/templates/',
       moduleName: 'openeis-ui.templates',
-    }
+    },
   });
 };

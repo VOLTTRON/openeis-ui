@@ -240,7 +240,7 @@ module.exports = function(grunt) {
 
     ngtemplates: {
       options: {
-        module: 'openeis-ui.templates',
+        module: 'openeis-ui',
         htmlmin: {
           collapseBooleanAttributes:      true,
           collapseWhitespace:             true,
@@ -251,10 +251,13 @@ module.exports = function(grunt) {
           removeScriptTypeAttributes:     true,
           removeStyleLinkTypeAttributes:  true,
         },
-        standalone: true,
+        url: function (url) {
+            // Strip 'src/templates/' from templateUrl
+            return url.replace(/^src\/templates\//, '');
+        },
       },
       build: {
-        src: 'src/**/*.tpl.html',
+        src: 'src/templates/*.tpl.html',
         dest: '<%= buildDir %>js/app.templates.js',
       },
     },
@@ -363,7 +366,7 @@ module.exports = function(grunt) {
       },
 
       templates: {
-        files: 'src/**/*.tpl.html',
+        files: 'src/templates/*.tpl.html',
         tasks: ['ngtemplates'],
       },
 

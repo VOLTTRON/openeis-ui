@@ -62,12 +62,11 @@ angular.module('openeis-ui', [
     'openeis-ui.recovery',
     'openeis-ui.shared-analyses',
     'openeis-ui.signup',
-    'openeis-ui.templates',
 ])
 .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider
         .otherwise({
-            templateUrl: 'src/404.tpl.html',
+            templateUrl: '404.tpl.html',
         });
 
     $locationProvider.html5Mode(true);

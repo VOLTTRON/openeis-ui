@@ -56,7 +56,7 @@ angular.module('openeis-ui.account', [
     authRouteProvider
         .whenAuth('/account', {
             controller: 'AccountCtrl',
-            templateUrl: 'src/account/account.tpl.html',
+            templateUrl: 'account.tpl.html',
         });
 })
 .controller('AccountCtrl', function ($scope, Auth, $timeout) {

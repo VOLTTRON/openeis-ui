@@ -53,7 +53,7 @@ angular.module('openeis-ui.modals', [])
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'src/components/modals/modal.tpl.html',
+        templateUrl: 'modal.tpl.html',
     };
 })
 .service('Modals', function () {

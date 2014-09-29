@@ -41,7 +41,7 @@
             &nbsp;<button ng-click="Modals.closeModal('uploadFile')">Cancel</button>
         </modal>
         <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
-            <ng-include src="'src/project/configure-timestamp.tpl.html'" ng-controller="ConfigureTimestampCtrl"></ng-include>
+            <ng-include src="'configure-timestamp.tpl.html'" ng-controller="ConfigureTimestampCtrl"></ng-include>
         </modal>
         <div class="layout">
             <div class="data-maps">
@@ -65,7 +65,7 @@
                 </table>
             </div>
             <modal class="modal--new-data-map" ng-if="Modals.modalOpen('newDataMap')">
-                <ng-include src="'src/project/new-data-map.tpl.html'" ng-controller="NewDataMapCtrl"></ng-include>
+                <ng-include src="'new-data-map.tpl.html'" ng-controller="NewDataMapCtrl"></ng-include>
             </modal>
             <div class="data-sets">
                 <h3>Data sets</h3>
@@ -109,7 +109,7 @@
                 <button ng-click="errorsModal.errors = []">Close</button>
             </modal>
             <modal class="modal--new-data-set" ng-if="Modals.modalOpen('newDataSet')">
-                <ng-include src="'src/project/new-data-set.tpl.html'" ng-controller="NewDataSetCtrl"></ng-include>
+                <ng-include src="'new-data-set.tpl.html'" ng-controller="NewDataSetCtrl"></ng-include>
             </modal>
         </div>
         <div class="analyses">
@@ -149,7 +149,7 @@
             </table>
         </div>
         <modal class="modal--new-analysis" ng-if="Modals.modalOpen('newAnalysis')">
-            <ng-include src="'src/project/new-analysis.tpl.html'" ng-controller="NewAnalysisCtrl"></ng-include>
+            <ng-include src="'new-analysis.tpl.html'" ng-controller="NewAnalysisCtrl"></ng-include>
         </modal>
         <modal class="modal--analysis" ng-if="Modals.modalOpen('viewAnalysis')">
             <h4>{{viewingAnalysis.name}}</h4>

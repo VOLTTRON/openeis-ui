@@ -61,7 +61,7 @@ angular.module('openeis-ui.data-maps.sensor-container-directive', [
             files: '=',
             parent: '=',
         },
-        templateUrl: 'src/components/data-maps/sensor-container-directive.tpl.html',
+        templateUrl: 'sensor-container-directive.tpl.html',
         controller: function ($scope, DataMaps) {
             DataMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;

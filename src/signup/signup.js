@@ -56,7 +56,7 @@ angular.module('openeis-ui.signup', [
     authRouteProvider
         .whenAnon('/sign-up', {
             controller: 'SignUpCtrl',
-            templateUrl: 'src/signup/signup.tpl.html',
+            templateUrl: 'signup.tpl.html',
         });
 })
 .controller('SignUpCtrl', function ($scope, $location, Auth) {
