@@ -48,64 +48,56 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.shared-analyses.shared-analyses-controller', function () {
-    var $controller, scope, SharedAnalyses, getResolve, getReject, getDataResolve;
+describe('LoginCtrl controller', function () {
+    var Auth, controller, scope, status;
 
     beforeEach(function () {
-        module('openeis-ui.shared-analyses.shared-analyses-controller');
+        module('openeis-ui');
 
-        SharedAnalyses = {
-            get: jasmine.createSpy('Analyses.get').andReturn({
-                $promise: {
-                    then: function (successCallback, errorCallback) {
-                        getResolve = successCallback;
-                        getReject = errorCallback;
-                    },
-                },
-            }),
-            getData: jasmine.createSpy('Analyses.getData').andReturn({
-                then: function (successCallback) { getDataResolve = successCallback; },
-            }),
+        module(function ($provide) {
+            $provide.value('Auth', Auth);
+        });
+
+        Auth = {
+            logIn: function () {
+                return { catch: function (callback) {
+                    callback({ status: status });
+                }};
+            },
         };
 
-        inject(function ($rootScope, _$controller_) {
-            $controller = _$controller_;
+        inject(function ($controller, $rootScope) {
             scope = $rootScope.$new();
+            controller = $controller('LoginCtrl', { $scope: scope });
         });
     });
 
-    it('should retrieve analysis and analysis data with key', function () {
-        var controller = $controller('SharedAnalysesCtrl', {
-                $scope: scope,
-                SharedAnalyses: SharedAnalyses,
-                $routeParams: { analysisId: 1, key: 'abc123' },
-            }),
-            sharedAnalysis = { analysis: 1, name: 'Analysis1', reports: [] };
+    describe('logIn method', function () {
+        it('should pass error status to view', function () {
+            scope.form = {
+                username: 'TestUser',
+                password: 'testpassword',
+            };
+            expect(scope.form.error).not.toBeDefined();
 
-        expect(SharedAnalyses.get).toHaveBeenCalledWith(1, 'abc123');
+            status = 403;
+            scope.logIn();
+            expect(scope.form.error).toBe(403);
 
-        getResolve(sharedAnalysis);
-
-        expect(SharedAnalyses.getData).toHaveBeenCalledWith(1, 'abc123');
-
-        getDataResolve('data');
-
-        expect(scope.valid).toBe(true);
-        expect(scope.sharedAnalysis).toBe(sharedAnalysis);
-        expect(scope.data).toBe('data');
+            status = 500;
+            scope.logIn();
+            expect(scope.form.error).toBe(500);
+        });
     });
 
-    it('should retrieve analysis and analysis data with key', function () {
-        var controller = $controller('SharedAnalysesCtrl', {
-                $scope: scope,
-                SharedAnalyses: SharedAnalyses,
-                $routeParams: { analysisId: 1, key: 'wrongkey' },
-            });
+    describe('clearError method', function () {
+        it('should clear errors', function () {
+            scope.form = {
+                error: 'error',
+            };
 
-        expect(SharedAnalyses.get).toHaveBeenCalledWith(1, 'wrongkey');
-
-        getReject();
-
-        expect(scope.valid).toBe(false);
+            scope.clearError();
+            expect(scope.form.error).toBeFalsy();
+        });
     });
 });

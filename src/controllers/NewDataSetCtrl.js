@@ -48,11 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.project.new-data-set-controller', [
-    'openeis-ui.modals',
-    'openeis-ui.data-maps',
-    'openeis-ui.data-sets-service',
-])
+angular.module('openeis-ui')
 .controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 

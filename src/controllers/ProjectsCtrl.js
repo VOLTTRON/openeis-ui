@@ -48,55 +48,48 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.project.new-data-map-controller', [
-    'openeis-ui.modals',
-    'openeis-ui.data-maps',
-])
-.controller('NewDataMapCtrl', function ($scope, DataMaps, Modals) {
-    DataMaps.ensureFileMetaData($scope.dataFiles);
+angular.module('openeis-ui')
+.controller('ProjectsCtrl', function ($scope, projects, Projects) {
+    $scope.projects = projects;
 
-    $scope.newDataMap = {
-        project: $scope.project.id,
-        map: {
-            version: 1,
-            sensors: [],
+    $scope.newProject = {
+        name: '',
+        create: function () {
+            Projects.create({ name: $scope.newProject.name }).then(function (response) {
+                $scope.newProject.name = '';
+                $scope.projects.push(response);
+            });
         },
-        valid: false,
     };
 
-    $scope.$watch('newDataMap.map', function () {
-        DataMaps.validateMap($scope.newDataMap.map)
-            .then(function (result) {
-                $scope.newDataMap.valid = result.valid;
-            });
-    }, true);
+    $scope.renameProject = function ($index) {
+        var newName = prompt("New project name:");
 
-    $scope.save = function () {
-        DataMaps.create($scope.newDataMap).$promise.then(function (dataMap) {
-            $scope.dataMaps.push(dataMap);
-            Modals.closeModal('newDataMap');
-        }, function (rejection) {
-            alert(rejection.data.__all__.join('\n'));
+        if (!newName || !newName.length) {
+            return;
+        }
+
+        $scope.projects[$index].name = newName;
+        $scope.projects[$index].$save(function (response) {
+            $scope.projects[$index] = response;
         });
     };
 
-    $scope.addChild = function (childLevel) {
-        var name,
-            promptMessage = 'Name:',
-            hasName = function (element) {
-                return (element.name === name);
-            };
+    $scope.deleteProject = function ($index) {
+        $scope.projects[$index].$delete(function () {
+            $scope.projects.splice($index, 1);
+        });
+    };
 
-        do {
-            name = prompt(promptMessage);
-            if (!name) { return; }
-            name = name.replace('/', '-');
-            promptMessage = 'Error: "' + name + '" already exists. Name:';
-        } while ($scope.newDataMap.map.sensors.some(hasName));
+    $scope.cloneProject = function ($index) {
+        var newName = prompt("Cloned project name:");
 
-        $scope.newDataMap.map.sensors.unshift({
-            level: childLevel,
-            name: name,
+        if (!newName || !newName.length) {
+            return;
+        }
+
+        Projects.clone($scope.projects[$index].id, newName).then(function (clone) {
+            $scope.projects.push(clone);
         });
     };
 });

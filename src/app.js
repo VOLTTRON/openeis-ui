@@ -52,24 +52,20 @@ var base = document.getElementsByTagName('base')[0];
 if (base) { base.setAttribute('href', settings.BASE_HREF); }
 
 angular.module('openeis-ui', [
+    'angularFileUpload',
     'ngAnimate',
     'ngResource',
     'ngRoute',
     'openeis-ui.auth',
     'openeis-ui.analyses',
+    'openeis-ui.applications-service',
     'openeis-ui.data-files',
     'openeis-ui.data-maps',
     'openeis-ui.data-sets-service',
     'openeis-ui.file-upload-directive',
     'openeis-ui.filters',
+    'openeis-ui.modals',
     'openeis-ui.projects-service',
-    'openeis-ui.projects.projects-controller',
-    'openeis-ui.project.configure-timestamp-controller',
-    'openeis-ui.project.new-analysis-controller',
-    'openeis-ui.project.new-data-map-controller',
-    'openeis-ui.project.new-data-set-controller',
-    'openeis-ui.project.project-controller',
-    'openeis-ui.shared-analyses.shared-analyses-controller',
 ])
 .config(function ($routeProvider, $locationProvider, $httpProvider, authRouteProvider) {
     $routeProvider

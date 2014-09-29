@@ -48,11 +48,11 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.project.new-data-map-controller', function () {
+describe('NewDataMapCtrl controller', function () {
     var $httpBackend, $controller, controller, scope, DataMaps, Modals, resolve, reject;
 
     beforeEach(function () {
-        module('openeis-ui.project.new-data-map-controller');
+        module('openeis-ui');
 
         DataMaps = {
             ensureFileMetaData: function () {},
@@ -83,66 +83,64 @@ describe('openeis-ui.project.new-data-map-controller', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
-    describe('NewDataMapCtrl controller', function () {
-        it('should ensure file metadata', function () {
-            spyOn(DataMaps, 'ensureFileMetaData');
-            controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
-            expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
-        });
+    it('should ensure file metadata', function () {
+        spyOn(DataMaps, 'ensureFileMetaData');
+        controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
+        expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
+    });
 
-        it('should validate map changes', function () {
-            spyOn(DataMaps, 'validateMap').andCallThrough();
-            expect(DataMaps.validateMap).not.toHaveBeenCalled();
-            expect(scope.newDataMap.valid).toBe(false);
+    it('should validate map changes', function () {
+        spyOn(DataMaps, 'validateMap').andCallThrough();
+        expect(DataMaps.validateMap).not.toHaveBeenCalled();
+        expect(scope.newDataMap.valid).toBe(false);
 
-            scope.newDataMap.map.sensors.push('NewSensor');
-            scope.$digest();
-            resolve({ valid: true });
-            expect(DataMaps.validateMap).toHaveBeenCalled();
-            expect(scope.newDataMap.valid).toBe(true);
-        });
+        scope.newDataMap.map.sensors.push('NewSensor');
+        scope.$digest();
+        resolve({ valid: true });
+        expect(DataMaps.validateMap).toHaveBeenCalled();
+        expect(scope.newDataMap.valid).toBe(true);
+    });
 
-        it('should create data maps', function () {
-            spyOn(DataMaps, 'create').andCallThrough();
-            expect(DataMaps.create).not.toHaveBeenCalled();
+    it('should create data maps', function () {
+        spyOn(DataMaps, 'create').andCallThrough();
+        expect(DataMaps.create).not.toHaveBeenCalled();
+        scope.save();
+        expect(DataMaps.create).toHaveBeenCalled();
+    });
+
+    describe('save', function () {
+        it('should should not close modal and alert user on failure', function () {
+            spyOn(window, 'alert');
+            spyOn(Modals, 'closeModal');
+
             scope.save();
-            expect(DataMaps.create).toHaveBeenCalled();
+            reject({ data: { __all__: [] } });
+            expect(window.alert).toHaveBeenCalled();
+            expect(Modals.closeModal).not.toHaveBeenCalled();
         });
 
-        describe('save', function () {
-            it('should should not close modal and alert user on failure', function () {
-                spyOn(window, 'alert');
-                spyOn(Modals, 'closeModal');
+        it('should close modal and add data map to array on success', function () {
+            scope.dataMaps = [];
+            spyOn(Modals, 'closeModal');
 
-                scope.save();
-                reject({ data: { __all__: [] } });
-                expect(window.alert).toHaveBeenCalled();
-                expect(Modals.closeModal).not.toHaveBeenCalled();
-            });
-
-            it('should close modal and add data map to array on success', function () {
-                scope.dataMaps = [];
-                spyOn(Modals, 'closeModal');
-
-                scope.save();
-                resolve('newDataMap');
-                expect(scope.dataMaps[0]).toBe('newDataMap');
-                expect(Modals.closeModal).toHaveBeenCalledWith('newDataMap');
-            });
+            scope.save();
+            resolve('newDataMap');
+            expect(scope.dataMaps[0]).toBe('newDataMap');
+            expect(Modals.closeModal).toHaveBeenCalledWith('newDataMap');
         });
+    });
 
-        it('should add child objects', function () {
-            expect(scope.newDataMap.map.sensors.length).toBe(0);
+    it('should add child objects', function () {
+        expect(scope.newDataMap.map.sensors.length).toBe(0);
 
-            var newChild = {
-                    level: 'site',
-                    name: 'NameWith/Slash',
-                };
-            spyOn(window, 'prompt').andReturn(newChild.name);
-            scope.addChild(newChild.level);
-            expect(scope.newDataMap.map.sensors.length).toBe(1);
-            // Slashes should be replaced with dashes
-            expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
-        });
+        var newChild = {
+                level: 'site',
+                name: 'NameWith/Slash',
+            };
+        spyOn(window, 'prompt').andReturn(newChild.name);
+        scope.addChild(newChild.level);
+        expect(scope.newDataMap.map.sensors.length).toBe(1);
+        // Slashes should be replaced with dashes
+        expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
     });
 });

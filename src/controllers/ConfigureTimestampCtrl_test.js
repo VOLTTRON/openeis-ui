@@ -48,11 +48,11 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.project.configure-timestamp-controller', function () {
+describe('ConfigureTimestampCtrl controller', function () {
     var $rootScope, controller, scope, DataFiles, $q;
 
     beforeEach(function () {
-        module('openeis-ui.project.configure-timestamp-controller');
+        module('openeis-ui');
 
         inject(function (_$rootScope_, $controller, _$q_, _DataFiles_) {
             $rootScope = _$rootScope_;
@@ -64,58 +64,56 @@ describe('openeis-ui.project.configure-timestamp-controller', function () {
         });
     });
 
-    describe('ConfigureTimestampCtrl controller', function () {
-        describe('preview', function () {
-            var timestamps;
+    describe('preview', function () {
+        var timestamps;
 
-            beforeEach(function () {
-                timestamps = $q.defer();
-                spyOn(DataFiles, 'timestamps').andReturn(timestamps.promise);
-                scope.modal.columns = { col1: true, col2: false };
-                scope.preview();
-            });
-
-            it('should alert user on failure', function () {
-                spyOn(window, 'alert');
-                timestamps.reject({ data: 'rejectionData' });
-                $rootScope.$digest();
-                expect(scope.modal.confirm).toBeFalsy();
-                expect(window.alert).toHaveBeenCalled();
-            });
-
-            it('should move to confirmation on success', function () {
-                timestamps.resolve('preview');
-                $rootScope.$digest();
-                expect(scope.modal.confirm).toBe(true);
-                expect(scope.modal.timestamps).toBe('preview');
-            });
+        beforeEach(function () {
+            timestamps = $q.defer();
+            spyOn(DataFiles, 'timestamps').andReturn(timestamps.promise);
+            scope.modal.columns = { col1: true, col2: false };
+            scope.preview();
         });
 
-        describe('save function', function () {
-            var update;
-
-            beforeEach(function () {
-                update = $q.defer();
-                spyOn(DataFiles, 'update').andReturn(update.promise);
-                scope.timestampFile = { id: 1, time_zone: 'UTC' };
-                scope.selectedColumns = [0, 1];
-                scope.save();
-            });
-
-            it('should alert user on failure', function () {
-                spyOn(window, 'alert');
-                update.reject({ data: 'rejectionData' });
-                $rootScope.$digest();
-                expect(scope.modal.confirm).toBeFalsy();
-                expect(window.alert).toHaveBeenCalled();
-            });
-
-            it('should close modal on success', inject(function (Modals) {
-                spyOn(Modals, 'closeModal');
-                update.resolve('preview');
-                $rootScope.$digest();
-                expect(Modals.closeModal).toHaveBeenCalledWith('configureTimestamp');
-            }));
+        it('should alert user on failure', function () {
+            spyOn(window, 'alert');
+            timestamps.reject({ data: 'rejectionData' });
+            $rootScope.$digest();
+            expect(scope.modal.confirm).toBeFalsy();
+            expect(window.alert).toHaveBeenCalled();
         });
+
+        it('should move to confirmation on success', function () {
+            timestamps.resolve('preview');
+            $rootScope.$digest();
+            expect(scope.modal.confirm).toBe(true);
+            expect(scope.modal.timestamps).toBe('preview');
+        });
+    });
+
+    describe('save function', function () {
+        var update;
+
+        beforeEach(function () {
+            update = $q.defer();
+            spyOn(DataFiles, 'update').andReturn(update.promise);
+            scope.timestampFile = { id: 1, time_zone: 'UTC' };
+            scope.selectedColumns = [0, 1];
+            scope.save();
+        });
+
+        it('should alert user on failure', function () {
+            spyOn(window, 'alert');
+            update.reject({ data: 'rejectionData' });
+            $rootScope.$digest();
+            expect(scope.modal.confirm).toBeFalsy();
+            expect(window.alert).toHaveBeenCalled();
+        });
+
+        it('should close modal on success', inject(function (Modals) {
+            spyOn(Modals, 'closeModal');
+            update.resolve('preview');
+            $rootScope.$digest();
+            expect(Modals.closeModal).toHaveBeenCalledWith('configureTimestamp');
+        }));
     });
 });

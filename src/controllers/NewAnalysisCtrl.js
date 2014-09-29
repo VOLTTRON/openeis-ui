@@ -48,13 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.project.new-analysis-controller', [
-    'openeis-ui.applications-service',
-    'openeis-ui.filters',
-    'openeis-ui.modals',
-    'openeis-ui.data-maps',
-    'openeis-ui.analyses',
-])
+angular.module('openeis-ui')
 .controller('NewAnalysisCtrl', function ($scope, Applications, DataMaps, $q, Modals, Analyses) {
     $scope.newAnalysis = { debug: false };
 

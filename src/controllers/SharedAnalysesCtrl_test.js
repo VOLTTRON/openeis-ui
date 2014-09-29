@@ -48,50 +48,64 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.projects.projects-controller', [
-    'openeis-ui.projects-service',
-])
-.controller('ProjectsCtrl', function ($scope, projects, Projects) {
-    $scope.projects = projects;
+describe('SharedAnalysesCtrl controller', function () {
+    var $controller, scope, SharedAnalyses, getResolve, getReject, getDataResolve;
 
-    $scope.newProject = {
-        name: '',
-        create: function () {
-            Projects.create({ name: $scope.newProject.name }).then(function (response) {
-                $scope.newProject.name = '';
-                $scope.projects.push(response);
+    beforeEach(function () {
+        module('openeis-ui');
+
+        SharedAnalyses = {
+            get: jasmine.createSpy('Analyses.get').andReturn({
+                $promise: {
+                    then: function (successCallback, errorCallback) {
+                        getResolve = successCallback;
+                        getReject = errorCallback;
+                    },
+                },
+            }),
+            getData: jasmine.createSpy('Analyses.getData').andReturn({
+                then: function (successCallback) { getDataResolve = successCallback; },
+            }),
+        };
+
+        inject(function ($rootScope, _$controller_) {
+            $controller = _$controller_;
+            scope = $rootScope.$new();
+        });
+    });
+
+    it('should retrieve analysis and analysis data with key', function () {
+        var controller = $controller('SharedAnalysesCtrl', {
+                $scope: scope,
+                SharedAnalyses: SharedAnalyses,
+                $routeParams: { analysisId: 1, key: 'abc123' },
+            }),
+            sharedAnalysis = { analysis: 1, name: 'Analysis1', reports: [] };
+
+        expect(SharedAnalyses.get).toHaveBeenCalledWith(1, 'abc123');
+
+        getResolve(sharedAnalysis);
+
+        expect(SharedAnalyses.getData).toHaveBeenCalledWith(1, 'abc123');
+
+        getDataResolve('data');
+
+        expect(scope.valid).toBe(true);
+        expect(scope.sharedAnalysis).toBe(sharedAnalysis);
+        expect(scope.data).toBe('data');
+    });
+
+    it('should retrieve analysis and analysis data with key', function () {
+        var controller = $controller('SharedAnalysesCtrl', {
+                $scope: scope,
+                SharedAnalyses: SharedAnalyses,
+                $routeParams: { analysisId: 1, key: 'wrongkey' },
             });
-        },
-    };
 
-    $scope.renameProject = function ($index) {
-        var newName = prompt("New project name:");
+        expect(SharedAnalyses.get).toHaveBeenCalledWith(1, 'wrongkey');
 
-        if (!newName || !newName.length) {
-            return;
-        }
+        getReject();
 
-        $scope.projects[$index].name = newName;
-        $scope.projects[$index].$save(function (response) {
-            $scope.projects[$index] = response;
-        });
-    };
-
-    $scope.deleteProject = function ($index) {
-        $scope.projects[$index].$delete(function () {
-            $scope.projects.splice($index, 1);
-        });
-    };
-
-    $scope.cloneProject = function ($index) {
-        var newName = prompt("Cloned project name:");
-
-        if (!newName || !newName.length) {
-            return;
-        }
-
-        Projects.clone($scope.projects[$index].id, newName).then(function (clone) {
-            $scope.projects.push(clone);
-        });
-    };
+        expect(scope.valid).toBe(false);
+    });
 });

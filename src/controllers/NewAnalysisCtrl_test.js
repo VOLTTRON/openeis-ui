@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.project.new-analysis-controller', function () {
+describe('NewAnalysisCtrl controller', function () {
     var $httpBackend, controller, scope, DataMaps, Applications;
     var testMap = { map: { sensors: {
         'object': {},
@@ -86,7 +86,7 @@ describe('openeis-ui.project.new-analysis-controller', function () {
     }];
 
     beforeEach(function () {
-        module('openeis-ui.project.new-analysis-controller');
+        module('openeis-ui');
 
         inject(function (_$httpBackend_, $rootScope, $controller) {
             $httpBackend = _$httpBackend_;
@@ -102,63 +102,61 @@ describe('openeis-ui.project.new-analysis-controller', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
-    describe('NewAnalysisCtrl controller', function () {
-        describe('upon data set selection', function () {
+    describe('upon data set selection', function () {
+        beforeEach(function () {
+            scope.newAnalysis.dataSet = { map: 1 };
+        });
+
+        it('should create list of available sensors', function () {
+            expect(scope.availableSensors).not.toBeDefined();
+            scope.$digest();
+            $httpBackend.flush();
+            expect(scope.availableSensors.typeA.length).toBe(2);
+            expect(scope.availableSensors.typeB.length).toBe(1);
+            expect(scope.availableSensors.typeC).not.toBeDefined();
+        });
+
+        it('should determine application compatibility', function () {
+            expect(scope.availableApps).not.toBeDefined();
+            scope.$digest();
+            $httpBackend.flush();
+            expect(scope.availableApps[0].missingInputs).not.toBeDefined();
+            expect(scope.availableApps[1].missingInputs.length).toBe(1);
+            expect(scope.availableApps[2].missingInputs.length).toBe(1);
+        });
+
+        describe('and application selection', function () {
+            var blankAppConfig = { parameters: {}, inputs: { input1: [{}, {}] } };
+
             beforeEach(function () {
-                scope.newAnalysis.dataSet = { map: 1 };
-            });
-
-            it('should create list of available sensors', function () {
-                expect(scope.availableSensors).not.toBeDefined();
                 scope.$digest();
-                $httpBackend.flush();
-                expect(scope.availableSensors.typeA.length).toBe(2);
-                expect(scope.availableSensors.typeB.length).toBe(1);
-                expect(scope.availableSensors.typeC).not.toBeDefined();
+                scope.newAnalysis.application = testApps[0];
             });
 
-            it('should determine application compatibility', function () {
-                expect(scope.availableApps).not.toBeDefined();
+            it('should create empty configuration', function () {
+                expect(scope.newAnalysis.configuration).not.toBeDefined();
                 scope.$digest();
-                $httpBackend.flush();
-                expect(scope.availableApps[0].missingInputs).not.toBeDefined();
-                expect(scope.availableApps[1].missingInputs.length).toBe(1);
-                expect(scope.availableApps[2].missingInputs.length).toBe(1);
+                expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
             });
 
-            describe('and application selection', function () {
-                var blankAppConfig = { parameters: {}, inputs: { input1: [{}, {}] } };
+            it('should preserve configuration if same application is re-selected', function () {
+                scope.$digest();
+                expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
 
-                beforeEach(function () {
-                    scope.$digest();
-                    scope.newAnalysis.application = testApps[0];
-                });
+                var testConfig = {
+                    parameters: { param1: 'value1', param2: 'value2' },
+                    inputs: { input1: 'value1', input2: 'value2' },
+                };
+                scope.newAnalysis.configuration = testConfig;
+                scope.newAnalysis.application = null;
+                scope.$digest();
+                scope.newAnalysis.application = testApps[0];
+                scope.$digest();
+                expect(scope.newAnalysis.configuration).toBe(testConfig);
 
-                it('should create empty configuration', function () {
-                    expect(scope.newAnalysis.configuration).not.toBeDefined();
-                    scope.$digest();
-                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
-                });
-
-                it('should preserve configuration if same application is re-selected', function () {
-                    scope.$digest();
-                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
-
-                    var testConfig = {
-                        parameters: { param1: 'value1', param2: 'value2' },
-                        inputs: { input1: 'value1', input2: 'value2' },
-                    };
-                    scope.newAnalysis.configuration = testConfig;
-                    scope.newAnalysis.application = null;
-                    scope.$digest();
-                    scope.newAnalysis.application = testApps[0];
-                    scope.$digest();
-                    expect(scope.newAnalysis.configuration).toBe(testConfig);
-
-                    scope.newAnalysis.application = testApps[1];
-                    scope.$digest();
-                    expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
-                });
+                scope.newAnalysis.application = testApps[1];
+                scope.$digest();
+                expect(scope.newAnalysis.configuration).toEqual(blankAppConfig);
             });
         });
     });

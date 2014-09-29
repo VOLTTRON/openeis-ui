@@ -48,13 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.project.project-controller', [
-    'angularFileUpload',
-    'openeis-ui.data-files',
-    'openeis-ui.analyses',
-    'openeis-ui.data-sets-service',
-    'openeis-ui.modals'
-])
+angular.module('openeis-ui')
 .controller('ProjectCtrl', function ($scope, project, dataFiles, DataFiles, dataSets, DataSets, dataMaps, $upload, $timeout, $q, $http, Modals, analyses, Analyses, sharedAnalyses, SharedAnalyses) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;

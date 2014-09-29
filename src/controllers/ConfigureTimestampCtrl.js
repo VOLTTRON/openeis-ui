@@ -48,10 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.project.configure-timestamp-controller', [
-    'openeis-ui.modals',
-    'openeis-ui.data-files',
-])
+angular.module('openeis-ui')
 .controller('ConfigureTimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = {
         columns: {},
