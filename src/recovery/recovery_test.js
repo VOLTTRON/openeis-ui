@@ -52,7 +52,7 @@ describe('openeis-ui.recovery', function () {
     var Auth;
 
     beforeEach(function () {
-        module('openeis-ui.recovery');
+        module('openeis-ui');
 
         module(function ($provide) {
             $provide.value('Auth', Auth);

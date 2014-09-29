@@ -185,6 +185,7 @@ module.exports = function(grunt) {
               '<%= buildDir %>js/angular*.js',
               '<%= buildDir %>js/autofill-event.js',
               '<%= buildDir %>js/tv4.js',
+              '<%= buildDir %>js/app.js',
               '<%= buildDir %>js/*.js',
             ],
           },

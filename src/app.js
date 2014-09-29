@@ -53,17 +53,25 @@ if (base) { base.setAttribute('href', settings.BASE_HREF); }
 
 angular.module('openeis-ui', [
     'ngAnimate',
+    'ngResource',
     'ngRoute',
-    'openeis-ui.account',
-    'openeis-ui.auth-service',
-    'openeis-ui.login',
-    'openeis-ui.project',
-    'openeis-ui.projects',
-    'openeis-ui.recovery',
-    'openeis-ui.shared-analyses',
-    'openeis-ui.signup',
+    'openeis-ui.auth',
+    'openeis-ui.analyses',
+    'openeis-ui.data-files',
+    'openeis-ui.data-maps',
+    'openeis-ui.data-sets-service',
+    'openeis-ui.file-upload-directive',
+    'openeis-ui.filters',
+    'openeis-ui.projects-service',
+    'openeis-ui.projects.projects-controller',
+    'openeis-ui.project.configure-timestamp-controller',
+    'openeis-ui.project.new-analysis-controller',
+    'openeis-ui.project.new-data-map-controller',
+    'openeis-ui.project.new-data-set-controller',
+    'openeis-ui.project.project-controller',
+    'openeis-ui.shared-analyses.shared-analyses-controller',
 ])
-.config(function ($routeProvider, $locationProvider, $httpProvider) {
+.config(function ($routeProvider, $locationProvider, $httpProvider, authRouteProvider) {
     $routeProvider
         .otherwise({
             templateUrl: '404.tpl.html',
@@ -73,6 +81,61 @@ angular.module('openeis-ui', [
 
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+
+    authRouteProvider
+        .whenAnon('/', {
+            controller: 'LoginCtrl',
+            templateUrl: 'login.tpl.html',
+        })
+        .whenAnon('/recovery', {
+            controller: 'RecoveryCtrl',
+            templateUrl: 'recovery.tpl.html',
+        })
+        .whenAnon('/sign-up', {
+            controller: 'SignUpCtrl',
+            templateUrl: 'signup.tpl.html',
+        })
+        .whenAuth('/account', {
+            controller: 'AccountCtrl',
+            templateUrl: 'account.tpl.html',
+        })
+        .whenAuth('/projects', {
+            controller: 'ProjectsCtrl',
+            templateUrl: 'projects.tpl.html',
+            resolve: {
+                projects: ['Projects', function(Projects) {
+                    return Projects.query();
+                }]
+            },
+        })
+        .whenAuth('/projects/:projectId', {
+            controller: 'ProjectCtrl',
+            templateUrl: 'project.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
+                    return DataFiles.query($route.current.params.projectId);
+                }],
+                dataSets: ['DataSets', '$route', function(DataSets, $route) {
+                    return DataSets.query($route.current.params.projectId).$promise;
+                }],
+                dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
+                    return DataMaps.query($route.current.params.projectId).$promise;
+                }],
+                analyses: ['Analyses', '$route', function(Analyses, $route) {
+                    return Analyses.query($route.current.params.projectId).$promise;
+                }],
+                sharedAnalyses: ['SharedAnalyses', '$route', function(SharedAnalyses, $route) {
+                    return SharedAnalyses.query($route.current.params.projectId).$promise;
+                }],
+            },
+        })
+        .when('/shared-analyses/:analysisId/:key', {
+            controller: 'SharedAnalysesCtrl',
+            templateUrl: 'shared-analyses.tpl.html',
+        });
 })
 .controller('AppCtrl', function ($scope, Modals, Auth) {
     $scope.modalOpen = Modals.modalOpen;

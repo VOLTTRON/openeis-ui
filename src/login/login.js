@@ -48,17 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.login', [
-    'openeis-ui.auth-service',
-    'openeis-ui.auth-route-service',
-])
-.config(function (authRouteProvider) {
-    authRouteProvider
-        .whenAnon('/', {
-            controller: 'LoginCtrl',
-            templateUrl: 'login.tpl.html',
-        });
-})
+angular.module('openeis-ui')
 .controller('LoginCtrl', function ($scope, Auth) {
     $scope.logIn = function () {
         Auth.logIn({

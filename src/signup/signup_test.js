@@ -52,7 +52,7 @@ describe('openeis-ui.signup', function () {
     var Auth;
 
     beforeEach(function () {
-        module('openeis-ui.signup');
+        module('openeis-ui');
 
         module(function ($provide) {
             $provide.value('Auth', Auth);

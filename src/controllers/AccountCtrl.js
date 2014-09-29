@@ -48,104 +48,87 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.auth-service', ['ngResource'])
-.service('Auth', function ($resource, $q, $location, $rootScope) {
-    var Auth = this,
-        account = null,
-        resource = $resource(settings.API_URL + 'account', null, {
-            create: { method: 'POST' },
-            update: { method: 'PATCH' },
-        }),
-        loginResource = $resource(settings.API_URL + 'account/login'),
-        pwChangeResource = $resource(settings.API_URL + 'account/change_password'),
-        pwResetResource = $resource(settings.API_URL + 'account/password_reset', null, {
-            put: { method: 'PUT' },
-        }),
-        loginRedirect = null;
+angular.module('openeis-ui')
+.controller('AccountCtrl', function ($scope, Auth, $timeout) {
+    var accountOrig;
 
-    function updateAccount() {
-        var deferred = $q.defer();
+    Auth.account().then(function (account) {
+        $scope.account = account;
+        accountOrig = angular.copy(account);
+    });
 
-        resource.get().$promise
-            .then(function (response) {
-                account = response;
-            }, function () {
-                account = false;
-            })
-            .finally(function () {
-                $rootScope.$broadcast('accountChange');
-                deferred.resolve(account);
-            });
-
-        return deferred.promise;
-    }
-
-    Auth.account = function () {
-        if (account === null) {
-            return updateAccount();
+    $scope.$watchCollection('account', function (newValue) {
+        if (newValue.first_name !== accountOrig.first_name ||
+            newValue.email != accountOrig.email) {
+            $scope.profile.changed = true;
+        } else {
+            $scope.profile.changed = false;
         }
+    });
 
-        var deferred = $q.defer();
-        deferred.resolve(account);
-        return deferred.promise;
-    };
+    $scope.profile = {
+        clearAlerts: function () {
+            $scope.profile.success = false;
+            $scope.profile.error = false;
+        },
+        update: function () {
+            $scope.profile.clearAlerts();
 
-    Auth.accountCreate = function (account) {
-        return resource.create(account).$promise;
-    };
-
-    Auth.accountUpdate = function (account) {
-        return resource.update(account).$promise;
-    };
-
-    Auth.accountPassword = function (password) {
-        return pwChangeResource.save(password).$promise;
-    };
-
-    Auth.accountRecover1 = function (id) {
-        return pwResetResource.save({ username_or_email: id }).$promise;
-    };
-
-    Auth.accountRecover2 = function (params) {
-        return pwResetResource.put(params).$promise;
-    };
-
-    Auth.logIn = function (credentials) {
-        var deferred = $q.defer();
-
-        loginResource.save(credentials, function () {
-            updateAccount().then(function () {
-                if (loginRedirect !== null) {
-                    $location.url(loginRedirect);
-                    loginRedirect = null;
-                } else {
-                    $location.url(settings.AUTH_HOME);
+            Auth.accountUpdate({
+                first_name: $scope.account.first_name,
+                email: $scope.account.email,
+            }).then(function (response) {
+                $scope.profile.success = true;
+                $scope.profile.changed = false;
+                accountOrig = angular.copy($scope.account);
+                $timeout($scope.profile.clearAlerts, 2000);
+            }, function (rejection) {
+                if (rejection.status === 400) {
+                    angular.forEach(rejection.data, function (v, k) {
+                        if (angular.isArray(v)) {
+                            rejection.data[k] = v.join('<br>');
+                        }
+                    });
                 }
-                deferred.resolve();
+
+                $scope.profile.error = rejection;
             });
-        }, function (rejection) {
-            deferred.reject(rejection);
-        });
-
-        return deferred.promise;
+        },
     };
 
-    Auth.loginRedirect = function (url) {
-        loginRedirect = url;
-    };
+    $scope.password = {
+        clearAlerts: function () {
+            $scope.password.mismatch = false;
+            $scope.password.success = false;
+            $scope.password.error = false;
+        },
+        update: function () {
+            $scope.password.clearAlerts();
 
-    Auth.logOut = function () {
-        var deferred = $q.defer();
+            if ($scope.password.new !== $scope.password.newConfirm) {
+                $scope.password.mismatch = true;
+                return;
+            }
 
-        loginResource.delete(function () {
-            account = false;
-            $rootScope.$broadcast('accountChange');
-            $location.url(settings.LOGIN_PAGE);
-            deferred.resolve();
-        }, function (rejection) {
-            deferred.reject(rejection);
-        });
-
-        return deferred.promise;
+            Auth.accountPassword({
+                old_password: $scope.password.current,
+                new_password: $scope.password.new,
+            }).then(function (response) {
+                $scope.password.success = true;
+                $scope.password.current = '';
+                $scope.password.new = '';
+                $scope.password.newConfirm = '';
+                $timeout($scope.password.clearAlerts, 2000);
+            }, function (rejection) {
+                if (rejection.status === 400) {
+                    angular.forEach(rejection.data, function (v, k) {
+                        if (angular.isArray(v)) {
+                            rejection.data[k] = v.join('<br>');
+                        }
+                    });
+                }
+                $scope.password.error = rejection;
+            });
+        },
     };
 });
