@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.auth', ['ngResource', 'ngRoute'])
+angular.module('openeis-ui.services.auth', ['ngResource', 'ngRoute'])
 .provider('authRoute', function ($routeProvider) {
     // Wrapper around $routeProvider to add check for auth status
 

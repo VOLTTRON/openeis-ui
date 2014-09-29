@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.projects-service', function () {
+describe('Projects service', function () {
     var Projects, $httpBackend,
         testProjects = [
             { id: 1, name: 'Test project 1' },
@@ -57,7 +57,7 @@ describe('openeis-ui.projects-service', function () {
         ];
 
     beforeEach(function () {
-        module('openeis-ui.projects-service');
+        module('openeis-ui.services.projects');
 
         inject(function (_Projects_, _$httpBackend_) {
             Projects = _Projects_;
@@ -69,68 +69,66 @@ describe('openeis-ui.projects-service', function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
-    describe('Projects service', function () {
-        it('should get projects by project ID that can be saved and deleted', function () {
-            var project;
+    it('should get projects by project ID that can be saved and deleted', function () {
+        var project;
 
-            expect(Projects.get).toBeDefined();
+        expect(Projects.get).toBeDefined();
 
-            $httpBackend.expectGET(settings.API_URL + 'projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
-            Projects.get(testProjects[0].id).then(function (response) {
-                project = response;
-            });
-            $httpBackend.flush();
-
-            expect(project.id).toEqual(testProjects[0].id);
-            expect(project.name).toEqual(testProjects[0].name);
-            expect(project.$save).toBeDefined();
-            expect(project.$delete).toBeDefined();
+        $httpBackend.expectGET(settings.API_URL + 'projects/' + testProjects[0].id).respond(angular.toJson(testProjects[0]));
+        Projects.get(testProjects[0].id).then(function (response) {
+            project = response;
         });
+        $httpBackend.flush();
 
-        it('should query for all projects', function () {
-            var projects;
+        expect(project.id).toEqual(testProjects[0].id);
+        expect(project.name).toEqual(testProjects[0].name);
+        expect(project.$save).toBeDefined();
+        expect(project.$delete).toBeDefined();
+    });
 
-            expect(Projects.query).toBeDefined();
+    it('should query for all projects', function () {
+        var projects;
 
-            $httpBackend.expectGET(settings.API_URL + 'projects').respond(angular.toJson(testProjects));
-            Projects.query().then(function (response) {
-                projects = response;
-            });
-            $httpBackend.flush();
+        expect(Projects.query).toBeDefined();
 
-            expect(projects.length).toEqual(testProjects.length);
-
-            for (var i = 0; i < testProjects.length; i++) {
-                expect(projects[i].id).toEqual(testProjects[i].id);
-                expect(projects[i].name).toEqual(testProjects[i].name);
-            }
+        $httpBackend.expectGET(settings.API_URL + 'projects').respond(angular.toJson(testProjects));
+        Projects.query().then(function (response) {
+            projects = response;
         });
+        $httpBackend.flush();
 
-        it('should create new projects', function () {
-            var project,
-                newProject = { name: 'New project' };
+        expect(projects.length).toEqual(testProjects.length);
 
-            expect(Projects.create).toBeDefined();
+        for (var i = 0; i < testProjects.length; i++) {
+            expect(projects[i].id).toEqual(testProjects[i].id);
+            expect(projects[i].name).toEqual(testProjects[i].name);
+        }
+    });
 
-            $httpBackend.expectPOST(settings.API_URL + 'projects').respond(angular.toJson(newProject));
-            Projects.create(newProject).then(function (response) {
-                project = response;
-            });
-            $httpBackend.flush();
+    it('should create new projects', function () {
+        var project,
+            newProject = { name: 'New project' };
 
-            expect(project.name).toEqual(newProject.name);
+        expect(Projects.create).toBeDefined();
+
+        $httpBackend.expectPOST(settings.API_URL + 'projects').respond(angular.toJson(newProject));
+        Projects.create(newProject).then(function (response) {
+            project = response;
         });
+        $httpBackend.flush();
 
-        it('should clone projects', function () {
-            var project;
+        expect(project.name).toEqual(newProject.name);
+    });
 
-            $httpBackend.expectPOST(settings.API_URL + 'projects/1/clone', { name: 'New project' }).respond('{"id":2}');
-            Projects.clone(1, 'New project').then(function (response) {
-                project = response;
-            });
-            $httpBackend.flush();
+    it('should clone projects', function () {
+        var project;
 
-            expect(project.id).toBe(2);
+        $httpBackend.expectPOST(settings.API_URL + 'projects/1/clone', { name: 'New project' }).respond('{"id":2}');
+        Projects.clone(1, 'New project').then(function (response) {
+            project = response;
         });
+        $httpBackend.flush();
+
+        expect(project.id).toBe(2);
     });
 });

@@ -48,22 +48,34 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.filters', [])
-.filter('bytes', function() { // Based on https://gist.github.com/thomseddon/3511330
-    return function(bytes, precision) {
-        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '--';
-        if (typeof precision === 'undefined') precision = 0;
-        var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'],
-        number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
-    };
-})
-.filter('capitalize', function () {
-    return function (input, scope) {
-        if (input) {
-            return input.substring(0,1).toUpperCase() + input.substring(1);
-        }
+angular.module('openeis-ui.services.data-sets', ['ngResource'])
+.service('DataSets', function ($resource, $http) {
+    var DataSets = this,
+        resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
+            create: { method: 'POST' },
+        });
 
-        return '';
+    DataSets.create = function (dataSet) {
+        return resource.create(dataSet);
+    };
+
+    DataSets.query = function (projectId) {
+        return resource.query({ project: projectId });
+    };
+
+    DataSets.getStatus = function (dataSet) {
+        return $http({
+            method: 'GET',
+            url: settings.API_URL + 'datasets/' + dataSet.id + '/status',
+            transformResponse: angular.fromJson,
+        });
+    };
+
+    DataSets.getErrors = function (dataSet) {
+        return $http({
+            method: 'GET',
+            url: settings.API_URL + 'datasets/' + dataSet.id + '/errors',
+            transformResponse: angular.fromJson,
+        });
     };
 });

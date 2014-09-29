@@ -48,9 +48,9 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.data-maps.data-maps-service', [
+angular.module('openeis-ui.services.data-maps', [
     'ngResource',
-    'openeis-ui.data-files',
+    'openeis-ui.services.data-files',
 ])
 .service('DataMaps', function ($http, $resource, DataFiles) {
     var DataMaps = this,

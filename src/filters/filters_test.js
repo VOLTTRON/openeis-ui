@@ -48,70 +48,70 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.data-sets-service', function () {
-    var DataSets, $httpBackend,
-        testDataSets = [
-            { id: 1 },
-            { id: 2 },
-            { id: 3 },
-        ];
-
+describe('openeis-ui.filters', function () {
     beforeEach(function () {
-        module('openeis-ui.data-sets-service');
+        module('openeis-ui.filters');
+    });
 
-        inject(function (_DataSets_, _$httpBackend_) {
-            DataSets = _DataSets_;
-            $httpBackend = _$httpBackend_;
+    describe('bytes filter', function () {
+        var bytesFilter;
+
+        beforeEach(inject(function (_bytesFilter_) {
+            bytesFilter = _bytesFilter_;
+        }));
+
+        it('should convert numeric values to bytes', function () {
+            expect(bytesFilter(1)).toBe('1 B');
+            expect(bytesFilter(1024)).toBe('1 KB');
+            expect(bytesFilter(1024 * 1024)).toBe('1 MB');
+            expect(bytesFilter(1024 * 1024 * 1024)).toBe('1 GB');
+        });
+
+        it('should accept an optional precision argument', function () {
+            expect(bytesFilter(1024 * 1.1111)).toBe('1 KB');
+            expect(bytesFilter(1024 * 1.1111, 0)).toBe('1 KB');
+            expect(bytesFilter(1024 * 1.1111, 1)).toBe('1.1 KB');
+            expect(bytesFilter(1024 * 1.1111, 2)).toBe('1.11 KB');
+            expect(bytesFilter(1024 * 1.1111, 4)).toBe('1.1111 KB');
+        });
+
+        it('should convert un-parseFloat-able values to "--"', function () {
+            expect(bytesFilter('123 MB')).toBe('--');
+            expect(bytesFilter(false)).toBe('--');
+            expect(bytesFilter(null)).toBe('--');
         });
     });
 
-    describe('DataSets service', function () {
-        it('should create data sets', function () {
-            var newDataSet = { map: 0, files: [0] };
+    describe('capitalize filter', function () {
+        it('should capitalize the first letter of strings', inject(function (capitalizeFilter) {
+            expect(capitalizeFilter('word')).toEqual('Word');
+            expect(capitalizeFilter('multiple words')).toEqual('Multiple words');
+            expect(capitalizeFilter('Already capitalized')).toEqual('Already capitalized');
+            expect(capitalizeFilter('second Word')).toEqual('Second Word');
+            expect(capitalizeFilter('123abc')).toEqual('123abc');
+            expect(capitalizeFilter('')).toEqual('');
+            expect(capitalizeFilter(null)).toEqual('');
+        }));
+    });
 
-            $httpBackend.expectPOST(settings.API_URL + 'datasets').respond(angular.toJson(newDataSet));
-            DataSets.create(newDataSet);
-            $httpBackend.flush();
-        });
+    describe('hasSignature filter', function () {
+        it('should only return files matching specified signature', inject(function (hasSignatureFilter) {
+            var signature = 'signature',
+                fileWith = { signature: 'signature' },
+                fileWithout = { signature: 'notsignature' };
 
-        it('should query for all data sets in a project by project ID', function () {
-            var dataSets;
+            expect(hasSignatureFilter([fileWith], signature)).toEqual([fileWith]);
+            expect(hasSignatureFilter([fileWithout], signature)).toEqual([]);
+        }));
+    });
 
-            $httpBackend.expectGET(settings.API_URL + 'datasets?project=1').respond(angular.toJson(testDataSets));
-            dataSets = DataSets.query(1);
-            $httpBackend.flush();
+    describe('hasTimestamp filter', function () {
+        it('should only return files with timestamp configurations', inject(function (hasTimestampFilter) {
+            var fileWith = { timestamp: true },
+                fileWithout = {};
 
-            expect(dataSets.length).toEqual(testDataSets.length);
-
-            for (var i = 0; i < testDataSets.length; i++) {
-                expect(dataSets[i].id).toEqual(testDataSets[i].id);
-            }
-        });
-
-        it('should retrieve data set status', function () {
-            var dataSet = { id: 1 },
-                status;
-
-            $httpBackend.expectGET(settings.API_URL + 'datasets/' + dataSet.id + '/status').respond('"completed"');
-            DataSets.getStatus(dataSet).then(function (response) {
-                status = response.data;
-            });
-            expect(status).toEqual(null);
-            $httpBackend.flush();
-            expect(status).toEqual('completed');
-        });
-
-        it('should retrieve data set errors', function () {
-            var dataSet = { id: 1 },
-                errors;
-
-            $httpBackend.expectGET(settings.API_URL + 'datasets/' + dataSet.id + '/errors').respond('[]');
-            DataSets.getErrors(dataSet).then(function (response) {
-                errors = response.data;
-            });
-            expect(errors).toEqual(null);
-            $httpBackend.flush();
-            expect(errors).toEqual([]);
-        });
+            expect(hasTimestampFilter([fileWith])).toEqual([fileWith]);
+            expect(hasTimestampFilter([fileWithout])).toEqual([]);
+        }));
     });
 });

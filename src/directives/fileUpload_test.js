@@ -48,34 +48,57 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.data-sets-service', ['ngResource'])
-.service('DataSets', function ($resource, $http) {
-    var DataSets = this,
-        resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
-            create: { method: 'POST' },
+describe('fileUpload directive', function () {
+    var $rootScope, directive, fileInput, uploadButton;
+
+    beforeEach(function () {
+        module('openeis-ui.directives.file-upload');
+        module('openeis-ui.templates');
+
+        inject(function(_$rootScope_, $compile) {
+            $rootScope = _$rootScope_;
+            $rootScope.clickFn = function (fileInput) {};
+            directive = angular.element('<file-upload file-upload-click="clickFn(fileInput)"></file-upload>');
+            $compile(directive)($rootScope);
+            $rootScope.$digest();
+
+            fileInput = directive.find('input');
+            uploadButton = directive.find('button');
+        });
+    });
+
+    describe('file input field', function () {
+        it('should exist', function () {
+            expect(fileInput.length).toBe(1);
+            expect(fileInput.attr('type')).toBe('file');
+        });
+    });
+
+    describe('upload button', function () {
+        it('should exist', function () {
+            expect(uploadButton.length).toBe(1);
+            expect(uploadButton.prop('innerHTML')).toBe('Upload');
         });
 
-    DataSets.create = function (dataSet) {
-        return resource.create(dataSet);
-    };
-
-    DataSets.query = function (projectId) {
-        return resource.query({ project: projectId });
-    };
-
-    DataSets.getStatus = function (dataSet) {
-        return $http({
-            method: 'GET',
-            url: settings.API_URL + 'datasets/' + dataSet.id + '/status',
-            transformResponse: angular.fromJson,
+        it('should be initially disabled', function () {
+            expect(uploadButton.prop('disabled')).toBe(true);
         });
-    };
 
-    DataSets.getErrors = function (dataSet) {
-        return $http({
-            method: 'GET',
-            url: settings.API_URL + 'datasets/' + dataSet.id + '/errors',
-            transformResponse: angular.fromJson,
+        it('should call file-upload-click value on click', function () {
+            spyOn($rootScope, 'clickFn');
+            expect($rootScope.clickFn).not.toHaveBeenCalled();
+            uploadButton.triggerHandler('click');
+            expect($rootScope.clickFn).toHaveBeenCalled();
         });
-    };
+    });
+
+    it('should enable/disable upload button when file is attached/detached', function () {
+        // TODO: attach file
+        // fileInput.triggerHandler('change');
+        // expect(uploadButton.prop('disabled')).toBe(false);
+
+        // TODO: detach file
+        // fileInput.triggerHandler('change');
+        // expect(uploadButton.prop('disabled')).toBe(true);
+    });
 });

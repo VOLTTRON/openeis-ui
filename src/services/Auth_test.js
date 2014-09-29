@@ -52,7 +52,7 @@ describe('authRoute', function () {
     var Auth;
 
     beforeEach(function () {
-        module('openeis-ui.auth');
+        module('openeis-ui.services.auth');
 
         module(function ($provide) {
             $provide.value('Auth', Auth);

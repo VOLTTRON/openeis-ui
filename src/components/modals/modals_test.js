@@ -48,10 +48,9 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.modals', function () {
+describe('openeis-ui.components.modals', function () {
     beforeEach(function () {
-        module('openeis-ui.modals');
-        module('openeis-ui.templates');
+        module('openeis-ui.components.modals');
     });
 
     describe('modal directive', function () {

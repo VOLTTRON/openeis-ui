@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.data-files', ['ngResource'])
+angular.module('openeis-ui.services.data-files', ['ngResource'])
 .service('DataFiles', function ($resource, $http) {
     var DataFiles = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
@@ -83,31 +83,5 @@ angular.module('openeis-ui.data-files', ['ngResource'])
         }).then(function (response) {
             return response.data;
         });
-    };
-})
-.filter('hasSignature', function () {
-    return function (items, signature) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (angular.equals(signature, item.signature)) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
-    };
-})
-.filter('hasTimestamp', function () {
-    return function (items) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (item.timestamp) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
     };
 });

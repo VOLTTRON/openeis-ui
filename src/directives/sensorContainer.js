@@ -48,10 +48,10 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.data-maps.sensor-container-directive', [
+angular.module('openeis-ui.directives.sensor-container', [
     'RecursionHelper',
     'openeis-ui.filters',
-    'openeis-ui.data-maps.data-maps-service',
+    'openeis-ui.services.data-maps',
 ])
 .directive('sensorContainer', function (RecursionHelper) {
     return {

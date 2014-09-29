@@ -48,59 +48,48 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-describe('openeis-ui.file-upload-directive', function () {
-    beforeEach(function () {
-        module('openeis-ui.file-upload-directive');
-        module('openeis-ui.templates');
-    });
+angular.module('openeis-ui.filters', [])
+.filter('bytes', function() { // Based on https://gist.github.com/thomseddon/3511330
+    return function(bytes, precision) {
+        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '--';
+        if (typeof precision === 'undefined') precision = 0;
+        var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'],
+        number = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+    };
+})
+.filter('capitalize', function () {
+    return function (input, scope) {
+        if (input) {
+            return input.substring(0,1).toUpperCase() + input.substring(1);
+        }
 
-    describe('fileUpload directive', function () {
-        var $rootScope, directive, fileInput, uploadButton;
+        return '';
+    };
+})
+.filter('hasSignature', function () {
+    return function (items, signature) {
+        var filtered = [];
 
-        beforeEach(inject(function(_$rootScope_, $compile) {
-            $rootScope = _$rootScope_;
-            $rootScope.clickFn = function (fileInput) {};
-            directive = angular.element('<file-upload file-upload-click="clickFn(fileInput)"></file-upload>');
-            $compile(directive)($rootScope);
-            $rootScope.$digest();
-
-            fileInput = directive.find('input');
-            uploadButton = directive.find('button');
-        }));
-
-        describe('file input field', function () {
-            it('should exist', function () {
-                expect(fileInput.length).toBe(1);
-                expect(fileInput.attr('type')).toBe('file');
-            });
+        angular.forEach(items, function (item) {
+            if (angular.equals(signature, item.signature)) {
+                filtered.push(item);
+            }
         });
 
-        describe('upload button', function () {
-            it('should exist', function () {
-                expect(uploadButton.length).toBe(1);
-                expect(uploadButton.prop('innerHTML')).toBe('Upload');
-            });
+        return filtered;
+    };
+})
+.filter('hasTimestamp', function () {
+    return function (items) {
+        var filtered = [];
 
-            it('should be initially disabled', function () {
-                expect(uploadButton.prop('disabled')).toBe(true);
-            });
-
-            it('should call file-upload-click value on click', function () {
-                spyOn($rootScope, 'clickFn');
-                expect($rootScope.clickFn).not.toHaveBeenCalled();
-                uploadButton.triggerHandler('click');
-                expect($rootScope.clickFn).toHaveBeenCalled();
-            });
+        angular.forEach(items, function (item) {
+            if (item.timestamp) {
+                filtered.push(item);
+            }
         });
 
-        it('should enable/disable upload button when file is attached/detached', function () {
-            // TODO: attach file
-            // fileInput.triggerHandler('change');
-            // expect(uploadButton.prop('disabled')).toBe(false);
-
-            // TODO: detach file
-            // fileInput.triggerHandler('change');
-            // expect(uploadButton.prop('disabled')).toBe(true);
-        });
-    });
+        return filtered;
+    };
 });

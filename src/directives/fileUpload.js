@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.file-upload-directive', [])
+angular.module('openeis-ui.directives.file-upload', [])
 .directive('fileUpload', function ($parse) {
     return {
         restrict: 'E',

@@ -48,12 +48,18 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.modals', [])
+angular.module('openeis-ui.components.modals', [])
 .directive('modal', function () {
     return {
         restrict: 'E',
         transclude: true,
-        templateUrl: 'modal.tpl.html',
+        template: [
+            '<div class="modal__backdrop">',
+                '<div class="modal__dialog">',
+                    '<div ng-transclude></div>',
+                '</div>',
+            '</div>',
+        ].join(''),
     };
 })
 .service('Modals', function () {
