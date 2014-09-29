@@ -141,6 +141,8 @@ angular.module('openeis-ui.project.project-controller', [
                 url: settings.API_URL + 'projects/' + project.id + '/add_file',
                 file: file,
             }).then(function (response) {
+                Modals.closeModal('uploadFile');
+
                 // Perform a 'get' so that the file object has $save and $delete methods
                 DataFiles.get(response.data.id).then(function (getResponse) {
                     $scope.dataFiles.push(getResponse);

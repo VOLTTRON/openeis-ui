@@ -8,32 +8,38 @@
         <h2>{{project.name}}</h2>
         <div class="data-files">
             <h3>Data files</h3>
-            <p>
-                <label class="label--inline">Upload file</label>&nbsp;
-                <file-upload file-upload-click="upload(files, onUpload)"></file-upload>
-            </p>
+            <p><a ng-click="Modals.openModal('uploadFile')">&plus; Upload file&hellip;</a></p>
             <table ng-if="dataFiles.length">
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Timestamp</th>
                         <th>Size</th>
-                        <th>Download</th>
-                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="file in dataFiles">
-                        <td>{{file.file}}</td>
-                        <td ng-if="file.timestamp">Configured</td>
-                        <td ng-if="!file.timestamp"><a ng-click="configureTimestamp($index)">Configure</a></td>
+                        <td>
+                            {{file.file}}
+                            <div class="drop-down">
+                                <a type="button" class="drop-down__toggle">Edit</a>
+                                <div class="drop-down__container">
+                                    <a class="drop-down__item" ng-click="configureTimestamp($index)">Configure timestamp</a>
+                                    <a class="drop-down__item" href="{{file.download_url}}" target="_self">Download</a>
+                                    <a class="drop-down__item" ng-click="deleteFile($index)">Delete</a>
+                                </div>
+                            </div>
+                            <span ng-if="!file.timestamp">Needs timestamp configuration</span>
+                        </td>
                         <td>{{file.size | bytes}}</td>
-                        <td><a href="{{file.download_url}}" target="_self">Download</a></td>
-                        <td><a ng-click="deleteFile($index)">Delete</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <modal class="modal--upload-file" ng-if="Modals.modalOpen('uploadFile')">
+            <label class="label--inline">Upload file</label>&nbsp;
+            <file-upload file-upload-click="upload(files, onUpload)"></file-upload>
+            &nbsp;<button ng-click="Modals.closeModal('uploadFile')">Cancel</button>
+        </modal>
         <modal class="modal--file-timestamp" ng-if="Modals.modalOpen('configureTimestamp')">
             <ng-include src="'src/project/configure-timestamp.tpl.html'" ng-controller="ConfigureTimestampCtrl"></ng-include>
         </modal>

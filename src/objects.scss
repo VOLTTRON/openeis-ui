@@ -155,3 +155,32 @@
         color: $error-color;
     }
 }
+
+.drop-down,
+%drop-down {
+    position: relative;
+    display: inline-block;
+}
+
+.drop-down__toggle,
+%drop-down__toggle {
+    display: block;
+}
+
+.drop-down__container,
+%drop-down__container {
+    position: absolute;
+    display: none;
+    z-index: 1;
+
+    .drop-down:hover > &,
+    %drop-down:hover > & {
+        display: block;
+    }
+}
+
+.drop-down__item,
+%drop-down__item {
+    display: block;
+    white-space: nowrap;
+}
