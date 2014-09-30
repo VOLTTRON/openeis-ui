@@ -298,6 +298,11 @@ module.exports = function(grunt) {
             ],
             dest: '<%= buildDir %>',
           },
+          {
+            cwd: 'bower_components/font-awesome/',
+            src: 'fonts/*',
+            dest: '<%= buildDir %>',
+          },
         ]
       },
       dev: {

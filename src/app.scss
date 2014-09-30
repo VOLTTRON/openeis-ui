@@ -40,6 +40,11 @@ $inuit-btn-border-width: 0;
 @import "objects.sensor-container";
 @import "objects";
 
+@import "font-awesome/scss/_variables";
+@import "font-awesome/scss/_path";
+@import "font-awesome/scss/_core";
+@import "font-awesome/scss/_icons";
+
 .top-bar {
     background-color: #333;
 
