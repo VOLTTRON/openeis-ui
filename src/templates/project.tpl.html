@@ -8,7 +8,7 @@
         <h2>{{project.name}}</h2>
         <div class="data-files">
             <h3>Data files</h3>
-            <p><a ng-click="Modals.openModal('uploadFile')">&plus; Upload file&hellip;</a></p>
+            <p><button ng-click="Modals.openModal('uploadFile')">Upload file&hellip;</button></p>
             <table ng-if="dataFiles.length">
                 <thead>
                     <tr>
@@ -20,11 +20,12 @@
                     <tr ng-repeat="file in dataFiles">
                         <td>
                             {{file.file}}
-                            <div class="drop-down">
-                                <a type="button" class="drop-down__toggle">Edit</a>
+                            <div class="edit-menu drop-down">
+                                <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                 <div class="drop-down__container">
                                     <a class="drop-down__item" ng-click="configureTimestamp($index)">Configure timestamp</a>
                                     <a class="drop-down__item" href="{{file.download_url}}" target="_self">Download</a>
+                                    <a class="drop-down__item" ng-click="renameFile($index)">Rename</a>
                                     <a class="drop-down__item" ng-click="deleteFile($index)">Delete</a>
                                 </div>
                             </div>
@@ -46,20 +47,25 @@
         <div class="layout">
             <div class="data-maps">
                 <h3>Data maps</h3>
-                <p><button ng-click="Modals.openModal('newDataMap')">Create new data map</button></p>
+                <p><button ng-click="Modals.openModal('newDataMap')">Create new data map&hellip;</button></p>
                 <table ng-if="dataMaps.length">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Rename</th>
-                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="dataMap in dataMaps">
-                            <td>{{dataMap.name}}</td>
-                            <td><a ng-click="renameDataMap($index)">Rename</a></td>
-                            <td><a ng-click="deleteDataMap($index)">Delete</a></td>
+                            <td>
+                                {{dataMap.name}}
+                                <div class="edit-menu drop-down">
+                                    <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
+                                    <div class="drop-down__container">
+                                        <a class="drop-down__item" ng-click="renameDataMap($index)">Rename</a>
+                                        <a class="drop-down__item" ng-click="deleteDataMap($index)">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -69,23 +75,30 @@
             </modal>
             <div class="data-sets">
                 <h3>Data sets</h3>
-                <p><button ng-click="Modals.openModal('newDataSet')">Create new data set</button></p>
+                <p><button ng-click="Modals.openModal('newDataSet')">Create new data set&hellip;</button></p>
                 <table ng-if="dataSets.length">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Status</th>
                             <th>Errors</th>
-                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="dataSet in dataSets">
-                            <td>Data set {{dataSet.id}}</td>
+                            <td>
+                                Data set {{dataSet.id}}
+                                <div class="edit-menu drop-down">
+                                    <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
+                                    <div class="drop-down__container">
+                                        <a class="drop-down__item" ng-click="renameDataSet($index)">Rename</a>
+                                        <a class="drop-down__item" ng-click="deleteDataSet($index)">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
                             <td>{{dataSet.status.status || 'Checking&hellip;' | capitalize}}</td>
                             <td ng-if="!dataSet.errors.length">None</td>
                             <td ng-if="dataSet.errors.length"><a ng-click="showErrors(dataSet)"><ng-pluralize count="dataSet.errors.length" when="{'one': '1 error', 'other': '{} errors'}"></ng-pluralize></a></td>
-                            <td><a ng-click="deleteDataSet($index)">Delete</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -114,35 +127,38 @@
         </div>
         <div class="analyses">
             <h3>Analyses</h3>
-            <p><button ng-click="Modals.openModal('newAnalysis')">Run analysis</button></p>
+            <p><button ng-click="Modals.openModal('newAnalysis')">Run analysis&hellip;</button></p>
             <table ng-if="analyses.length">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Status</th>
                         <th>Report</th>
-                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="analysis in analyses">
                         <td>
-                            <span ng-if="analysis.status !== 'complete'">Analysis {{analysis.id}}: {{analysis.name}}</span>
-                            <a ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">Analysis {{analysis.id}}: {{analysis.name}}</a>
-                            <span ng-if="analysis.status === 'complete' && analysis.debug">(<a href="{{analysis.debug}}" target="_self">download debug output</a>)</span>
-                            <span ng-if="analysis.status === 'error' && analysis.debug">(download debug output)</span>
+                            Analysis {{analysis.id}}: {{analysis.name}}
+                            <div class="edit-menu drop-down">
+                                <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
+                                <div class="drop-down__container">
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">View</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' && analysis.debug" href="{{analysis.debug}}" target="_self">Download debug output</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'error'">Download debug output</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
+                                    <a class="drop-down__item" ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="revokeLink(analysis.id)">Revoke sharing</a>
+                                    <a class="drop-down__item" ng-click="renameAnalysis($index)">Rename</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="deleteAnalysis($index)">Delete</a>
+                                </div>
+                            </div>
                         </td>
                         <td>{{analysis.status | capitalize}}</td>
                         <td>
-                            <span ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length">
-                                <a ng-click="shareAnalysis(analysis)">Share</a>
-                            </span>
+                            <a ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                             <span ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length">
                                 <a ng-click="viewLink(analysis.id)">Shared</a> (<a ng-click="revokeLink(analysis.id)">revoke</a>)
                             </span>
-                        </td>
-                        <td>
-                            <a ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="deleteAnalysis($index)">Delete</a>
                         </td>
                     </tr>
                 </tbody>

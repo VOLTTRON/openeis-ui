@@ -154,6 +154,8 @@ $inuit-btn-border-width: 0;
 }
 
 .view {
+    padding-bottom: 100px;
+
     &--account {
         @extend %box;
 
@@ -215,8 +217,12 @@ $inuit-btn-border-width: 0;
             > table {
                 width: 100%;
 
+                tr:hover {
+                    background-color: #f8f8ff;
+                }
+
                 td:first-child {
-                    width: 38.2%
+                    width: 61.8%
                 }
             }
         }
@@ -228,6 +234,10 @@ $inuit-btn-border-width: 0;
 
             > table {
                 width: 100%;
+
+                tr:hover {
+                    background-color: #f8f8ff;
+                }
 
                 td:first-child {
                     width: 38.2%
@@ -246,6 +256,10 @@ $inuit-btn-border-width: 0;
             > table {
                 width: 100%;
 
+                tr:hover {
+                    background-color: #f8f8ff;
+                }
+
                 td:first-child {
                     width: 61.8%
                 }
@@ -262,6 +276,10 @@ $inuit-btn-border-width: 0;
 
             > table {
                 width: 100%;
+
+                tr:hover {
+                    background-color: #f8f8ff;
+                }
             }
         }
 
@@ -294,6 +312,25 @@ $inuit-btn-border-width: 0;
             @extend %box;
             @extend %form--aligned;
         }
+    }
+}
+
+.edit-menu {
+    .drop-down__toggle {
+        width: $inuit-base-spacing-unit;
+        text-align: center;
+    }
+
+    .drop-down__container {
+        top: -0.25 * $inuit-base-spacing-unit;
+        left: 0;
+        margin-left: 100%;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.54);
+    }
+
+    .drop-down__item {
+        padding: quarter($inuit-base-spacing-unit) halve($inuit-base-spacing-unit);
     }
 }
 
