@@ -52,9 +52,15 @@ angular.module('openeis-ui')
 .controller('ConfigureTimestampCtrl', function ($scope, DataFiles, $http, Modals) {
     $scope.modal = {
         columns: {},
-        timeOffset: 0,
-        timeZone: jstz.determine().name(),
+        timeOffset: $scope.timestampFile.time_offset || 0,
+        timeZone: $scope.timestampFile.time_zone || jstz.determine().name(),
     };
+
+    if ($scope.timestampFile.timestamp && $scope.timestampFile.timestamp.columns) {
+        angular.forEach($scope.timestampFile.timestamp.columns, function (column) {
+            $scope.modal.columns[column] = true;
+        });
+    }
 
     $scope.preview = function () {
         $scope.selectedColumns = [];
@@ -64,6 +70,11 @@ angular.module('openeis-ui')
                 $scope.selectedColumns.push(parseInt(column));
             }
         });
+
+        if (!$scope.selectedColumns.length) {
+            alert('Please select at least one column.');
+            return;
+        }
 
         DataFiles.timestamps(
             $scope.timestampFile.id,
