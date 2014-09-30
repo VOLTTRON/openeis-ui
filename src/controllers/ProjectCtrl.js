@@ -182,16 +182,38 @@ angular.module('openeis-ui')
     };
 
     $scope.renameDataMap = function ($index) {
-        var newName = prompt("New data map name:");
+        function getName(promptText) {
+            var originalName = $scope.dataMaps[$index].name,
+                newName;
 
-        if (!newName || !newName.length) {
-            return;
+            promptText = promptText || '';
+
+            if (promptText.length) {
+                promptText += '\n\n';
+            }
+
+            promptText += "Rename data map '" + originalName + "' to:";
+
+            newName = prompt(promptText);
+
+            if (newName === false) {
+                return;
+            }
+
+            if (!newName.length) {
+                getName('Name cannot be empty.');
+            } else {
+                $scope.dataMaps[$index].name = newName;
+                $scope.dataMaps[$index].$save(function (response) {
+                    $scope.dataMaps[$index] = response;
+                }, function (rejection) {
+                    $scope.dataMaps[$index].name = originalName;
+                    getName(rejection.data.__all__.join('\n'));
+                });
+            }
         }
 
-        $scope.dataMaps[$index].name = newName;
-        $scope.dataMaps[$index].$save(function (response) {
-            $scope.dataMaps[$index] = response;
-        });
+        getName();
     };
 
     $scope.deleteDataMap = function ($index) {
