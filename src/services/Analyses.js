@@ -53,6 +53,7 @@ angular.module('openeis-ui.services.analyses', ['ngResource'])
     var Analyses = this,
         resource = $resource(settings.API_URL + 'analyses/:analysisId', { analysisId: '@id' }, {
             create: { method: 'POST' },
+            save: { method: 'PUT' },
         }),
         dataResource = $resource(settings.API_URL + 'analyses/:analysisId/data');
 

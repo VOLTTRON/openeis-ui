@@ -175,15 +175,13 @@ angular.module('openeis-ui')
         $scope.errorsModal.errors = dataSet.errors;
     };
 
-    $scope.deleteDataSet = function ($index) {
-        $scope.dataSets[$index].$delete(function () {
-            $scope.dataSets.splice($index, 1);
-        });
-    };
-
-    $scope.renameDataMap = function ($index) {
+    $scope.rename = function (collection, index) {
         function getName(promptText) {
-            var originalName = $scope.dataMaps[$index].name,
+            if (!$scope[collection]) {
+                throw 'Collection not found: ' + collection;
+            }
+
+            var originalName = $scope[collection][index].name,
                 newName;
 
             promptText = promptText || '';
@@ -192,28 +190,36 @@ angular.module('openeis-ui')
                 promptText += '\n\n';
             }
 
-            promptText += "Rename data map '" + originalName + "' to:";
+            promptText += "Rename '" + originalName + "' to:";
 
             newName = prompt(promptText);
 
-            if (newName === false) {
+            console.log(newName);
+
+            if (newName === null) {
                 return;
             }
 
             if (!newName.length) {
                 getName('Name cannot be empty.');
             } else {
-                $scope.dataMaps[$index].name = newName;
-                $scope.dataMaps[$index].$save(function (response) {
-                    $scope.dataMaps[$index] = response;
+                $scope[collection][index].name = newName;
+                $scope[collection][index].$save(function (response) {
+                    $scope[collection][index] = response;
                 }, function (rejection) {
-                    $scope.dataMaps[$index].name = originalName;
+                    $scope[collection][index].name = originalName;
                     getName(rejection.data.__all__.join('\n'));
                 });
             }
         }
 
         getName();
+    };
+
+    $scope.deleteDataSet = function ($index) {
+        $scope.dataSets[$index].$delete(function () {
+            $scope.dataSets.splice($index, 1);
+        });
     };
 
     $scope.deleteDataMap = function ($index) {
