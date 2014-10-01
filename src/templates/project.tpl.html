@@ -133,13 +133,15 @@
                     <tr>
                         <th>Name</th>
                         <th>Status</th>
+                        <th>Added</th>
                         <th>Report</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="analysis in analyses">
                         <td>
-                            Analysis {{analysis.id}}: {{analysis.name}}
+                            <span ng-if="analysis.status !== 'complete'">{{analysis.name}}</span>
+                            <a ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">{{analysis.name}}</a>
                             <div class="edit-menu drop-down">
                                 <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                 <div class="drop-down__container">
@@ -154,6 +156,7 @@
                             </div>
                         </td>
                         <td>{{analysis.status | capitalize}}</td>
+                        <td>{{analysis.added | date:'medium'}}</td>
                         <td>
                             <a ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                             <span ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length">
