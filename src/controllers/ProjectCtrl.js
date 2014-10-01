@@ -163,7 +163,7 @@ angular.module('openeis-ui')
         angular.forEach(dataSet.files, function (file) {
             angular.forEach($scope.dataFiles, function (dataFile) {
                 if (dataFile.id === file.file) {
-                    $scope.errorsModal.files[file.name] = dataFile.file;
+                    $scope.errorsModal.files[file.name] = dataFile.name;
                 }
             });
 

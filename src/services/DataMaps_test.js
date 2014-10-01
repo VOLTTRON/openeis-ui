@@ -140,14 +140,14 @@ describe('DataMaps service', function () {
         it('should set the files property', function () {
             var files = {
                     File1: {
-                        file: 'File1',
+                        name: 'File1',
                         hasHeader: true,
                         columns: ['Timestamp', 'Value'],
                         signature: 'file1signature',
                         timestamp: 'file1timestamp',
                     },
                     File2: {
-                        file: 'File2',
+                        name: 'File2',
                         hasHeader: false,
                         columns: ['Column 1', 'Column 2', 'Column 3'],
                         signature: 'file2signature',

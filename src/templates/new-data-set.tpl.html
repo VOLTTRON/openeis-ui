@@ -14,7 +14,7 @@
             <dt ng-repeat-start="(key, file) in newDataSet.map.map.files">File "{{key}}":<dt>
             <dd ng-repeat-end>
                 Signature: <pre>{{file.signature.headers}}</pre>
-                <select required ng-options="file.id as file.file for file in dataFiles | hasSignature:file.signature" ng-model="newDataSet.files[key]">
+                <select required ng-options="file.id as file.name for file in dataFiles | hasSignature:file.signature" ng-model="newDataSet.files[key]">
                     <option value="">-- Choose file --</option>
                 </select>
             </dd>

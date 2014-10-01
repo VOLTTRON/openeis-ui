@@ -53,6 +53,7 @@ angular.module('openeis-ui.services.data-files', ['ngResource'])
     var DataFiles = this,
         resource = $resource(settings.API_URL + 'files/:fileId', { fileId: '@id' }, {
             head: { method: 'GET', url: settings.API_URL + 'files/:fileId/head' },
+            save: { method: 'PUT' },
             update: { method: 'PATCH' },
         });
 

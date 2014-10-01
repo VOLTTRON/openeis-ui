@@ -267,7 +267,7 @@ describe('ProjectCtrl controller', function () {
 
     describe('deleteFile function', function () {
         it('should delete files by array index', inject(function (DataFiles) {
-            var testFile = { id: 1, file: 'test_file.csv' };
+            var testFile = { id: 1, name: 'test_file.csv' };
 
             expect(scope.deleteFile).toBeDefined();
 
@@ -293,8 +293,8 @@ describe('ProjectCtrl controller', function () {
     describe('showErrors function', function () {
         it('should set files and errors properties of errorsModal', function () {
             scope.dataFiles = [
-                { id: 1, file: 'File1' },
-                { id: 2, file: 'File2' }
+                { id: 1, name: 'File1' },
+                { id: 2, name: 'File2' }
             ];
             expect(scope.errorsModal.files).not.toBeDefined();
             expect(scope.errorsModal.errors).not.toBeDefined();

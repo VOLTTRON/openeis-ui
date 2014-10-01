@@ -115,15 +115,15 @@ angular.module('openeis-ui.services.data-maps', [
                         object.column = parseInt(object.column);
                     }
 
-                    if (!files[object.file.file]) {
-                        files[object.file.file] = {
+                    if (!files[object.file.name]) {
+                        files[object.file.name] = {
                             key: fileCounter++ + '',
                             signature: object.file.signature,
                             timestamp: object.file.timestamp,
                         };
                     }
 
-                    object.file = files[object.file.file].key;
+                    object.file = files[object.file.name].key;
                 }
 
                 flattened[topic] = object;

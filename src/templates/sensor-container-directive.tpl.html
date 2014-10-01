@@ -44,7 +44,7 @@
                     </div>
                     <div class="form__group" ng-if="newSensor.name">
                         <label>Source</label>
-                        <select required ng-model="newSensor.file" ng-options="file.file for file in files | hasTimestamp">
+                        <select required ng-model="newSensor.file" ng-options="file.name for file in files | hasTimestamp">
                             <option value="">-- Choose file --</option>
                         </select>
                         <select required ng-model="newSensor.column" ng-options="key as column for (key, column) in newSensor.file.columns">
@@ -61,7 +61,7 @@
                 </form>
                 <dl ng-if="container.sensors">
                     <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}}</dt>
-                    <dd ng-repeat-end>{{sensor.file.file}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span> (<a ng-click="deleteSensor($index)">delete</a>)</dd>
+                    <dd ng-repeat-end>{{sensor.file.name}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span> (<a ng-click="deleteSensor($index)">delete</a>)</dd>
                 </dl>
             </fieldset>
         </div>

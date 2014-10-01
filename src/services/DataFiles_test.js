@@ -52,9 +52,9 @@ describe('DataFiles service', function () {
     var DataFiles, $httpBackend,
         headUrlPattern = new RegExp('^' + settings.API_URL + 'files/\\d+/head(\\?rows=\\d+)?$'),
         testDataFiles = [
-            { id: 1, file: 'File 1' },
-            { id: 2, file: 'File 2' },
-            { id: 3, file: 'File 3' },
+            { id: 1, name: 'File 1' },
+            { id: 2, name: 'File 2' },
+            { id: 3, name: 'File 3' },
         ];
 
     beforeEach(function () {
@@ -78,7 +78,7 @@ describe('DataFiles service', function () {
         $httpBackend.flush();
 
         expect(file.id).toEqual(testDataFiles[0].id);
-        expect(file.file).toEqual(testDataFiles[0].file);
+        expect(file.name).toEqual(testDataFiles[0].name);
         expect(file.$save).toBeDefined();
         expect(file.$delete).toBeDefined();
     });
@@ -98,7 +98,7 @@ describe('DataFiles service', function () {
 
         for (var i = 0; i < testDataFiles.length; i++) {
             expect(files[i].id).toEqual(testDataFiles[i].id);
-            expect(files[i].file).toEqual(testDataFiles[i].file);
+            expect(files[i].name).toEqual(testDataFiles[i].name);
         }
     });
 
