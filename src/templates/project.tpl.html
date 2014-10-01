@@ -47,7 +47,8 @@
         <div class="layout">
             <div class="data-maps">
                 <h3>Data maps</h3>
-                <p><button ng-click="Modals.openModal('newDataMap')">Create new data map&hellip;</button></p>
+                <p><button ng-disabled="!(dataFiles | hasTimestamp).length" ng-click="Modals.openModal('newDataMap')">Create new data map&hellip;</button></p>
+                <p class="help help--error" ng-if="!(dataFiles | hasTimestamp).length">Data file with timestamp configuration required.</p>
                 <table ng-if="dataMaps.length">
                     <thead>
                         <tr>
