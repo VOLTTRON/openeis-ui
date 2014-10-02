@@ -94,13 +94,7 @@ describe('NewDataSetCtrl controller', function () {
                 },
             };
             scope.save();
-            expect(DataSets.create).toHaveBeenCalledWith({
-                map: scope.newDataSet.map.id,
-                files: [
-                    { name: '0', file: scope.newDataSet.files[0] },
-                    { name: '1', file: scope.newDataSet.files[1] },
-                ],
-            });
+            expect(DataSets.create).toHaveBeenCalled();
         });
 
         it('should call statusCheck, close modal, and add data set to array on success', function () {

@@ -69,7 +69,7 @@ describe('DataMaps service', function () {
     it('should query for all data maps in a project by project ID', function () {
         var dataMaps;
 
-        $httpBackend.expectGET(settings.API_URL + 'sensormaps?project=1').respond(angular.toJson(testDataMaps));
+        $httpBackend.expectGET(settings.API_URL + 'datamaps?project=1').respond(angular.toJson(testDataMaps));
         dataMaps = DataMaps.query(1);
         $httpBackend.flush();
 
@@ -86,7 +86,7 @@ describe('DataMaps service', function () {
 
         spyOn(DataMaps, 'flattenMap').andReturn('flattenedMap');
 
-        $httpBackend.expectPOST(settings.API_URL + 'sensormaps', '{"map":"flattenedMap"}').respond('');
+        $httpBackend.expectPOST(settings.API_URL + 'datamaps', '{"map":"flattenedMap"}').respond('');
         DataMaps.create(newDataMap);
         $httpBackend.flush();
     });

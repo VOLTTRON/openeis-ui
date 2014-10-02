@@ -164,7 +164,7 @@ angular.module('openeis-ui')
 
     $scope.run = function () {
         Analyses.create({
-            name: 'Data set ' + $scope.newAnalysis.dataSet.id + ' - ' + $scope.newAnalysis.application.name,
+            name: $scope.newAnalysis.dataSet.name + ' - ' + $scope.newAnalysis.application.name,
             dataset: $scope.newAnalysis.dataSet.id,
             application: $scope.newAnalysis.application.name,
             configuration: $scope.newAnalysis.configuration,

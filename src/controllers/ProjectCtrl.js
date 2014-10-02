@@ -194,8 +194,6 @@ angular.module('openeis-ui')
 
             newName = prompt(promptText);
 
-            console.log(newName);
-
             if (newName === null) {
                 return;
             }
@@ -204,8 +202,10 @@ angular.module('openeis-ui')
                 getName('Name cannot be empty.');
             } else {
                 $scope[collection][index].name = newName;
-                $scope[collection][index].$save(function (response) {
-                    $scope[collection][index] = response;
+                $scope[collection][index].$save(function () {
+                    if (collection === 'dataSets') {
+                        $scope.statusCheck();
+                    }
                 }, function (rejection) {
                     $scope[collection][index].name = originalName;
                     getName(rejection.data.__all__.join('\n'));

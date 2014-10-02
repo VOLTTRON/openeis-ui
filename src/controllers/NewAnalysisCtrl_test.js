@@ -93,7 +93,7 @@ describe('NewAnalysisCtrl controller', function () {
             scope = $rootScope.$new();
             controller = $controller('NewAnalysisCtrl', { $scope: scope });
 
-            $httpBackend.expectGET(settings.API_URL + 'sensormaps/1').respond(angular.toJson(testMap));
+            $httpBackend.expectGET(settings.API_URL + 'datamaps/1').respond(angular.toJson(testMap));
             $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
         });
     });

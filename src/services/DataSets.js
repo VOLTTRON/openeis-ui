@@ -53,6 +53,7 @@ angular.module('openeis-ui.services.data-sets', ['ngResource'])
     var DataSets = this,
         resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
             create: { method: 'POST' },
+            save: { method: 'PUT' },
         });
 
     DataSets.create = function (dataSet) {

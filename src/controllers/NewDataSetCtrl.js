@@ -49,7 +49,7 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals) {
+.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals, $filter) {
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
     $scope.newDataSet = { files: {} };
@@ -62,6 +62,7 @@ angular.module('openeis-ui')
         });
 
         DataSets.create({
+            name: $scope.newDataSet.map.name + ' - ' + $filter('date')(Date.now(), 'short'),
             map: $scope.newDataSet.map.id,
             files: files,
         }).$promise.then(function (dataSet) {
