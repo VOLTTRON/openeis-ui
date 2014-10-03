@@ -26,7 +26,7 @@
                                     <a class="drop-down__item" ng-click="configureTimestamp($index)">Configure timestamp</a>
                                     <a class="drop-down__item" href="{{file.download_url}}" target="_self">Download</a>
                                     <a class="drop-down__item" ng-click="rename('dataFiles', $index)">Rename</a>
-                                    <a class="drop-down__item" ng-click="deleteFile($index)">Delete</a>
+                                    <a class="drop-down__item" ng-click="delete('dataFiles', $index)">Delete</a>
                                 </div>
                             </div>
                             <span ng-if="!file.timestamp">Needs timestamp configuration</span>
@@ -63,7 +63,7 @@
                                     <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                     <div class="drop-down__container">
                                         <a class="drop-down__item" ng-click="rename('dataMaps', $index)">Rename</a>
-                                        <a class="drop-down__item" ng-click="deleteDataMap($index)">Delete</a>
+                                        <a class="drop-down__item" ng-click="delete('dataMaps', $index)">Delete</a>
                                     </div>
                                 </div>
                             </td>
@@ -93,7 +93,7 @@
                                     <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                     <div class="drop-down__container">
                                         <a class="drop-down__item" ng-click="rename('dataSets', $index)">Rename</a>
-                                        <a class="drop-down__item" ng-click="deleteDataSet($index)">Delete</a>
+                                        <a class="drop-down__item" ng-click="delete('dataSets', $index)">Delete</a>
                                     </div>
                                 </div>
                             </td>
@@ -151,7 +151,7 @@
                                     <a class="drop-down__item" ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                                     <a class="drop-down__item" ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="revokeLink(analysis.id)">Revoke sharing</a>
                                     <a class="drop-down__item" ng-click="rename('analyses', $index)">Rename</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="deleteAnalysis($index)">Delete</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="delete('analyses', $index)">Delete</a>
                                 </div>
                             </div>
                         </td>

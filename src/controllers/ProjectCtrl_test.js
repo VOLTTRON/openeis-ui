@@ -265,29 +265,37 @@ describe('ProjectCtrl controller', function () {
         });
     });
 
-    describe('deleteFile function', function () {
-        it('should delete files by array index', inject(function (DataFiles) {
-            var testFile = { id: 1, name: 'test_file.csv' };
+    describe('delete function', function () {
+        var testFile = { id: 1, name: 'test_file.csv' };
 
-            expect(scope.deleteFile).toBeDefined();
-
-            // Setup: populate scope.dataFiles
+        beforeEach(inject(function (DataFiles) {
+            // populate scope.dataFiles
             $httpBackend.expectGET(settings.API_URL + 'files?project=1').respond(angular.toJson([testFile]));
             DataFiles.query(1).then(function (response) {
                 scope.dataFiles = response;
             });
             $httpBackend.flush();
+        }));
+
+        it('should display a confirmation', function () {
+            spyOn(window, 'confirm').andReturn(false);
+            scope.delete('dataFiles', 0);
+            expect(window.confirm).toHaveBeenCalled();
+        });
+
+        it('should delete items by array index', function () {
+            spyOn(window, 'confirm').andReturn(true);
 
             // Assert project file exists
             expect(scope.dataFiles.length).toEqual(1);
 
             $httpBackend.expectDELETE(settings.API_URL + 'files/' + testFile.id).respond(204, '');
-            scope.deleteFile(0);
+            scope.delete('dataFiles', 0);
             $httpBackend.flush();
 
             // Assert project file deleted
             expect(scope.dataFiles.length).toEqual(0);
-        }));
+        });
     });
 
     describe('showErrors function', function () {

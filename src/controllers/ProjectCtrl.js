@@ -148,12 +148,6 @@ angular.module('openeis-ui')
         });
     };
 
-    $scope.deleteFile = function ($index) {
-        $scope.dataFiles[$index].$delete(function () {
-            $scope.dataFiles.splice($index, 1);
-        });
-    };
-
     $scope.errorsModal = {};
 
     $scope.showErrors = function (dataSet) {
@@ -175,13 +169,13 @@ angular.module('openeis-ui')
         $scope.errorsModal.errors = dataSet.errors;
     };
 
-    $scope.rename = function (collection, index) {
+    $scope.rename = function (collectionName, index) {
         function getName(promptText) {
-            if (!$scope[collection]) {
-                throw 'Collection not found: ' + collection;
+            if (!$scope[collectionName]) {
+                throw 'Collection not found: ' + collectionName;
             }
 
-            var originalName = $scope[collection][index].name,
+            var originalName = $scope[collectionName][index].name,
                 newName;
 
             promptText = promptText || '';
@@ -190,7 +184,7 @@ angular.module('openeis-ui')
                 promptText += '\n\n';
             }
 
-            promptText += "Rename '" + originalName + "' to:";
+            promptText += 'Rename \'' + originalName + '\' to:';
 
             newName = prompt(promptText);
 
@@ -201,13 +195,13 @@ angular.module('openeis-ui')
             if (!newName.length) {
                 getName('Name cannot be empty.');
             } else {
-                $scope[collection][index].name = newName;
-                $scope[collection][index].$save(function () {
-                    if (collection === 'dataSets') {
+                $scope[collectionName][index].name = newName;
+                $scope[collectionName][index].$save(function () {
+                    if (collectionName === 'dataSets') {
                         $scope.statusCheck();
                     }
                 }, function (rejection) {
-                    $scope[collection][index].name = originalName;
+                    $scope[collectionName][index].name = originalName;
                     getName(rejection.data.__all__.join('\n'));
                 });
             }
@@ -216,23 +210,21 @@ angular.module('openeis-ui')
         getName();
     };
 
-    $scope.deleteDataSet = function ($index) {
-        $scope.dataSets[$index].$delete(function () {
-            $scope.dataSets.splice($index, 1);
-        });
-    };
+    $scope.delete = function (collectionName, index) {
+        if (!$scope[collectionName]) {
+            throw 'Collection not found: ' + collectionName;
+        }
 
-    $scope.deleteDataMap = function ($index) {
-        $scope.dataMaps[$index].$delete(function () {
-            $scope.dataMaps.splice($index, 1);
-        });
-    };
+        if (!confirm('Delete \'' + $scope[collectionName][index].name + '\'?')) {
+            return;
+        }
 
-    $scope.deleteAnalysis = function ($index) {
-        $scope.analyses[$index].$delete(function () {
-            $scope.analyses.splice($index, 1);
+        $scope[collectionName][index].$delete(function () {
+            $scope[collectionName].splice(index, 1);
 
-            $scope.sharedAnalyses = SharedAnalyses.query(project.id);
+            if (collectionName === 'sharedAnalyses') {
+                $scope.sharedAnalyses = SharedAnalyses.query(project.id);
+            }
         });
     };
 
