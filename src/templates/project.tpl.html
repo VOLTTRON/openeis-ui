@@ -147,8 +147,7 @@
                                 <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                 <div class="drop-down__container">
                                     <a class="drop-down__item" ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">View</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' && analysis.debug" href="{{analysis.debug}}" target="_self">Download debug output</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'error'">Download debug output</a>
+                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" href="{{getAnalysisOutputUrl(analysis.id)}}" target="_self">Download output</a>
                                     <a class="drop-down__item" ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                                     <a class="drop-down__item" ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="revokeLink(analysis.id)">Revoke sharing</a>
                                     <a class="drop-down__item" ng-click="rename('analyses', $index)">Rename</a>

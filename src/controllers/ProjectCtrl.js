@@ -244,6 +244,10 @@ angular.module('openeis-ui')
         });
     };
 
+    $scope.getAnalysisOutputUrl = function (analysisId) {
+        return settings.API_URL + 'analyses/' + analysisId + '/download';
+    };
+
     $scope.shareAnalysis = function (analysis) {
         SharedAnalyses.create(analysis.id).$promise.then(function (sharedAnalysis) {
             $scope.sharedAnalyses.push(sharedAnalysis);
