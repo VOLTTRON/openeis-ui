@@ -61,13 +61,10 @@ angular.module('openeis-ui')
 
         // Data set has been selected, generate lists of available and required sensors
         // and compare for compatibility
-        var mapPromise = DataMaps.get($scope.newAnalysis.dataSet.map).$promise,
-            appsPromise = Applications.query().$promise;
-
-        $q.all({ map: mapPromise, apps: appsPromise }).then(function (resolve) {
+        Applications.query().$promise.then(function (apps) {
             $scope.availableSensors = {};
 
-            angular.forEach(resolve.map.map.sensors, function (sensor, topic) {
+            angular.forEach($scope.newAnalysis.dataSet.datamap.sensors, function (sensor, topic) {
                 if (!sensor.type) {
                     return;
                 }
@@ -79,7 +76,7 @@ angular.module('openeis-ui')
                 $scope.availableSensors[sensor.type].push(topic);
             });
 
-            angular.forEach(resolve.apps, function (app) {
+            angular.forEach(apps, function (app) {
                 var requiredCounts = {},
                     missingInputs = [];
 

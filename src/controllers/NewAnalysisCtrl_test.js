@@ -50,12 +50,6 @@
 
 describe('NewAnalysisCtrl controller', function () {
     var $httpBackend, controller, scope, DataMaps, Applications;
-    var testMap = { map: { sensors: {
-        'object': {},
-        'object/sensor1': { type: 'typeA' },
-        'object/sensor2': { type: 'typeA' },
-        'object/sensor3': { type: 'typeB' },
-    }}};
     var testApps = [{
         name: 'app1',
         inputs: {
@@ -92,9 +86,6 @@ describe('NewAnalysisCtrl controller', function () {
             $httpBackend = _$httpBackend_;
             scope = $rootScope.$new();
             controller = $controller('NewAnalysisCtrl', { $scope: scope });
-
-            $httpBackend.expectGET(settings.API_URL + 'datamaps/1').respond(angular.toJson(testMap));
-            $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
         });
     });
 
@@ -104,7 +95,14 @@ describe('NewAnalysisCtrl controller', function () {
 
     describe('upon data set selection', function () {
         beforeEach(function () {
-            scope.newAnalysis.dataSet = { map: 1 };
+            scope.newAnalysis.dataSet = { datamap: { sensors: {
+                'object': {},
+                'object/sensor1': { type: 'typeA' },
+                'object/sensor2': { type: 'typeA' },
+                'object/sensor3': { type: 'typeB' },
+            }}};
+
+            $httpBackend.expectGET(settings.API_URL + 'applications').respond(angular.toJson(testApps));
         });
 
         it('should create list of available sensors', function () {
