@@ -225,6 +225,17 @@ $inuit-btn-border-width: 0;
                     width: 61.8%
                 }
             }
+
+            .meta-tag {
+                @include inuit-font-size(10px);
+                display: inline-block;
+                vertical-align: top;
+                text-transform: uppercase;
+                color: #FFF;
+                background-color: #F08A24;
+                border-radius: 3px;
+                padding: 0 6px;
+            }
         }
 
         .data-sets {

@@ -29,7 +29,7 @@
                                     <a class="drop-down__item" ng-click="delete('dataFiles', $index)">Delete</a>
                                 </div>
                             </div>
-                            <span ng-if="!file.timestamp">Needs timestamp configuration</span>
+                            <a class="meta-tag" ng-if="!file.timestamp" ng-click="configureTimestamp($index)">Needs timestamp configuration</a>
                         </td>
                         <td>{{file.size | bytes}}</td>
                     </tr>
