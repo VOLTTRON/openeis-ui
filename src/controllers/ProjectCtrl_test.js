@@ -226,12 +226,13 @@ describe('ProjectCtrl controller', function () {
     });
 
     describe('upload function', function () {
-        var upload, DataFiles, resolve;
+        var upload, DataFiles, resolve, reject;
 
         beforeEach(function () {
             upload = { upload: jasmine.createSpy('upload.upload').andReturn({
-                then: function (successCallback) {
+                then: function (successCallback, errorCallback) {
                     resolve = successCallback;
+                    reject = errorCallback;
                 }
             })};
 
@@ -262,6 +263,13 @@ describe('ProjectCtrl controller', function () {
             expect(DataFiles.get).toHaveBeenCalledWith(1);
             expect(scope.configureTimestamp).toHaveBeenCalledWith(0);
             expect(onUpload.callCount).toBe(1);
+        });
+
+        it('should display server response on error', function () {
+            spyOn(window, 'alert');
+            scope.upload(['file1']);
+            reject({ data: { file: ['Some error', 'Some other error']}});
+            expect(window.alert).toHaveBeenCalledWith('Some error\nSome other error');
         });
     });
 
