@@ -379,7 +379,6 @@ module.exports = function(grunt) {
       sync: {
         files: [
           'src/settings.js',
-          'src/sensormap-schema.json',
           'src/**/*.js',
           '!src/**/*_test.js',
         ],
