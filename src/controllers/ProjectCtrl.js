@@ -144,6 +144,8 @@ angular.module('openeis-ui')
                 });
 
                 onUpload();
+            }, function (rejection) {
+                alert(rejection.data.file.join('\n'));
             });
         });
     };
