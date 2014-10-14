@@ -48,49 +48,9 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.services.data-sets', ['ngResource'])
-.service('DataSets', function ($resource, $http) {
-    var DataSets = this,
-        resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
-            create: { method: 'POST' },
-            save: { method: 'PUT' },
-            preview: { method: 'POST', url: settings.API_URL + 'datasets/preview' },
-            head: { url: settings.API_URL + 'datasets/:dataSetId/head' },
-        });
-
-    DataSets.create = function (dataSet) {
-        return resource.create(dataSet);
-    };
-
-    DataSets.get = function (dataSetId) {
-        return resource.get({ dataSetId: dataSetId });
-    };
-
-    DataSets.query = function (projectId) {
-        return resource.query({ project: projectId });
-    };
-
-    DataSets.preview = function (map, files) {
-        return resource.preview({ map: map, files: files, rows: 10 });
-    };
-
-    DataSets.head = function (dataSetId) {
-        return  resource.head({ dataSetId: dataSetId, rows: 10 });
-    };
-
-    DataSets.getStatus = function (dataSet) {
-        return $http({
-            method: 'GET',
-            url: settings.API_URL + 'datasets/' + dataSet.id + '/status',
-            transformResponse: angular.fromJson,
-        });
-    };
-
-    DataSets.getErrors = function (dataSet) {
-        return $http({
-            method: 'GET',
-            url: settings.API_URL + 'datasets/' + dataSet.id + '/errors',
-            transformResponse: angular.fromJson,
-        });
-    };
+angular.module('openeis-ui')
+.controller('DataSetCtrl', function ($scope, project, dataSet, head) {
+    $scope.project = project;
+    $scope.dataSet = dataSet;
+    $scope.data = head;
 });

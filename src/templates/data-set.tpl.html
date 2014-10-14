@@ -1,0 +1,30 @@
+<div class="container">
+    <ul class="breadcrumbs">
+        <li><a href="projects">Projects</a></li>
+        <li><a href="projects/{{project.id}}">{{project.name}}</a></li>
+        <li>Data set: {{dataSet.name}}</li>
+    </ul>
+
+    <div class="view view--data-set">
+        <h2>Data set: {{dataSet.name}}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th ng-repeat="column in data.cols">{{column}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in data.rows">
+                    <td ng-repeat="value in row track by $index">{{value}}</td>
+                </tr>
+                <tr ng-repeat-start="row in data.extra_rows">
+                    <td class="table-gap" colspan="{{data.cols.length}}">&hellip;</td>
+                </tr>
+                <tr ng-repeat-end>
+                    <td ng-repeat="value in row track by $index">{{value}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <a class="button" href="projects/{{project.id}}">Back</a>
+    </div>
+</div>

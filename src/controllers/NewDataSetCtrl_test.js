@@ -126,7 +126,7 @@ describe('NewDataSetCtrl controller', function () {
             spyOn($location, 'url');
 
             scope.save();
-            reject();
+            reject({ data: '' });
             expect(window.alert).toHaveBeenCalled();
             expect($location.url).not.toHaveBeenCalled();
         });

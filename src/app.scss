@@ -310,6 +310,10 @@ $inuit-btn-border-width: 0;
         @extend %box;
     }
 
+    &--data-set{
+        @extend %box;
+    }
+
     &--recovery {
         padding: 60px 250px 0;
 
