@@ -17,10 +17,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="app in availableApps">
+            <tr ng-repeat="app in availableApps | orderBy:'name'">
                 <td>{{app.name}}</td>
                 <td><button ng-disabled="app.missingInputs" ng-click="newAnalysis.application = app">Configure</button></td>
                 <td>
+                    <p ng-if="app.description">{{app.description}}</p>
                     <ul class="missing-inputs" ng-if="app.missingInputs">
                         <li ng-repeat="missingInput in app.missingInputs">{{missingInput}}</li>
                     </ul>

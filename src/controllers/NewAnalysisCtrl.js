@@ -105,6 +105,7 @@ angular.module('openeis-ui')
                 if (missingInputs.length) {
                     $scope.availableApps.push({
                         name: app.name,
+                        description: app.description,
                         missingInputs: missingInputs,
                     });
                     return;
