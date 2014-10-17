@@ -49,10 +49,16 @@
 // under Contract DE-AC05-76RL01830
 
 describe('NewDataMapCtrl controller', function () {
-    var $httpBackend, $controller, controller, scope, DataMaps, Modals, resolve, reject;
+    var $httpBackend, $controller, controller, scope, DataMaps, $location, resolve, reject,
+        testProject = { id: 1 };
 
     beforeEach(function () {
         module('openeis-ui');
+
+        module(function($provide) {
+            $provide.value('project', testProject);
+            $provide.value('dataFiles', []);
+        });
 
         DataMaps = {
             ensureFileMetaData: function () {},
@@ -69,13 +75,13 @@ describe('NewDataMapCtrl controller', function () {
             },
         };
 
-        inject(function (_$httpBackend_, $rootScope, _$controller_, _Modals_) {
+        inject(function (_$httpBackend_, $rootScope, _$controller_, _$location_) {
             $httpBackend = _$httpBackend_;
             $controller = _$controller_;
             scope = $rootScope.$new();
             scope.project = { id: 1 };
             controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
-            Modals = _Modals_;
+            $location = _$location_;
         });
     });
 
@@ -87,6 +93,44 @@ describe('NewDataMapCtrl controller', function () {
         spyOn(DataMaps, 'ensureFileMetaData');
         controller = $controller('NewDataMapCtrl', { $scope: scope, DataMaps: DataMaps });
         expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
+    });
+
+    describe('addChild', function () {
+        it('should add child objects', function () {
+            expect(scope.newDataMap.map.sensors.length).toBe(0);
+
+            var newChild = {
+                    level: 'site',
+                    name: 'NameWith/Slash',
+                };
+            spyOn(window, 'prompt').andReturn(newChild.name);
+            scope.addChild(newChild.level);
+            expect(scope.newDataMap.map.sensors.length).toBe(1);
+            // Slashes should be replaced with dashes
+            expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
+        });
+
+        it('should detect duplicate names', function () {
+            var promptCount = 0;
+
+            spyOn(window, 'prompt').andCallFake(function (message) {
+                if (promptCount++ < 2) {
+                    expect(message.substr(0, 5)).toBe('Name:');
+                    return 'NewSite';
+                }
+
+                expect(message.substr(0, 6)).toBe('Error:');
+                return false;
+            });
+
+            scope.addChild('site');
+            expect(window.prompt.callCount).toBe(1);
+            expect(scope.newDataMap.map.sensors.length).toBe(1);
+
+            scope.addChild('site');
+            expect(window.prompt.callCount).toBe(3);
+            expect(scope.newDataMap.map.sensors.length).toBe(1);
+        });
     });
 
     it('should validate map changes', function () {
@@ -109,38 +153,44 @@ describe('NewDataMapCtrl controller', function () {
     });
 
     describe('save', function () {
-        it('should should not close modal and alert user on failure', function () {
+        it('should return to project view on success', function () {
+            spyOn($location, 'url');
+
+            scope.save();
+            resolve();
+            expect($location.url).toHaveBeenCalledWith('projects/' + testProject.id);
+        });
+
+        it('should alert user on failure', function () {
             spyOn(window, 'alert');
-            spyOn(Modals, 'closeModal');
+            spyOn($location, 'url');
 
             scope.save();
             reject({ data: { __all__: [] } });
             expect(window.alert).toHaveBeenCalled();
-            expect(Modals.closeModal).not.toHaveBeenCalled();
-        });
-
-        it('should close modal and add data map to array on success', function () {
-            scope.dataMaps = [];
-            spyOn(Modals, 'closeModal');
-
-            scope.save();
-            resolve('newDataMap');
-            expect(scope.dataMaps[0]).toBe('newDataMap');
-            expect(Modals.closeModal).toHaveBeenCalledWith('newDataMap');
+            expect($location.url).not.toHaveBeenCalled();
         });
     });
 
-    it('should add child objects', function () {
-        expect(scope.newDataMap.map.sensors.length).toBe(0);
+    it('should confirm on page leave if and only if child objects have been added', function () {
+        var confirmSpy = spyOn(window, 'confirm'),
+            event;
 
-        var newChild = {
-                level: 'site',
-                name: 'NameWith/Slash',
-            };
-        spyOn(window, 'prompt').andReturn(newChild.name);
-        scope.addChild(newChild.level);
+        event = scope.$broadcast('$locationChangeStart');
+        expect(window.confirm.callCount).toBe(0);
+
+        spyOn(window, 'prompt').andReturn('NewSite');
+        scope.addChild('site');
         expect(scope.newDataMap.map.sensors.length).toBe(1);
-        // Slashes should be replaced with dashes
-        expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
+
+        confirmSpy.andReturn(false);
+        event = scope.$broadcast('$locationChangeStart');
+        expect(window.confirm.callCount).toBe(1);
+        expect(event.defaultPrevented).toBe(true);
+
+        confirmSpy.andReturn(true);
+        event = scope.$broadcast('$locationChangeStart');
+        expect(window.confirm.callCount).toBe(2);
+        expect(event.defaultPrevented).toBe(false);
     });
 });

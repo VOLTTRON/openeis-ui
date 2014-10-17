@@ -1,15 +1,25 @@
-<h4>New data map</h4>
+<div class="container">
+    <ul class="breadcrumbs">
+        <li><a href="projects">Projects</a></li>
+        <li><a href="projects/{{project.id}}">{{project.name}}</a></li>
+        <li>New data map</li>
+    </ul>
 
-<div class="form__group">
-    Add to data map:<span ng-repeat="child in ['site', 'building', 'other']">&nbsp;<button ng-click="addChild(child)">{{child}}</button></span>
+    <div class="view view--new-data-map">
+        <h2>New data map</h2>
+
+        <div class="form__group">
+            Add to data map:<span ng-repeat="child in ['site', 'building', 'other']">&nbsp;<button ng-click="addChild(child)">{{child}}</button></span>
+        </div>
+
+        <sensor-container ng-repeat="container in newDataMap.map.sensors" container="container" files="dataFiles"></sensor-container>
+
+        <form ng-submit="save()">
+            <label class="label--inline">Data map name</label>&nbsp;
+            <input class="input--inline" required ng-model="newDataMap.name">
+            &nbsp;<button ng-disabled="!newDataMap.valid">Save</button>
+            <a class="button" href="projects/{{project.id}}">Cancel</a>
+            <small class="help help--error" ng-if="!newDataMap.valid">Add at least one object and sensor to save</small>
+        </form>
+    </div>
 </div>
-
-<sensor-container ng-repeat="container in newDataMap.map.sensors" container="container" files="dataFiles"></sensor-container>
-
-<form ng-submit="save()">
-    <label class="label--inline">Data map name</label>&nbsp;
-    <input class="input--inline" required ng-model="newDataMap.name">
-    &nbsp;<button ng-disabled="!newDataMap.valid">Save</button>
-    <button type="button" ng-click="Modals.closeModal('newDataMap')">Cancel</button>
-    <small class="help help--error" ng-if="!newDataMap.valid">Add at least one object and sensor to save</small>
-</form>

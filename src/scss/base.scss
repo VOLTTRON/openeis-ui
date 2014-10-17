@@ -76,7 +76,8 @@ select {
     }
 }
 
-button {
+button,
+.button {
     @extend %btn;
     vertical-align: baseline !important;
 

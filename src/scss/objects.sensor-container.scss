@@ -5,6 +5,10 @@ sensor-container {
 
     h1 {
         @include inuit-font-size(16px);
+
+        button {
+            @include inuit-font-size(14px);
+        }
     }
 
     dt {

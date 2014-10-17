@@ -49,7 +49,10 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataMapCtrl', function ($scope, DataMaps, Modals) {
+.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps) {
+    $scope.project = project;
+    $scope.dataFiles = dataFiles;
+
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
     $scope.newDataMap = {
@@ -61,21 +64,18 @@ angular.module('openeis-ui')
         valid: false,
     };
 
+    $scope.$on('$locationChangeStart', function (event) {
+        if ($scope.newDataMap.map.sensors.length && !confirm('Abandon unsaved data map?')) {
+            event.preventDefault();
+        }
+    });
+
     $scope.$watch('newDataMap.map', function () {
         DataMaps.validateMap($scope.newDataMap.map)
             .then(function (result) {
                 $scope.newDataMap.valid = result.valid;
             });
     }, true);
-
-    $scope.save = function () {
-        DataMaps.create($scope.newDataMap).$promise.then(function (dataMap) {
-            $scope.dataMaps.push(dataMap);
-            Modals.closeModal('newDataMap');
-        }, function (rejection) {
-            alert(rejection.data.__all__.join('\n'));
-        });
-    };
 
     $scope.addChild = function (childLevel) {
         var name,
@@ -94,6 +94,15 @@ angular.module('openeis-ui')
         $scope.newDataMap.map.sensors.unshift({
             level: childLevel,
             name: name,
+        });
+    };
+
+    $scope.save = function () {
+        DataMaps.create($scope.newDataMap).$promise.then(function () {
+            $scope.newDataMap.map.sensors = [];
+            $location.url('projects/' + project.id);
+        }, function (rejection) {
+            alert(rejection.data.__all__.join('\n'));
         });
     };
 });

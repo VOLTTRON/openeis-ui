@@ -302,6 +302,10 @@ $inuit-btn-border-width: 0;
         }
     }
 
+    &--new-data-map {
+        @extend %box;
+    }
+
     &--recovery {
         padding: 60px 250px 0;
 
@@ -365,31 +369,6 @@ $inuit-btn-border-width: 0;
     thead tr:not(:first-child) th,
     td {
         border-left: 1px solid #ddd;
-    }
-}
-
-.modal--new-data-set,
-.modal--new-data-map,
-.modal--new-analysis {
-    .modal__dialog {
-        width: 900px;
-    }
-
-    button {
-        padding: 5px 10px;
-    }
-
-    input:not([type="checkbox"]) {
-        height: 1.5 * $inuit-base-spacing-unit;
-        padding: 0 quarter($inuit-base-spacing-unit);
-    }
-
-    select {
-        padding: quarter($inuit-base-spacing-unit);
-
-        @media screen and (-webkit-min-device-pixel-ratio:0) {
-            height: 1.5 * $inuit-base-spacing-unit;
-        }
     }
 }
 
