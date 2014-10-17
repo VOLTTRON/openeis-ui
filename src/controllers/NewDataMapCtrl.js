@@ -49,9 +49,10 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps) {
+.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps, Modals) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
+    $scope.Modals = Modals;
 
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
@@ -95,6 +96,11 @@ angular.module('openeis-ui')
             level: childLevel,
             name: name,
         });
+    };
+
+    $scope.preview = function () {
+        $scope.previewData = 'POST api/datasets/preview';
+        Modals.openModal('dataMapPreview');
     };
 
     $scope.save = function () {

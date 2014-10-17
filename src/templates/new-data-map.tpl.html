@@ -17,9 +17,16 @@
         <form ng-submit="save()">
             <label class="label--inline">Data map name</label>&nbsp;
             <input class="input--inline" required ng-model="newDataMap.name">
+            &nbsp;<button type="button" ng-click="preview()" ng-disabled="!newDataMap.valid">Preview</button>
             &nbsp;<button ng-disabled="!newDataMap.valid">Save</button>
-            <a class="button" href="projects/{{project.id}}">Cancel</a>
+            &nbsp;<a class="button" href="projects/{{project.id}}">Cancel</a>
             <small class="help help--error" ng-if="!newDataMap.valid">Add at least one object and sensor to save</small>
         </form>
     </div>
+
+    <modal ng-if="Modals.modalOpen('dataMapPreview')">
+        <h3>Preview</h3>
+        <pre>{{previewData | json}}</pre>
+        <button ng-click="Modals.closeModal('dataMapPreview')">Close</button>
+    </modal>
 </div>
