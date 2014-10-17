@@ -385,9 +385,7 @@ $inuit-btn-border-width: 0;
     }
 
     select {
-        @-moz-document url-prefix() {
-            padding: quarter($inuit-base-spacing-unit);
-        }
+        padding: quarter($inuit-base-spacing-unit);
 
         @media screen and (-webkit-min-device-pixel-ratio:0) {
             height: 1.5 * $inuit-base-spacing-unit;

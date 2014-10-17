@@ -265,12 +265,12 @@ module.exports = function(grunt) {
 
     sass: {
       options: {
-        loadPath: ['src/scss', 'bower_components'],
-        sourcemap: 'none',
+        includePaths: ['src/scss', 'bower_components'],
+        precision: 5,
       },
       build: {
         options: {
-          style: 'compressed',
+          outputStyle: 'compressed',
         },
         files: {
           '<%= buildDir %>css/app.css': 'src/app.scss',
@@ -279,7 +279,7 @@ module.exports = function(grunt) {
       },
       dev: {
         options: {
-          style: 'nested',
+          outputStyle: 'nested',
         },
         files: {
           '<%= buildDir %>css/app.css': 'src/app.scss',
