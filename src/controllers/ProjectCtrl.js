@@ -169,6 +169,8 @@ angular.module('openeis-ui')
         });
 
         $scope.errorsModal.errors = dataSet.errors;
+
+        Modals.openModal('dataSetErrors');
     };
 
     $scope.rename = function (collectionName, index) {

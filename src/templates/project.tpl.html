@@ -106,7 +106,7 @@
                     </tbody>
                 </table>
             </div>
-            <modal class="modal--data-set-errors" ng-if="errorsModal.errors.length">
+            <modal class="modal--data-set-errors" modal-id="dataSetErrors">
                 <h4>Errors</h4>
                 <table>
                     <thead>
@@ -122,7 +122,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <button ng-click="errorsModal.errors = []">Close</button>
+                <button ng-click="Modals.closeModal('dataSetErrors')">Close</button>
             </modal>
             <modal class="modal--new-data-set" modal-id="newDataSet">
                 <ng-include src="'new-data-set.tpl.html'" ng-controller="NewDataSetCtrl"></ng-include>
