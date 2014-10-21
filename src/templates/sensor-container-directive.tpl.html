@@ -8,61 +8,71 @@
         <div class="layout__item" style="width:50%" ng-if="objectDefinition.attribute_list.length || container.attributes">
             <fieldset>
                 <legend>Attributes</legend>
-                <form class="form--stacked" ng-submit="addAttribute()" ng-if="objectDefinition.attribute_list.length">
-                    <div class="form__group">
-                        <label>New attribute</label>
-                        <select required ng-options="attribute for attribute in objectDefinition.attribute_list" ng-model="newAttribute.name">
-                            <option value="">-- Choose attribute --</option>
-                        </select>
-                    </div>
-                    <div class="form__group" ng-if="newAttribute.name && definition.attributes[newAttribute.name].data_type === 'enum'">
-                        <select required ng-options="value for value in definition.attributes[newAttribute.name].data_values" ng-model="newAttribute.value">
-                            <option value="">--- Choose value---</option>
-                        </select>
-                    </div>
-                    <div class="form__group" ng-if="newAttribute.name && !definition.attributes[newAttribute.name].data_type" ng-init="newAttribute.value = {}">
-                        <label ng-repeat-start="(name, property) in definition.attributes[newAttribute.name]">{{name}}</label>
-                        <input ng-model="newAttribute.value[name]"><br ng-repeat-end>
-                    </div>
-                    <button>Add</button>
-                </form>
+                <modal modal-id="newAttribute-{{container.$$hashKey}}" ng-if="objectDefinition.attribute_list.length">
+                    <form class="form--stacked" ng-submit="addAttribute()">
+                        <div class="form__group">
+                            <label>New attribute</label>
+                            <select required ng-options="attribute for attribute in objectDefinition.attribute_list" ng-model="newAttribute.name">
+                                <option value="">-- Choose attribute --</option>
+                            </select>
+                        </div>
+                        <div class="form__group" ng-if="newAttribute.name && definition.attributes[newAttribute.name].data_type === 'enum'">
+                            <select required ng-options="value for value in definition.attributes[newAttribute.name].data_values" ng-model="newAttribute.value">
+                                <option value="">--- Choose value---</option>
+                            </select>
+                        </div>
+                        <div class="form__group" ng-if="newAttribute.name && !definition.attributes[newAttribute.name].data_type" ng-init="newAttribute.value = {}">
+                            <label ng-repeat-start="(name, property) in definition.attributes[newAttribute.name]">{{name}}</label>
+                            <input ng-model="newAttribute.value[name]"><br ng-repeat-end>
+                        </div>
+                        <button>Add</button> <button type="button" ng-click="cancel('newAttribute')">Cancel</button>
+                    </form>
+                </modal>
                 <dl ng-if="container.attributes">
-                    <dt ng-repeat-start="(attribute, value) in container.attributes">{{attribute}}</dt>
+                    <dt ng-repeat-start="(attribute, value) in container.attributes">{{attribute}} <a ng-click="deleteAttribute(attribute)">Delete</a></dt>
                     <dd ng-repeat-end><pre>{{value | json}}</pre></dd>
                 </dl>
+                <div class="form__group" ng-if="objectDefinition.attribute_list.length">
+                    <button ng-click="prompt('newAttribute')">Add attribute</button>
+                </div>
             </fieldset>
         </div>
         <div class="layout__item" style="width:50%" ng-if="objectDefinition.sensor_list.length || container.sensors">
             <fieldset>
                 <legend>Sensors</legend>
-                <form class="form--stacked" ng-submit="addSensor()" ng-if="objectDefinition.sensor_list.length">
-                    <div class="form__group">
-                        <label>New sensor</label>
-                        <select required ng-options="sensor for sensor in objectDefinition.sensor_list" ng-model="newSensor.name">
-                            <option value="">-- Choose sensor --</option>
-                        </select>
-                    </div>
-                    <div class="form__group" ng-if="newSensor.name">
-                        <label>Source</label>
-                        <select required ng-model="newSensor.file" ng-options="file.name for file in files | hasTimestamp">
-                            <option value="">-- Choose file --</option>
-                        </select>
-                        <select required ng-model="newSensor.column" ng-options="key as column for (key, column) in newSensor.file.columns">
-                            <option value="">-- Choose column --</option>
-                        </select>
-                    </div>
-                    <div class="form__group" ng-if="newSensor.name">
-                        <label>Value unit</label>
-                        <select required ng-model="newSensor.unit" ng-options="key as unit.value for (key, unit) in units[definition.sensors[newSensor.name].unit_type]">
-                            <option value="">-- Choose unit  --</option>
-                        </select>
-                    </div>
-                    <button>Add</button>
-                </form>
-                <dl ng-if="container.sensors">
-                    <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}}</dt>
-                    <dd ng-repeat-end>{{sensor.file.name}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span> (<a ng-click="deleteSensor($index)">delete</a>)</dd>
+                <modal modal-id="newSensor-{{container.$$hashKey}}" ng-if="objectDefinition.sensor_list.length">
+                    <form class="form--stacked" ng-submit="addSensor()">
+                        <div class="form__group">
+                            <label>New sensor</label>
+                            <select required ng-options="sensor for sensor in objectDefinition.sensor_list" ng-model="newSensor.name">
+                                <option value="">-- Choose sensor --</option>
+                            </select>
+                        </div>
+                        <div class="form__group" ng-if="newSensor.name">
+                            <label>Source</label>
+                            <select required ng-model="newSensor.file" ng-options="file.name for file in files | hasTimestamp">
+                                <option value="">-- Choose file --</option>
+                            </select>
+                            <select required ng-model="newSensor.column" ng-options="key as column for (key, column) in newSensor.file.columns">
+                                <option value="">-- Choose column --</option>
+                            </select>
+                        </div>
+                        <div class="form__group" ng-if="newSensor.name">
+                            <label>Value unit</label>
+                            <select required ng-model="newSensor.unit" ng-options="key as unit.value for (key, unit) in units[definition.sensors[newSensor.name].unit_type]">
+                                <option value="">-- Choose unit  --</option>
+                            </select>
+                        </div>
+                        <button>Add</button> <button type="button" ng-click="cancel('newSensor')">Cancel</button>
+                    </form>
+                </modal>
+                <dl ng-if="container.sensors.length">
+                    <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}} <a ng-click="deleteSensor($index)">Delete</a></dt>
+                    <dd ng-repeat-end>{{sensor.file.name}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span></dd>
                 </dl>
+                <div class="form__group" ng-if="objectDefinition.sensor_list.length">
+                    <button ng-click="prompt('newSensor')">Add sensor</button>
+                </div>
             </fieldset>
         </div>
     </div>

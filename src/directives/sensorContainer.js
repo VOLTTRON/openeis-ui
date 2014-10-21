@@ -50,6 +50,7 @@
 
 angular.module('openeis-ui.directives.sensor-container', [
     'RecursionHelper',
+    'openeis-ui.components.modals',
     'openeis-ui.filters',
     'openeis-ui.services.data-maps',
 ])
@@ -62,7 +63,7 @@ angular.module('openeis-ui.directives.sensor-container', [
             parent: '=',
         },
         templateUrl: 'sensor-container-directive.tpl.html',
-        controller: function ($scope, DataMaps) {
+        controller: function ($scope, DataMaps, Modals) {
             DataMaps.getDefinition().then(function (definition) {
                 $scope.definition = definition;
 
@@ -100,6 +101,15 @@ angular.module('openeis-ui.directives.sensor-container', [
                 $scope.units = units;
             });
 
+            $scope.prompt = function (action) {
+                Modals.openModal(action + '-' + $scope.container.$$hashKey);
+            };
+
+            $scope.cancel = function (action) {
+                $scope[action] = {};
+                Modals.closeModal(action + '-' + $scope.container.$$hashKey);
+            };
+
             $scope.newAttribute = {};
 
             $scope.addAttribute = function () {
@@ -108,7 +118,17 @@ angular.module('openeis-ui.directives.sensor-container', [
                 $scope.objectDefinition.attribute_list.splice(
                     $scope.objectDefinition.attribute_list.indexOf($scope.newAttribute.name), 1
                 );
-                $scope.newAttribute = {};
+                $scope.cancel('newAttribute');
+            };
+
+            $scope.deleteAttribute = function (attribute) {
+                $scope.objectDefinition.attribute_list.push(attribute);
+                $scope.objectDefinition.attribute_list.sort();
+                delete $scope.container.attributes[attribute];
+
+                if (!Object.keys($scope.container.attributes).length) {
+                    delete $scope.container.attributes;
+                }
             };
 
             $scope.newSensor = {};
@@ -132,7 +152,7 @@ angular.module('openeis-ui.directives.sensor-container', [
                 $scope.objectDefinition.sensor_list.splice(
                     $scope.objectDefinition.sensor_list.indexOf($scope.newSensor.name), 1
                 );
-                $scope.newSensor = {};
+                $scope.cancel('newSensor');
             };
 
             $scope.deleteSensor = function (index) {
@@ -154,7 +174,7 @@ angular.module('openeis-ui.directives.sensor-container', [
                     name = prompt(promptMessage);
                     if (!name) { return; }
                     name = name.replace('/', '-');
-                    promptMessage = 'Error: "' + name + '" already exists. Name:';
+                    promptMessage = 'Error: ' + $scope.container.name + 'already has child "' + name + '". Name:';
                 } while ($scope.container.children.some(hasName));
 
                 $scope.container.children.unshift({

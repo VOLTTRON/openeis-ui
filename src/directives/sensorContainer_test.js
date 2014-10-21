@@ -49,8 +49,7 @@
 // under Contract DE-AC05-76RL01830
 
 describe('sensorContainer directive', function () {
-    var $httpBackend, $compile, scope, definition,
-        directive, isolateScope;
+    var $httpBackend, $compile, scope, definition, directive, isolateScope;
 
     beforeEach(function () {
         module('openeis-ui.directives.sensor-container');
@@ -97,7 +96,9 @@ describe('sensorContainer directive', function () {
         expect(directive[0].querySelectorAll('sensor-container sensor-container sensor-container').length).toBe(1);
     });
 
-    it('should replace asterisk string with array of all attributes or sensors', function () {
+    it('should replace asterisk string with array of all attributes or sensors', inject(function (Modals) {
+        var attributes, sensors;
+
         definition = {
             site: { attribute_list: '*', sensor_list: ['sensor2'] },
             building: { attribute_list: ['attribute3'], sensor_list: '*' },
@@ -115,31 +116,45 @@ describe('sensorContainer directive', function () {
         scope.rootContainer = { level: 'site', name: 'Site1', children: [
             { level: 'building', name: 'Building1' },
         ]};
+        // rootContainer isn't part of ng-repeat in test, so set fake $$hashKey
+        scope.rootContainer.$$hashKey = 'FAKE_HASH_KEY';
         compile();
+        isolateScope.prompt('newAttribute');
+        isolateScope.prompt('newSensor');
+        scope.$digest();
 
-        var siteAttributes = directive.find('select')[0].querySelectorAll('option:not([value=""])'),
-            siteSensors = directive.find('select')[1].querySelectorAll('option:not([value=""])'),
-            buildingAttributes = directive.find('select')[2].querySelectorAll('option:not([value=""])');
-            buildingSensors = directive.find('select')[3].querySelectorAll('option:not([value=""])');
+        attributes = directive.find('select')[0].querySelectorAll('option:not([value=""])');
+        sensors = directive.find('select')[1].querySelectorAll('option:not([value=""])');
 
-        expect(siteAttributes.length).toBe(3);
-        expect(siteAttributes[0].innerHTML).toBe('attribute1');
-        expect(siteAttributes[1].innerHTML).toBe('attribute2');
-        expect(siteAttributes[2].innerHTML).toBe('attribute3');
+        expect(attributes.length).toBe(3);
+        expect(attributes[0].innerHTML).toBe('attribute1');
+        expect(attributes[1].innerHTML).toBe('attribute2');
+        expect(attributes[2].innerHTML).toBe('attribute3');
 
-        expect(siteSensors.length).toBe(1);
-        expect(siteSensors[0].innerHTML).toBe('sensor2');
+        expect(sensors.length).toBe(1);
+        expect(sensors[0].innerHTML).toBe('sensor2');
 
-        expect(buildingAttributes.length).toBe(1);
-        expect(buildingAttributes[0].innerHTML).toBe('attribute3');
+        isolateScope.cancel('newAttribute');
+        isolateScope.cancel('newSensor');
+        Modals.openModal('newAttribute-' + scope.rootContainer.children[0].$$hashKey);
+        Modals.openModal('newSensor-' + scope.rootContainer.children[0].$$hashKey);
+        scope.$digest();
 
-        expect(buildingSensors.length).toBe(3);
-        expect(buildingSensors[0].innerHTML).toBe('sensor1');
-        expect(buildingSensors[1].innerHTML).toBe('sensor2');
-        expect(buildingSensors[2].innerHTML).toBe('sensor3');
-    });
+        attributes = directive.find('select')[0].querySelectorAll('option:not([value=""])');
+        sensors = directive.find('select')[1].querySelectorAll('option:not([value=""])');
 
-    it('should remove timezone attribute from child objects', function () {
+        expect(attributes.length).toBe(1);
+        expect(attributes[0].innerHTML).toBe('attribute3');
+
+        expect(sensors.length).toBe(3);
+        expect(sensors[0].innerHTML).toBe('sensor1');
+        expect(sensors[1].innerHTML).toBe('sensor2');
+        expect(sensors[2].innerHTML).toBe('sensor3');
+    }));
+
+    it('should remove timezone attribute from child objects', inject(function (Modals) {
+        var attributes;
+
         definition = {
             site: { attribute_list: '*' },
             building: { attribute_list: '*' },
@@ -151,18 +166,30 @@ describe('sensorContainer directive', function () {
         scope.rootContainer = { level: 'site', name: 'Site1', children: [
             { level: 'building', name: 'Building1' },
         ]};
+        // rootContainer isn't part of ng-repeat in test, so set fake $$hashKey
+        scope.rootContainer.$$hashKey = 'FAKE_HASH_KEY';
         compile();
+        isolateScope.prompt('newAttribute');
+        isolateScope.prompt('newSensor');
+        scope.$digest();
 
-        var siteAttributes = directive.find('select')[0].querySelectorAll('option:not([value=""])'),
-            buildingAttributes = directive.find('select')[1].querySelectorAll('option:not([value=""])');
+        attributes = directive.find('select')[0].querySelectorAll('option:not([value=""])');
 
-        expect(siteAttributes.length).toBe(2);
-        expect(siteAttributes[0].innerHTML).toBe('address');
-        expect(siteAttributes[1].innerHTML).toBe('timezone');
+        expect(attributes.length).toBe(2);
+        expect(attributes[0].innerHTML).toBe('address');
+        expect(attributes[1].innerHTML).toBe('timezone');
 
-        expect(buildingAttributes.length).toBe(1);
-        expect(buildingAttributes[0].innerHTML).toBe('address');
-    });
+        isolateScope.cancel('newAttribute');
+        isolateScope.cancel('newSensor');
+        Modals.openModal('newAttribute-' + scope.rootContainer.children[0].$$hashKey);
+        Modals.openModal('newSensor-' + scope.rootContainer.children[0].$$hashKey);
+        scope.$digest();
+
+        attributes = directive.find('select')[0].querySelectorAll('option:not([value=""])');
+
+        expect(attributes.length).toBe(1);
+        expect(attributes[0].innerHTML).toBe('address');
+    }));
 
     it('should add attributes', function () {
         definition = {
@@ -193,7 +220,7 @@ describe('sensorContainer directive', function () {
         expect(directive.find('dt').length).toBe(0);
         scope.$digest();
         // Attribute should be added to view
-        expect(directive.find('dt').prop('innerHTML')).toBe('attribute1');
+        expect(directive.find('dt').prop('innerHTML').substr(0, 11)).toBe('attribute1 ');
     });
 
     it('should add and delete sensors', function () {
@@ -224,7 +251,7 @@ describe('sensorContainer directive', function () {
         expect(directive.find('dt').length).toBe(0);
         scope.$digest();
         // Sensor should be added to view
-        expect(directive.find('dt').prop('innerHTML')).toBe('sensor1');
+        expect(directive.find('dt').prop('innerHTML').substr(0, 8)).toBe('sensor1 ');
 
         isolateScope.deleteSensor(0);
 
