@@ -105,6 +105,7 @@ angular.module('openeis-ui')
 
     $scope.save = function () {
         DataMaps.create($scope.newDataMap).$promise.then(function () {
+            // Clear sensors list so we don't trigger confirmation
             $scope.newDataMap.map.sensors = [];
             $location.url('projects/' + project.id);
         }, function (rejection) {

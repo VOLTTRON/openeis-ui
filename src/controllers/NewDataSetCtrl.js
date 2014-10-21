@@ -49,10 +49,45 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataSetCtrl', function ($scope, DataSets, DataMaps, Modals, $filter) {
+.controller('NewDataSetCtrl', function ($filter, $location, $scope, project, dataFiles, dataMaps, DataMaps, DataSets, Modals) {
+    $scope.project = project;
+    $scope.dataFiles = dataFiles;
+    $scope.dataMaps = dataMaps;
+    $scope.Modals = Modals;
+    $scope.isObject = angular.isObject;
+
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
     $scope.newDataSet = { files: {} };
+
+    $scope.showError = function (error) {
+        alert([
+            $scope.newDataSet.files[error.file].name,
+            ': row ',
+            error.row,
+            ', column ',
+            error.column,
+            '\n',
+            error.error
+        ].join(''));
+    };
+
+    $scope.submit = function () {
+        $scope[$scope.newDataSet.action]();
+    };
+
+    $scope.preview = function () {
+        var files = [];
+
+        angular.forEach($scope.newDataSet.files, function (file, key) {
+            files.push({ name: key, file: file.id });
+        });
+
+        DataSets.preview($scope.newDataSet.map, files).$promise.then(function (dataSetPreview) {
+            $scope.dataSetPreview = dataSetPreview;
+            Modals.openModal('dataSetPreview');
+        });
+    };
 
     $scope.save = function () {
         var files = [];
@@ -66,9 +101,7 @@ angular.module('openeis-ui')
             map: $scope.newDataSet.map.id,
             files: files,
         }).$promise.then(function (dataSet) {
-            $scope.dataSets.push(dataSet);
-            $scope.statusCheck();
-            Modals.closeModal('newDataSet');
+            $location.url('projects/' + project.id);
         }, function (rejection) {
             alert(angular.toJson(rejection, true));
         });

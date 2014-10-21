@@ -1,25 +1,65 @@
-<h4>New data set</h4>
+<div class="container">
+    <ul class="breadcrumbs">
+        <li><a href="projects">Projects</a></li>
+        <li><a href="projects/{{project.id}}">{{project.name}}</a></li>
+        <li>New data set</li>
+    </ul>
 
-<form ng-submit="save()">
-    <div class="form__group">
-        <h5>Select data map to use</h5>
-        <select required ng-options="dataMap as dataMap.name for dataMap in dataMaps" ng-model="newDataSet.map">
-            <option value="">-- Choose data map --</option>
-        </select>
-    </div>
+    <div class="view view--new-data-set">
+        <h2>New data set</h2>
 
-    <div class="form__group" ng-if="newDataSet.map">
-        <h5>Select files to use</h5>
-        <dl>
-            <dt ng-repeat-start="(key, file) in newDataSet.map.map.files">File "{{key}}":<dt>
-            <dd ng-repeat-end>
-                Signature: <pre>{{file.signature.headers}}</pre>
-                <select required ng-options="file.id as file.name for file in dataFiles | hasSignature:file.signature" ng-model="newDataSet.files[key]">
-                    <option value="">-- Choose file --</option>
+        <form ng-submit="submit()">
+            <div class="form__group">
+                <h5>Select data map to use</h5>
+                <select required ng-options="dataMap as dataMap.name for dataMap in dataMaps" ng-model="newDataSet.map">
+                    <option value="">-- Choose data map --</option>
                 </select>
-            </dd>
-        </dl>
-    </div>
+            </div>
 
-    <button>Create</button> <button type="button" ng-click="Modals.closeModal('newDataSet')">Cancel</button>
-</form>
+            <div class="form__group" ng-if="newDataSet.map">
+                <h5>Select files to use</h5>
+                <dl>
+                    <dt ng-repeat-start="(key, file) in newDataSet.map.map.files">File "{{key}}":<dt>
+                    <dd ng-repeat-end>
+                        Signature: <pre>{{file.signature.headers}}</pre>
+                        <select required ng-options="file as file.name for file in dataFiles | hasSignature:file.signature" ng-model="newDataSet.files[key]">
+                            <option value="">-- Choose file --</option>
+                        </select>
+                    </dd>
+                </dl>
+            </div>
+
+            <button ng-click="newDataSet.action = 'preview'">Preview</button>
+            <button ng-click="newDataSet.action = 'save'">Create</button>
+            <a class="button" href="projects/{{project.id}}">Cancel</a>
+        </form>
+
+        <modal modal-id="dataSetPreview">
+            <table>
+                <thead>
+                    <tr>
+                        <th ng-repeat="column in dataSetPreview.cols">{{column}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in dataSetPreview.rows">
+                        <td ng-repeat="value in row track by $index">
+                            <span ng-if="!isObject(value)">{{value}}</span>
+                            <span class="invalid-value" ng-if="isObject(value)" ng-click="showError(value)">Invalid</span>
+                        </td>
+                    </tr>
+                    <tr ng-repeat-start="row in dataSetPreview.extra_rows">
+                        <td class="table-gap" colspan="{{dataSetPreview.cols.length}}">&hellip;</td>
+                    </tr>
+                    <tr ng-repeat-end>
+                        <td ng-repeat="value in row track by $index">
+                            <span ng-if="!isObject(value)">{{value}}</span>
+                            <span class="invalid-value" ng-if="isObject(value)" ng-click="showError(value)">Invalid</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button ng-click="Modals.closeModal('dataSetPreview')">Close</button>
+        </modal>
+    </div>
+</div>

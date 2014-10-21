@@ -49,10 +49,17 @@
 // under Contract DE-AC05-76RL01830
 
 describe('NewDataSetCtrl controller', function () {
-    var $httpBackend, $controller, controller, scope, DataSets, DataMaps, Modals, resolve, reject;
+    var $httpBackend, $controller, $location, controller, scope, DataSets, DataMaps, Modals, resolve, reject,
+        testProject = { id: 1 };
 
     beforeEach(function () {
         module('openeis-ui');
+
+        module(function($provide) {
+            $provide.value('project', testProject);
+            $provide.value('dataFiles', []);
+            $provide.value('dataMaps', []);
+        });
 
         DataSets = { create: function () {
             return { $promise: { then: function (successCallback, errorCallback) {
@@ -63,9 +70,10 @@ describe('NewDataSetCtrl controller', function () {
 
         DataMaps = { ensureFileMetaData: function () {} };
 
-        inject(function (_$httpBackend_, $rootScope, _$controller_, _Modals_) {
+        inject(function (_$httpBackend_, $rootScope, _$controller_, _$location_, _Modals_) {
             $httpBackend = _$httpBackend_;
             $controller = _$controller_;
+            $location = _$location_;
             scope = $rootScope.$new();
             controller = $controller('NewDataSetCtrl', { $scope: scope, DataMaps: DataMaps, DataSets: DataSets });
             Modals = _Modals_;
@@ -97,29 +105,30 @@ describe('NewDataSetCtrl controller', function () {
             expect(DataSets.create).toHaveBeenCalled();
         });
 
-        it('should call statusCheck, close modal, and add data set to array on success', function () {
-            scope.dataSets = [];
-            scope.newDataSet = { map: { id: 1 }, files: {} };
-            scope.statusCheck = jasmine.createSpy('statusCheck');
-            spyOn(Modals, 'closeModal');
+        it('should return to project view on success', function () {
+            spyOn($location, 'url');
 
+            scope.newDataSet = {
+                map: { id: 1 },
+                files: {
+                    0: 'File1',
+                    1: 'File2',
+                },
+            };
             scope.save();
-            resolve('newDataSet');
-            expect(scope.dataSets[0]).toBe('newDataSet');
-            expect(scope.statusCheck).toHaveBeenCalled();
-            expect(Modals.closeModal).toHaveBeenCalledWith('newDataSet');
+            resolve();
+            expect($location.url).toHaveBeenCalledWith('projects/' + testProject.id);
         });
 
-        it('should alert on failure', function () {
-            scope.dataSets = [];
+        it('should alert user on failure', function () {
             scope.newDataSet = { map: { id: 1 }, files: {} };
-            spyOn(Modals, 'closeModal');
             spyOn(window, 'alert');
+            spyOn($location, 'url');
+
             scope.save();
             reject();
-            expect(scope.dataSets.length).toBe(0);
-            expect(Modals.closeModal).not.toHaveBeenCalled();
             expect(window.alert).toHaveBeenCalled();
+            expect($location.url).not.toHaveBeenCalled();
         });
     });
 });

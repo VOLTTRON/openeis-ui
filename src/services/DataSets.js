@@ -54,6 +54,7 @@ angular.module('openeis-ui.services.data-sets', ['ngResource'])
         resource = $resource(settings.API_URL + 'datasets/:dataSetId', { dataSetId: '@id' }, {
             create: { method: 'POST' },
             save: { method: 'PUT' },
+            preview: { method: 'POST', url: settings.API_URL + 'datasets/preview' },
         });
 
     DataSets.create = function (dataSet) {
@@ -62,6 +63,10 @@ angular.module('openeis-ui.services.data-sets', ['ngResource'])
 
     DataSets.query = function (projectId) {
         return resource.query({ project: projectId });
+    };
+
+    DataSets.preview = function (map, files) {
+        return resource.preview({ map: map, files: files, rows: 10 });
     };
 
     DataSets.getStatus = function (dataSet) {

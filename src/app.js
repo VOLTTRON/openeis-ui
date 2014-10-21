@@ -143,6 +143,21 @@ angular.module('openeis-ui', [
                 }],
             },
         })
+        .whenAuth('/projects/:projectId/new-data-set', {
+            controller: 'NewDataSetCtrl',
+            templateUrl: 'new-data-set.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
+                    return DataFiles.query($route.current.params.projectId);
+                }],
+                dataMaps: ['DataMaps', '$route', function(DataMaps, $route) {
+                    return DataMaps.query($route.current.params.projectId);
+                }],
+            },
+        })
         .when('/shared-analyses/:analysisId/:key', {
             controller: 'SharedAnalysesCtrl',
             templateUrl: 'shared-analyses.tpl.html',
