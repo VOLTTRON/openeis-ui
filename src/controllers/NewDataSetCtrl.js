@@ -92,8 +92,8 @@ angular.module('openeis-ui')
     $scope.save = function () {
         var files = [];
 
-        angular.forEach($scope.newDataSet.files, function (fileId, key) {
-            files.push({ name: key, file: fileId });
+        angular.forEach($scope.newDataSet.files, function (file, key) {
+            files.push({ name: key, file: file.id });
         });
 
         DataSets.create({
@@ -103,7 +103,7 @@ angular.module('openeis-ui')
         }).$promise.then(function (dataSet) {
             $location.url('projects/' + project.id);
         }, function (rejection) {
-            alert(angular.toJson(rejection, true));
+            alert(angular.toJson(rejection.data, true));
         });
     };
 });
