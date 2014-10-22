@@ -49,10 +49,11 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps, Modals) {
+.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps, DataSets, Modals) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.Modals = Modals;
+    $scope.isObject = angular.isObject;
 
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
@@ -99,8 +100,55 @@ angular.module('openeis-ui')
     };
 
     $scope.preview = function () {
-        $scope.previewData = 'POST api/datasets/preview';
-        Modals.openModal('dataMapPreview');
+        var files = [],
+            filesMap = {},
+            fileCounter = 0;
+
+        function getFiles(objects) {
+            angular.forEach(objects, function (object) {
+                if (object.deleted === true) {
+                    return;
+                }
+
+                if (object.file) {
+                    if (!filesMap[object.file.id]) {
+                        filesMap[object.file.id] = {
+                            key: fileCounter++ + '',
+                            name: object.file.name,
+                        };
+                    }
+                }
+
+                if (object.sensors) { getFiles(object.sensors); }
+                if (object.children) { getFiles(object.children); }
+            });
+        }
+
+        getFiles($scope.newDataMap.map.sensors);
+
+        $scope.dataMapPreviewFiles = {};
+
+        angular.forEach(filesMap, function (values, fileId) {
+            files.push({ name: values.key, file: fileId });
+            $scope.dataMapPreviewFiles[values.key] = values.name;
+        });
+
+        DataSets.preview(DataMaps.flattenMap($scope.newDataMap.map), files).$promise.then(function (dataMapPreview) {
+            $scope.dataMapPreview = dataMapPreview;
+            Modals.openModal('dataMapPreview');
+        });
+    };
+
+    $scope.showError = function (error) {
+        alert([
+            $scope.dataMapPreviewFiles[error.file],
+            ': row ',
+            error.row,
+            ', column ',
+            error.column,
+            '\n',
+            error.error
+        ].join(''));
     };
 
     $scope.save = function () {

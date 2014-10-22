@@ -24,9 +24,31 @@
         </form>
     </div>
 
-    <modal ng-if="Modals.modalOpen('dataMapPreview')">
-        <h3>Preview</h3>
-        <pre>{{previewData | json}}</pre>
+    <modal modal-id="dataMapPreview">
+        <table>
+            <thead>
+                <tr>
+                    <th ng-repeat="column in dataMapPreview.cols">{{column}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in dataMapPreview.rows">
+                    <td ng-repeat="value in row track by $index">
+                        <span ng-if="!isObject(value)">{{value}}</span>
+                        <span class="invalid-value" ng-if="isObject(value)" ng-click="showError(value)">Invalid</span>
+                    </td>
+                </tr>
+                <tr ng-repeat-start="row in dataMapPreview.extra_rows">
+                    <td class="table-gap" colspan="{{dataMapPreview.cols.length}}">&hellip;</td>
+                </tr>
+                <tr ng-repeat-end>
+                    <td ng-repeat="value in row track by $index">
+                        <span ng-if="!isObject(value)">{{value}}</span>
+                        <span class="invalid-value" ng-if="isObject(value)" ng-click="showError(value)">Invalid</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <button ng-click="Modals.closeModal('dataMapPreview')">Close</button>
     </modal>
 </div>
