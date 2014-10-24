@@ -232,9 +232,13 @@ $inuit-btn-border-width: 0;
                 vertical-align: top;
                 text-transform: uppercase;
                 color: #FFF;
-                background-color: #F08A24;
+                background-color: #ccc;
                 border-radius: 3px;
                 padding: 0 6px;
+
+                &--error {
+                    background-color: #F08A24;
+                }
             }
         }
 
