@@ -141,6 +141,10 @@ angular.module('openeis-ui')
         var app = $scope.newAnalysis.application,
             config = $scope.newAnalysis.configuration;
 
+        if (!$scope.availableSensors[inputType]) {
+            return false;
+        }
+
         if (config.inputs[inputName].length >= $scope.availableSensors[inputType].length) {
             return false;
         }
@@ -164,7 +168,7 @@ angular.module('openeis-ui')
         Analyses.create({
             name: $scope.newAnalysis.dataSet.name + ' - ' + $scope.newAnalysis.application.name,
             dataset: $scope.newAnalysis.dataSet.id,
-            application: $scope.newAnalysis.application.name,
+            application: $scope.newAnalysis.application.id,
             configuration: $scope.newAnalysis.configuration,
             debug: $scope.newAnalysis.debug,
         }).$promise.then(function (analysis) {
