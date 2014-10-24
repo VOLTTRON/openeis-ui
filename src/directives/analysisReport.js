@@ -143,6 +143,14 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     });
                     element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(data, reportElement.x_label, reportElement.y_label)));
                     break;
+
+                case 'RetroCommissioningOAED':
+                    element.append(angular.element('<div class="retro-commissioning-oaed" />').append(retroCommissioningOAEDSVG(scope.arData[reportElement.table_name])));
+                    break;
+
+                case 'RetroCommissioningAFDD':
+                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name])));
+                    break;
                 }
             });
         }
