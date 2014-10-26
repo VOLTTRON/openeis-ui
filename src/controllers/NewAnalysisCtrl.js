@@ -80,6 +80,8 @@ angular.module('openeis-ui')
                 var requiredCounts = {},
                     missingInputs = [];
 
+                app.name = app.name || app.id;
+
                 angular.forEach(app.inputs, function (input) {
                     if (!requiredCounts.hasOwnProperty(input.sensor_type)) {
                         requiredCounts[input.sensor_type] = 0;
