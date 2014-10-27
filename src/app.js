@@ -166,7 +166,7 @@ angular.module('openeis-ui', [
                     return Projects.get($route.current.params.projectId);
                 }],
                 dataSet: ['DataSets', '$route', function(DataSets, $route) {
-                    return DataSets.get($route.current.params.projectId).$promise;
+                    return DataSets.get($route.current.params.dataSetId).$promise;
                 }],
                 head: ['DataSets', '$route', function(DataSets, $route) {
                     return DataSets.head($route.current.params.dataSetId).$promise;
