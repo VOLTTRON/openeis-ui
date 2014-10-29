@@ -101,10 +101,11 @@ describe('ProjectCtrl controller', function () {
             });
         });
 
-        it('should check status and errors of incomplete data set ingests', function () {
+        it('should check status and errors of in-progress data set ingests', function () {
             scope.dataSets = [
                 { status: { status: 'complete' } },
                 { status: { status: 'processing' } },
+                { status: { status: 'incomplete' } },
             ];
 
             scope.statusCheck();
@@ -112,6 +113,8 @@ describe('ProjectCtrl controller', function () {
             expect(DataSets.getErrors).not.toHaveBeenCalledWith(scope.dataSets[0]);
             expect(DataSets.getStatus).toHaveBeenCalledWith(scope.dataSets[1]);
             expect(DataSets.getErrors).toHaveBeenCalledWith(scope.dataSets[1]);
+            expect(DataSets.getStatus).not.toHaveBeenCalledWith(scope.dataSets[2]);
+            expect(DataSets.getErrors).not.toHaveBeenCalledWith(scope.dataSets[2]);
         });
 
         it('should append processing status with percentage', function () {

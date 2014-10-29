@@ -62,7 +62,7 @@ angular.module('openeis-ui')
 
     $scope.statusCheck = function () {
         angular.forEach($scope.dataSets, function (dataSet) {
-            if (!dataSet.status || dataSet.status.status !== 'complete') {
+            if (!dataSet.status || dataSet.status.status.slice(-8) !== 'complete') {
                 var promises = [];
 
                 promises.push(DataSets.getStatus(dataSet).then(function (response) {
@@ -78,7 +78,7 @@ angular.module('openeis-ui')
                 }));
 
                 $q.all(promises).then(function () {
-                    if (dataSet.status.status !== 'complete') {
+                    if (dataSet.status.status.slice(-8) !== 'complete') {
                         $timeout.cancel(statusCheckPromise);
                         statusCheckPromise = $timeout($scope.statusCheck, 1000);
                     }
