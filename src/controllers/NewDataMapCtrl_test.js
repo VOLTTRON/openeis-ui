@@ -96,8 +96,8 @@ describe('NewDataMapCtrl controller', function () {
     });
 
     it('should start with a building named "New building"', function () {
-        expect(scope.newDataMap.map.sensors.length).toBe(1);
-        expect(scope.newDataMap.map.sensors[0]).toEqual({
+        expect(scope.newDataMap.map.children.length).toBe(1);
+        expect(scope.newDataMap.map.children[0]).toEqual({
             level: 'building',
             name: 'New building',
         });
@@ -105,7 +105,7 @@ describe('NewDataMapCtrl controller', function () {
 
     describe('addChild', function () {
         it('should add child objects', function () {
-            expect(scope.newDataMap.map.sensors.length).toBe(1);
+            expect(scope.newDataMap.map.children.length).toBe(1);
 
             var newChild = {
                     level: 'site',
@@ -113,9 +113,9 @@ describe('NewDataMapCtrl controller', function () {
                 };
             spyOn(window, 'prompt').andReturn(newChild.name);
             scope.addChild(newChild.level);
-            expect(scope.newDataMap.map.sensors.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(2);
             // Slashes should be replaced with dashes
-            expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
+            expect(scope.newDataMap.map.children[0].name).toBe('NameWith-Slash');
         });
 
         it('should detect duplicate names', function () {
@@ -133,11 +133,11 @@ describe('NewDataMapCtrl controller', function () {
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(1);
-            expect(scope.newDataMap.map.sensors.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(2);
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(3);
-            expect(scope.newDataMap.map.sensors.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(2);
         });
     });
 
@@ -146,7 +146,7 @@ describe('NewDataMapCtrl controller', function () {
         expect(DataMaps.validateMap).not.toHaveBeenCalled();
         expect(scope.newDataMap.valid).toBe(false);
 
-        scope.newDataMap.map.sensors.push('NewSensor');
+        scope.newDataMap.map.children.push('NewSensor');
         scope.$digest();
         resolve({ valid: true });
         expect(DataMaps.validateMap).toHaveBeenCalled();
@@ -185,14 +185,14 @@ describe('NewDataMapCtrl controller', function () {
             event;
 
         // Clear default building
-        scope.newDataMap.map.sensors = [];
+        scope.newDataMap.map.children = [];
 
         event = scope.$broadcast('$locationChangeStart');
         expect(window.confirm.callCount).toBe(0);
 
         spyOn(window, 'prompt').andReturn('NewSite');
         scope.addChild('site');
-        expect(scope.newDataMap.map.sensors.length).toBe(1);
+        expect(scope.newDataMap.map.children.length).toBe(1);
 
         confirmSpy.andReturn(false);
         event = scope.$broadcast('$locationChangeStart');

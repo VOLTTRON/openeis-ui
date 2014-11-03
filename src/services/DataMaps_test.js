@@ -81,7 +81,7 @@ describe('DataMaps service', function () {
     });
 
     it('should create data maps from non-flattened data maps', function () {
-        var newDataMap = { map: { sensors: [] } },
+        var newDataMap = { map: { children: [] } },
             result;
 
         spyOn(DataMaps, 'flattenMap').andReturn('flattenedMap');
@@ -106,7 +106,7 @@ describe('DataMaps service', function () {
     describe('flattenMap method', function () {
         it('should flatten data map objects into topics', function () {
             var map = {
-                    sensors: [
+                    children: [
                         { name: 'Site1', children: [
                             { name: 'Building1', children: [
                                 { name: 'System1', sensors: [
@@ -155,7 +155,7 @@ describe('DataMaps service', function () {
                     },
                 },
                 map = {
-                    sensors: [
+                    children: [
                         { name: 'Building1', sensors: [
                             {
                                 name: 'SensorA',
@@ -195,7 +195,7 @@ describe('DataMaps service', function () {
 
         it('should not include deleted objects', function () {
             var map = {
-                    sensors: [
+                    children: [
                         { name: 'Site1', children: [
                             { name: 'Building1', deleted: true },
                             { name: 'Building2', sensors: [

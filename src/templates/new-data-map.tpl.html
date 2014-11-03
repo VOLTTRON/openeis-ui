@@ -12,7 +12,7 @@
             Add to data map:<span ng-repeat="child in ['site', 'building', 'other']">&nbsp;<button ng-click="addChild(child)">{{child}}</button></span>
         </div>
 
-        <sensor-container ng-repeat="container in newDataMap.map.sensors" container="container" files="dataFiles"></sensor-container>
+        <sensor-container ng-repeat="child in newDataMap.map.children" container="child" parent="newDataMap.map" files="dataFiles"></sensor-container>
 
         <form ng-submit="save()">
             <label class="label--inline">Data map name</label>&nbsp;

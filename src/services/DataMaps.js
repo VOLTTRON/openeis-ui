@@ -135,7 +135,9 @@ angular.module('openeis-ui.services.data-maps', [
             return flattened;
         }
 
-        mapCopy.sensors = flattenObject(mapCopy.sensors, '');
+        mapCopy.sensors = flattenObject(mapCopy.children, '');
+
+        delete mapCopy.children;
 
         mapCopy.files = mapCopy.files || {};
 

@@ -61,7 +61,7 @@ angular.module('openeis-ui')
         project: $scope.project.id,
         map: {
             version: 1,
-            sensors: [{
+            children: [{
                 level: 'building',
                 name: 'New building',
             }],
@@ -70,7 +70,7 @@ angular.module('openeis-ui')
     };
 
     $scope.$on('$locationChangeStart', function (event) {
-        if ($scope.newDataMap.map.sensors.length && !confirm('Abandon unsaved data map?')) {
+        if ($scope.newDataMap.map.children.length && !confirm('Abandon unsaved data map?')) {
             event.preventDefault();
         }
     });
@@ -94,9 +94,9 @@ angular.module('openeis-ui')
             if (!name) { return; }
             name = name.replace('/', '-');
             promptMessage = 'Error: "' + name + '" already exists. Name:';
-        } while ($scope.newDataMap.map.sensors.some(hasName));
+        } while ($scope.newDataMap.map.children.some(hasName));
 
-        $scope.newDataMap.map.sensors.unshift({
+        $scope.newDataMap.map.children.unshift({
             level: childLevel,
             name: name,
         });
@@ -127,7 +127,7 @@ angular.module('openeis-ui')
             });
         }
 
-        getFiles($scope.newDataMap.map.sensors);
+        getFiles($scope.newDataMap.map.children);
 
         $scope.dataMapPreviewFiles = {};
 
@@ -156,8 +156,8 @@ angular.module('openeis-ui')
 
     $scope.save = function () {
         DataMaps.create($scope.newDataMap).$promise.then(function () {
-            // Clear sensors list so we don't trigger confirmation
-            $scope.newDataMap.map.sensors = [];
+            // Clear children so we don't trigger confirmation
+            $scope.newDataMap.map.children = [];
             $location.url('projects/' + project.id);
         }, function (rejection) {
             alert(rejection.data.__all__.join('\n'));
