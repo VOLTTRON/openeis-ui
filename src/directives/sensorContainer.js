@@ -101,6 +101,23 @@ angular.module('openeis-ui.directives.sensor-container', [
                 $scope.units = units;
             });
 
+            $scope.rename = function () {
+                var name,
+                    promptMessage = 'Name:',
+                    hasName = function (element) {
+                        return (element.name === name);
+                    };
+
+                do {
+                    name = prompt(promptMessage);
+                    if (!name || name === $scope.container.name) { return; }
+                    name = name.replace('/', '-');
+                    promptMessage = 'Error: "' + name + '" already exists. Name:';
+                } while ($scope.parent.children.some(hasName));
+
+                $scope.container.name = name;
+            };
+
             $scope.prompt = function (action) {
                 Modals.openModal(action + '-' + $scope.container.$$hashKey);
             };

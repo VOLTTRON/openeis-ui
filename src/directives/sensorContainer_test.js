@@ -286,6 +286,6 @@ describe('sensorContainer directive', function () {
         scope.$digest();
         // Building should be added to view
         expect(directive.find('sensor-container').length).toBe(1);
-        expect(directive.find('sensor-container').find('h1').prop('textContent')).toMatch(/^Building: Building-WithSlash/);
+        expect(directive.find('sensor-container').find('h1').prop('textContent').trim()).toMatch(/^Building: Building-WithSlash/);
     });
 });
