@@ -61,7 +61,10 @@ angular.module('openeis-ui')
         project: $scope.project.id,
         map: {
             version: 1,
-            sensors: [],
+            sensors: [{
+                level: 'building',
+                name: 'New building',
+            }],
         },
         valid: false,
     };

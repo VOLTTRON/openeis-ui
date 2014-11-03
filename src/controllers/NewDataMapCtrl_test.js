@@ -95,9 +95,17 @@ describe('NewDataMapCtrl controller', function () {
         expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
     });
 
+    it('should start with a building named "New building"', function () {
+        expect(scope.newDataMap.map.sensors.length).toBe(1);
+        expect(scope.newDataMap.map.sensors[0]).toEqual({
+            level: 'building',
+            name: 'New building',
+        });
+    });
+
     describe('addChild', function () {
         it('should add child objects', function () {
-            expect(scope.newDataMap.map.sensors.length).toBe(0);
+            expect(scope.newDataMap.map.sensors.length).toBe(1);
 
             var newChild = {
                     level: 'site',
@@ -105,7 +113,7 @@ describe('NewDataMapCtrl controller', function () {
                 };
             spyOn(window, 'prompt').andReturn(newChild.name);
             scope.addChild(newChild.level);
-            expect(scope.newDataMap.map.sensors.length).toBe(1);
+            expect(scope.newDataMap.map.sensors.length).toBe(2);
             // Slashes should be replaced with dashes
             expect(scope.newDataMap.map.sensors[0].name).toBe('NameWith-Slash');
         });
@@ -125,11 +133,11 @@ describe('NewDataMapCtrl controller', function () {
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(1);
-            expect(scope.newDataMap.map.sensors.length).toBe(1);
+            expect(scope.newDataMap.map.sensors.length).toBe(2);
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(3);
-            expect(scope.newDataMap.map.sensors.length).toBe(1);
+            expect(scope.newDataMap.map.sensors.length).toBe(2);
         });
     });
 
@@ -175,6 +183,9 @@ describe('NewDataMapCtrl controller', function () {
     it('should confirm on page leave if and only if child objects have been added', function () {
         var confirmSpy = spyOn(window, 'confirm'),
             event;
+
+        // Clear default building
+        scope.newDataMap.map.sensors = [];
 
         event = scope.$broadcast('$locationChangeStart');
         expect(window.confirm.callCount).toBe(0);
