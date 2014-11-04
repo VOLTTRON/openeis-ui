@@ -87,11 +87,11 @@ angular.module('openeis-ui')
         });
 
         angular.forEach($scope.analyses, function (analysis) {
-            if (analysis.status !== 'complete' && analysis.status !== 'error') {
+            if (analysis.status.slice(-8) !== 'complete') {
                 Analyses.get(analysis.id).$promise.then(function (updatedAnalysis) {
                     angular.extend(analysis, updatedAnalysis);
 
-                    if (analysis.status !== 'complete' && analysis.status !== 'error') {
+                    if (analysis.status.slice(-8) !== 'complete') {
                         $timeout.cancel(statusCheckPromise);
                         statusCheckPromise = $timeout($scope.statusCheck, 1000);
                     }

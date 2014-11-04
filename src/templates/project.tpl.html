@@ -151,24 +151,24 @@
                 <tbody>
                     <tr ng-repeat="analysis in analyses">
                         <td>
-                            <span ng-if="analysis.status !== 'complete'">{{analysis.name}}</span>
-                            <a ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">{{analysis.name}}</a>
+                            <span ng-if="analysis.status.slice(-8) !== 'complete'">{{analysis.name}}</span>
+                            <a ng-if="analysis.status.slice(-8) === 'complete'" ng-click="viewAnalysis(analysis)">{{analysis.name}}</a>
                             <div class="edit-menu drop-down">
                                 <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                 <div class="drop-down__container">
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete'" ng-click="viewAnalysis(analysis)">View</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" href="{{getAnalysisOutputUrl(analysis.id)}}" target="_self">Download output</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
+                                    <a class="drop-down__item" ng-if="analysis.status.slice(-8) === 'complete'" ng-click="viewAnalysis(analysis)">View</a>
+                                    <a class="drop-down__item" ng-if="analysis.status.slice(-8) === 'complete'" href="{{getAnalysisOutputUrl(analysis.id)}}" target="_self">Download output</a>
+                                    <a class="drop-down__item" ng-if="analysis.status.slice(-8) === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                                     <a class="drop-down__item" ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="revokeLink(analysis.id)">Revoke sharing</a>
                                     <a class="drop-down__item" ng-click="rename('analyses', $index)">Rename</a>
-                                    <a class="drop-down__item" ng-if="analysis.status === 'complete' || analysis.status === 'error'" ng-click="delete('analyses', $index)">Delete</a>
+                                    <a class="drop-down__item" ng-if="analysis.status.slice(-8) === 'complete'" ng-click="delete('analyses', $index)">Delete</a>
                                 </div>
                             </div>
                         </td>
                         <td>{{analysis.status | capitalize}}</td>
                         <td>{{analysis.added | date:'medium'}}</td>
                         <td>
-                            <a ng-if="analysis.status === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
+                            <a ng-if="analysis.status.slice(-8) === 'complete' && !(sharedAnalyses | filter:{analysis:analysis.id}).length" ng-click="shareAnalysis(analysis)">Share</a>
                             <span ng-if="(sharedAnalyses | filter:{analysis:analysis.id}).length">
                                 <a ng-click="viewLink(analysis.id)">Shared</a> (<a ng-click="revokeLink(analysis.id)">revoke</a>)
                             </span>
