@@ -64,7 +64,7 @@ describe('sensorContainer directive', function () {
 
     // Helper function to keep things DRY
     function compile() {
-        directive = directive || angular.element('<sensor-container container="rootContainer" files=""></sensor-container>');
+        directive = directive || angular.element('<sensor-container container="rootContainer" parent="map" files=""></sensor-container>');
 
         $httpBackend.whenGET(settings.SCHEMA_DEFINITION_URL).respond(angular.toJson(definition));
         $httpBackend.whenGET(settings.SCHEMA_UNITS_URL).respond('{}');
@@ -113,6 +113,7 @@ describe('sensorContainer directive', function () {
                 sensor3: {},
             }
         };
+        scope.map = { version: 1 };
         scope.rootContainer = { level: 'site', name: 'Site1', children: [
             { level: 'building', name: 'Building1' },
         ]};
@@ -163,6 +164,7 @@ describe('sensorContainer directive', function () {
                 timezone: {},
             }
         };
+        scope.map = { version: 1 };
         scope.rootContainer = { level: 'site', name: 'Site1', children: [
             { level: 'building', name: 'Building1' },
         ]};
@@ -200,6 +202,7 @@ describe('sensorContainer directive', function () {
                 attribute1: {}
             },
         };
+        scope.map = { version: 1 };
         scope.rootContainer = { level: 'site', name: 'Site1' };
         compile();
 

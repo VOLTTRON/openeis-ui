@@ -89,7 +89,7 @@ angular.module('openeis-ui.directives.sensor-container', [
                     }
 
                     // Time zone is only allowed on top-level objects
-                    if ($scope.parent && $scope.objectDefinition.attribute_list.indexOf('timezone') >  -1) {
+                    if (!$scope.parent.hasOwnProperty('version') && $scope.objectDefinition.attribute_list.indexOf('timezone') >  -1) {
                         $scope.objectDefinition.attribute_list.splice($scope.objectDefinition.attribute_list.indexOf('timezone'), 1);
                     }
 
