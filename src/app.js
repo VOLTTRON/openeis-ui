@@ -192,7 +192,7 @@ angular.module('openeis-ui', [
             templateUrl: 'shared-analyses.tpl.html',
         });
 })
-.controller('AppCtrl', function ($scope, Modals, Auth) {
+.controller('AppCtrl', function ($http, $scope, Modals, Auth) {
     $scope.modalOpen = Modals.modalOpen;
 
     $scope.$on('accountChange', function () {
@@ -204,6 +204,19 @@ angular.module('openeis-ui', [
     $scope.logOut = function () {
         Auth.logOut();
     };
+
+    $http.get(settings.API_URL + 'version').success(function (version) {
+        $scope.version = [
+            'v',
+            version.version,
+            ' (',
+            version.revision,
+            '#',
+            version.vcs_version,
+            ') ',
+            version.updated,
+        ].join('');
+    });
 })
 .run(function ($rootScope, $rootElement) {
     $rootScope.$on('$viewContentLoaded', function () {

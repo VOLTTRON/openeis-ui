@@ -440,4 +440,11 @@ $inuit-btn-border-width: 0;
     cursor: pointer;
 }
 
+.footer {
+    @include inuit-font-size(11px);
+    text-align: center;
+    padding-bottom: 2 * $inuit-base-spacing-unit;
+    color: #ccc;
+}
+
 @import "inuit-clearfix/_trumps.clearfix";
