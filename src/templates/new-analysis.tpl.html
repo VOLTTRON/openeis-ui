@@ -43,7 +43,7 @@
             <fieldset>
                 <legend>Parameters</legend>
                 <div class="form__group" ng-repeat="(paramName, param) in newAnalysis.application.parameters">
-                    <label>{{param.display_name}}<span ng-if="param.optional">&nbsp;(optional)</label>
+                    <label>{{param.display_name}}<span ng-if="param.optional">&nbsp;(optional)</span></label>
                     <select ng-if="param.value_list"
                             ng-required="!param.optional"
                             ng-model="newAnalysis.configuration.parameters[paramName]"

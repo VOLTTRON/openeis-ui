@@ -70,6 +70,15 @@ angular.module('openeis-ui.services.data-sets', ['ngResource'])
         return resource.query({ project: projectId });
     };
 
+    DataSets.manipulate = function (dataSet, filters) {
+        return $http({
+            method: 'POST',
+            url: settings.API_URL + 'datasets/' + dataSet.id + '/manipulate',
+            data: { config: filters },
+            transformResponse: angular.fromJson,
+        });
+    };
+
     DataSets.preview = function (map, files) {
         return resource.preview({ map: map, files: files, rows: 10 });
     };

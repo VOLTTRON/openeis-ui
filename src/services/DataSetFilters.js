@@ -48,55 +48,13 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.filters', [])
-.filter('bytes', function() { // Based on https://gist.github.com/thomseddon/3511330
-    return function(bytes, precision) {
-        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '--';
-        if (typeof precision === 'undefined') precision = 0;
-        var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'],
-        number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
-    };
-})
-.filter('capitalize', function () {
-    return function (input, scope) {
-        if (input) {
-            return input.substring(0,1).toUpperCase() + input.substring(1);
-        }
+angular.module('openeis-ui.services.data-set-filters', ['ngResource'])
+.service('DataSetFilters', function ($resource) {
+    var DataSetFilters = this,
+        resource = $resource(settings.API_URL + 'filters');
 
-        return '';
-    };
-})
-.filter('hasSignature', function () {
-    return function (items, signature) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (angular.equals(signature, item.signature)) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
-    };
-})
-.filter('hasTimestamp', function () {
-    return function (items) {
-        var filtered = [];
-
-        angular.forEach(items, function (item) {
-            if (item.timestamp) {
-                filtered.push(item);
-            }
-        });
-
-        return filtered;
-    };
-})
-.filter('nl2br', function () {
-    return function (input) {
-        if (!angular.isString(input)) { return input; }
-
-        return input.replace(/\n/g, '<br>');
+    DataSetFilters.query = function () {
+        return resource.query();
     };
 });
+

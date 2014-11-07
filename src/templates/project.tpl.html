@@ -101,6 +101,7 @@
                                     <a class="drop-down__toggle"><span class="fa fa-caret-right"></span></a>
                                     <div class="drop-down__container">
                                         <a class="drop-down__item" href="projects/{{project.id}}/datasets/{{dataSet.id}}" ng-if="dataSet.status.status === 'complete'">View</a>
+                                        <a class="drop-down__item" href="projects/{{project.id}}/datasets/{{dataSet.id}}/manipulate" ng-if="dataSet.status.status === 'complete'">Manipulate</a>
                                         <a class="drop-down__item" href="{{dataSet.download_url}}?format=csv" target="_self">Download</a>
                                         <a class="drop-down__item" ng-click="rename('dataSets', $index)">Rename</a>
                                         <a class="drop-down__item" ng-click="delete('dataSets', $index)">Delete</a>

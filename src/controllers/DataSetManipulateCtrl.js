@@ -48,55 +48,97 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.filters', [])
-.filter('bytes', function() { // Based on https://gist.github.com/thomseddon/3511330
-    return function(bytes, precision) {
-        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '--';
-        if (typeof precision === 'undefined') precision = 0;
-        var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'],
-        number = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
-    };
-})
-.filter('capitalize', function () {
-    return function (input, scope) {
-        if (input) {
-            return input.substring(0,1).toUpperCase() + input.substring(1);
+angular.module('openeis-ui')
+.controller('DataSetManipulateCtrl', function ($location, $scope, DataSetFilters, DataSets, Modals, project, dataSet) {
+    $scope.Modals = Modals;
+    $scope.project = project;
+    $scope.dataSet = dataSet;
+    $scope.availableFilters = DataSetFilters.query();
+    $scope.filters = {};
+
+    $scope.$on('$locationChangeStart', function (event) {
+        if ($scope.filterAdded() && !confirm('Abandon data set manipulation?')) {
+            event.preventDefault();
         }
+    });
 
-        return '';
-    };
-})
-.filter('hasSignature', function () {
-    return function (items, signature) {
-        var filtered = [];
+    $scope.filterAdded = function () {
+        var hasFilter = false;
 
-        angular.forEach(items, function (item) {
-            if (angular.equals(signature, item.signature)) {
-                filtered.push(item);
+        angular.forEach($scope.filters, function (topicFilters) {
+            if (topicFilters.length) {
+                hasFilter = true;
             }
         });
 
-        return filtered;
+        return hasFilter;
     };
-})
-.filter('hasTimestamp', function () {
-    return function (items) {
-        var filtered = [];
 
-        angular.forEach(items, function (item) {
-            if (item.timestamp) {
-                filtered.push(item);
-            }
+    $scope.addFilterTo = function (topic) {
+        $scope.filters[topic] = $scope.filters[topic] || [];
+        $scope.newFilter = { topic: topic };
+        Modals.openModal('newFilter');
+    };
+
+    $scope.saveNewFilter = function () {
+        var parameters = {};
+
+        angular.forEach($scope.newFilter.filter.parameters, function (value, key) {
+            parameters[key] = $scope.newFilter.parameters[key];
         });
 
-        return filtered;
+        $scope.filters[$scope.newFilter.topic].push([
+            $scope.newFilter.topic,
+            $scope.newFilter.filter.id,
+            parameters,
+        ]);
+        Modals.closeModal('newFilter');
     };
-})
-.filter('nl2br', function () {
-    return function (input) {
-        if (!angular.isString(input)) { return input; }
 
-        return input.replace(/\n/g, '<br>');
+    $scope.raiseFilter = function (filter) {
+        var topicFilters = $scope.filters[filter[0]],
+            index = topicFilters.indexOf(filter);
+
+        if (index === 0) { return; }
+
+        topicFilters.splice(index, 1);
+        topicFilters.splice(index - 1, 0, filter);
+    };
+
+    $scope.lowerFilter = function (filter) {
+        var topicFilters = $scope.filters[filter[0]],
+            index = topicFilters.indexOf(filter);
+
+        if (index === topicFilters.length - 1) { return; }
+
+        topicFilters.splice(index, 1);
+        topicFilters.splice(index + 1, 0, filter);
+    };
+
+    $scope.deleteFilter = function (filter) {
+        var topicFilters = $scope.filters[filter[0]];
+        topicFilters.splice(topicFilters.indexOf(filter), 1);
+    };
+
+    $scope.apply = function () {
+        var filters = [];
+
+        angular.forEach($scope.filters, function (topicFilters) {
+            filters = filters.concat(topicFilters);
+        });
+
+        DataSets.manipulate(dataSet, filters).then(function () {
+            // Clear filters so we don't trigger confirmation
+            $scope.filters = {};
+            $location.url('projects/' + project.id);
+        }, function (rejection) {
+            var errors = rejection.data;
+
+            if (angular.isArray(errors)) {
+                alert(errors.join('\n'));
+            } else {
+                alert(errors);
+            }
+        });
     };
 });

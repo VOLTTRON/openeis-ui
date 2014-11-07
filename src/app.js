@@ -56,6 +56,7 @@ angular.module('openeis-ui', [
     'ngAnimate',
     'ngResource',
     'ngRoute',
+    'ngSanitize',
     'openeis-ui.components.modals',
     'openeis-ui.directives.analysis-report',
     'openeis-ui.directives.file-upload',
@@ -66,6 +67,7 @@ angular.module('openeis-ui', [
     'openeis-ui.services.auth',
     'openeis-ui.services.data-files',
     'openeis-ui.services.data-maps',
+    'openeis-ui.services.data-set-filters',
     'openeis-ui.services.data-sets',
     'openeis-ui.services.projects',
     'openeis-ui.services.shared-analyses',
@@ -170,6 +172,18 @@ angular.module('openeis-ui', [
                 }],
                 head: ['DataSets', '$route', function(DataSets, $route) {
                     return DataSets.head($route.current.params.dataSetId).$promise;
+                }],
+            },
+        })
+        .whenAuth('/projects/:projectId/datasets/:dataSetId/manipulate', {
+            controller: 'DataSetManipulateCtrl',
+            templateUrl: 'data-set-manipulate.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataSet: ['DataSets', '$route', function(DataSets, $route) {
+                    return DataSets.get($route.current.params.dataSetId).$promise;
                 }],
             },
         })

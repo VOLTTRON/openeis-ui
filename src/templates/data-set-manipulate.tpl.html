@@ -1,0 +1,61 @@
+<div class="container">
+    <ul class="breadcrumbs">
+        <li><a href="projects">Projects</a></li>
+        <li><a href="projects/{{project.id}}">{{project.name}}</a></li>
+        <li>Manipulate data set: {{dataSet.name}}</li>
+    </ul>
+
+    <div class="view view--data-set-manipulate">
+        <h2>Manipulate data set: {{dataSet.name}}</h2>
+        <ul>
+            <li class="topic" ng-repeat="(topic, sensor) in dataSet.datamap.sensors" ng-if="sensor.type">
+                {{topic}} <a ng-click="addFilterTo(topic)">Add filter&hellip;</a>
+                <ol>
+                    <li ng-repeat="filter in filters[topic]">
+                        {{filter | json}}
+                        &mdash; <a ng-click="deleteFilter(filter)">Delete</a>
+                        <span ng-if="!$first">&mdash; <a ng-click="raiseFilter(filter)">Up</a></span>
+                        <span ng-if="!$last">&mdash; <a ng-click="lowerFilter(filter)">Down</a></span>
+                    </li>
+                </ol>
+            </li>
+        </ul>
+        <button ng-disabled="!filterAdded()" ng-click="apply()">Apply</button> <a class="button" href="projects/{{project.id}}">Cancel</a>
+    </div>
+</div>
+<modal modal-id="newFilter">
+    <h3>Add filter</h3>
+    <form class="form--stacked" ng-submit="saveNewFilter()">
+        <div class="form__group">
+            <label>Sensor</label>
+            <div>{{newFilter.topic}}</div>
+        </div>
+        <div class="form__group">
+            <label>Filter</label>
+            <select required
+                ng-options="filter as filter.name for filter in availableFilters | orderBy:'name'"
+                ng-model="newFilter.filter">
+                <option value="">-- Choose filter --</option>
+            <select>
+        </div>
+        <div class="form__group"
+            ng-if="newFilter.filter"
+            ng-init="newFilter.parameters[paramName] = param.value_default"
+            ng-repeat="(paramName, param) in newFilter.filter.parameters">
+            <label>{{param.display_name}}</label>
+            <input type="checkbox"
+                ng-if="param.config_type === 'bool'"
+                ng-model="newFilter.parameters[paramName]">
+            <input value="{{param.value_default}}"
+                type="number"
+                step="1"
+                ng-if="param.config_type === 'int' && !param.value_list"
+                min="{{param.value_min}}"
+                max="{{param.value_max}}"
+                ng-required="!param.optional"
+                ng-model="newFilter.parameters[paramName]">
+                <small class="help" ng-if="param.description" ng-bind-html="param.description | nl2br"></small>
+        </div>
+        <button>Add</button> <button type="button" ng-click="Modals.closeModal('newFilter')">Cancel</button>
+    </form>
+</modal>

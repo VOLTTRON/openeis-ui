@@ -222,7 +222,8 @@ $inuit-btn-border-width: 0;
                 }
 
                 td:first-child {
-                    width: 61.8%
+                    width: 61.8%;
+                    white-space: nowrap;
                 }
             }
 
@@ -255,7 +256,8 @@ $inuit-btn-border-width: 0;
                 }
 
                 td:first-child {
-                    width: 38.2%
+                    width: 61.8%;
+                    white-space: nowrap;
                 }
             }
         }
@@ -276,11 +278,8 @@ $inuit-btn-border-width: 0;
                 }
 
                 td:first-child {
-                    width: 61.8%
-                }
-
-                td:last-child {
-                    width: 38.2%;
+                    width: 61.8%;
+                    white-space: nowrap;
                 }
             }
         }
@@ -294,6 +293,11 @@ $inuit-btn-border-width: 0;
 
                 tbody > tr:hover {
                     background-color: #f8f8ff;
+                }
+
+                td:first-child {
+                    width: 61.8%;
+                    white-space: nowrap;
                 }
             }
         }
@@ -314,7 +318,11 @@ $inuit-btn-border-width: 0;
         @extend %box;
     }
 
-    &--data-set{
+    &--data-set {
+        @extend %box;
+    }
+
+    &--data-set-manipulate {
         @extend %box;
     }
 

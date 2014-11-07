@@ -89,6 +89,7 @@ module.exports = function(grunt) {
             'bower_components/angular-cookies/angular-cookies.min.js',
             'bower_components/angular-resource/angular-resource.min.js',
             'bower_components/angular-route/angular-route.min.js',
+            'bower_components/angular-sanitize/angular-sanitize.min.js',
             '<%= buildDir %>js/autofill-event.min.js',
           ],
         },
