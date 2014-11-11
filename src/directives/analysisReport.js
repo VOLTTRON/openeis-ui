@@ -466,11 +466,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         var margin = { top: 50, right: 0, bottom: 100, left: 100 },
             width = 960 - margin.left - margin.right,
-            height = 1200 - margin.top - margin.bottom,
             gridSize = Math.floor(width / 24),
+            dates = d3.set(data.map(function (d) { return d.y; })).values();
+            height = (dates.length + 1) * gridSize,
             legendElementWidth = gridSize*2,
             buckets = 9,
-            colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"] // alternatively colorbrewer.YlGnBu[9]
+            colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
 
         var colorScale = d3.scale.quantile()
             //.domain([buckets, d3.max(data, function (d) { return d.value; })])
@@ -485,7 +486,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
         var yLabels = graph.selectAll(".yLabel")
-            .data(d3.set(data.map(function (d) { return d.y; })).values())
+            .data(dates)
             .enter().append("text")
             .text(function (d) { return d; })
             .attr("x", 0)
@@ -508,8 +509,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .data(data)
             .enter().append("rect")
             .attr("x", function(d) { return (d.x ) * gridSize; })
-            //.attr("y", function(d) { return (d.y) * gridSize; })
-            .attr("y", function(d) { return (((d.y).substr((d.y).lastIndexOf("-")+1)) -1 ) * gridSize; })
+            .attr("y", function(d) { return dates.indexOf(d.y) * gridSize; })
             .attr("rx", 4)
             .attr("ry", 4)
             .attr("class", "value bordered")
