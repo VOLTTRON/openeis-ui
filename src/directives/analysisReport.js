@@ -496,7 +496,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr("class", "yLabel");
 
         var xLabels = graph.selectAll(".xLabel")
-            .data(d3.set(data.map(function (d) { return d.x; })).values())
+            .data(d3.range(24))
             .enter().append("text")
             .text(function(d) { return d; })
             .attr("x", function(d, i) { return i * gridSize; })
