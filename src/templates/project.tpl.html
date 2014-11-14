@@ -38,9 +38,14 @@
             </table>
         </div>
         <modal class="modal--upload-file" modal-id="uploadFile">
-            <label class="label--inline">Upload file</label>&nbsp;
-            <file-upload file-upload-click="upload(files, onUpload)"></file-upload>
-            &nbsp;<button ng-click="Modals.closeModal('uploadFile')">Cancel</button>
+            <div class="form__group" ng-if="!uploading">
+                <label class="label--inline">Upload file</label>&nbsp;
+                <file-upload file-upload-click="upload(files, onUpload)"></file-upload>
+                &nbsp;<button ng-click="Modals.closeModal('uploadFile')">Cancel</button>
+            </div>
+            <div class="form__group" ng-if="uploading">
+                <span class="spinner fa fa-circle-o-notch"></span> Uploading file&hellip;
+            </div>
         </modal>
         <modal class="modal--file-timestamp" modal-id="configureTimestamp">
             <ng-include src="'configure-timestamp.tpl.html'" ng-controller="ConfigureTimestampCtrl"></ng-include>

@@ -129,25 +129,30 @@ angular.module('openeis-ui')
         });
     };
 
-    $scope.upload = function (files, onUpload) {
+    $scope.upload = function (files) {
+        var uploads = [];
+
+        $scope.uploading = true;
+
         angular.forEach(files, function(file) {
-            $upload.upload({
+            uploads.push($upload.upload({
                 url: settings.API_URL + 'projects/' + project.id + '/add_file',
                 file: file,
             }).then(function (response) {
-                Modals.closeModal('uploadFile');
-
                 // Perform a 'get' so that the file object has $save and $delete methods
                 DataFiles.get(response.data.id).then(function (getResponse) {
                     $scope.dataFiles.push(getResponse);
                     $scope.configureTimestamp($scope.dataFiles.length - 1);
                 });
-
-                onUpload();
-            }, function (rejection) {
-                alert(rejection.data.file.join('\n'));
-            });
+            }));
         });
+
+        return $q.all(uploads).catch(function (rejection) {
+                alert(rejection.data.file.join('\n'));
+            }).finally(function () {
+                delete $scope.uploading;
+                Modals.closeModal('uploadFile');
+            });
     };
 
     $scope.errorsModal = {};

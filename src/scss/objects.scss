@@ -184,3 +184,7 @@
     display: block;
     white-space: nowrap;
 }
+
+.spinner {
+    animation: fa-spin 1s infinite linear;
+}

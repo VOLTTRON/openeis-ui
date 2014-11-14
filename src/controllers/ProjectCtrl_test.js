@@ -229,24 +229,32 @@ describe('ProjectCtrl controller', function () {
     });
 
     describe('upload function', function () {
-        var upload, DataFiles, resolve, reject;
+        var upload, DataFiles, $rootScope,
+            uploads = [],
+            gets = [];
 
-        beforeEach(function () {
-            upload = { upload: jasmine.createSpy('upload.upload').andReturn({
-                then: function (successCallback, errorCallback) {
-                    resolve = successCallback;
-                    reject = errorCallback;
-                }
-            })};
+        beforeEach(inject(function ($q, _$rootScope_) {
+            $rootScope = _$rootScope_;
 
-            DataFiles = { get: jasmine.createSpy('DataFiles.get').andReturn({
-                then: function (successCallback) {
-                    resolve = successCallback;
-                }
-            })};
+            uploads = [];
+            upload = { upload: jasmine.createSpy('upload.upload').andCallFake(function () {
+                var deferred = $q.defer();
+
+                uploads.push(deferred);
+
+                return deferred.promise;
+            }) };
+
+            DataFiles = { get: jasmine.createSpy('DataFiles.get').andCallFake(function () {
+                var deferred = $q.defer();
+
+                gets.push(deferred);
+
+                return deferred.promise;
+            }) };
 
             controller = $controller('ProjectCtrl', { $scope: scope, $upload: upload, DataFiles: DataFiles });
-        });
+        }));
 
         it('should upload selected files with $upload', function () {
             scope.upload(['file1', 'file2', 'file2']);
@@ -254,26 +262,35 @@ describe('ProjectCtrl controller', function () {
         });
 
         it('should retrieve file and add it to array', function () {
-            var onUpload = jasmine.createSpy('onUpload');
-
             scope.dataFiles = [];
             scope.configureTimestamp = jasmine.createSpy('configureTimestamp');
-            scope.upload(['file1', 'file2', 'file2'], onUpload);
-            resolve({ data: { id: 1 }});
-            resolve('file');
-            expect(scope.dataFiles.length).toBe(1);
-            expect(scope.dataFiles[0]).toBe('file');
+
+            scope.upload(['file1', 'file2', 'file2']);
+            angular.forEach(uploads, function (upload, key) {
+                upload.resolve({ data: { id: key } });
+            });
+            $rootScope.$apply();
+            expect(DataFiles.get).toHaveBeenCalledWith(0);
             expect(DataFiles.get).toHaveBeenCalledWith(1);
+            expect(DataFiles.get).toHaveBeenCalledWith(2);
+
+            angular.forEach(gets, function (get, key) {
+                get.resolve('file' + key);
+            });
+            $rootScope.$apply();
+            expect(scope.dataFiles).toEqual(['file0', 'file1', 'file2']);
             expect(scope.configureTimestamp).toHaveBeenCalledWith(0);
-            expect(onUpload.callCount).toBe(1);
+            expect(scope.configureTimestamp).toHaveBeenCalledWith(1);
+            expect(scope.configureTimestamp).toHaveBeenCalledWith(2);
         });
 
-        it('should display server response on error', function () {
+        it('should display server response on error', inject(function ($q) {
             spyOn(window, 'alert');
-            scope.upload(['file1']);
-            reject({ data: { file: ['Some error', 'Some other error']}});
+            scope.upload(['file1', 'file2', 'file3']);
+            uploads[0].reject({ data: { file: ['Some error', 'Some other error']}});
+            $rootScope.$apply();
             expect(window.alert).toHaveBeenCalledWith('Some error\nSome other error');
-        });
+        }));
     });
 
     describe('delete function', function () {

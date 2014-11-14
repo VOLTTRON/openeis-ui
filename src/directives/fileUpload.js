@@ -69,13 +69,14 @@ angular.module('openeis-ui.directives.file-upload', [])
                 });
 
                 uploadButton.on('click', function (event) {
+                    uploadButton.prop('disabled', true);
+
                     scope.$apply(function () {
                         clickFn(scope, {
                             $event: event,
                             files: fileInput[0].files,
-                            onUpload: function () {
-                                fileInput.val('').triggerHandler('change');
-                            },
+                        }).finally(function () {
+                            fileInput.val('').triggerHandler('change');
                         });
                     });
                 });

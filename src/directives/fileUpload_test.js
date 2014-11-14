@@ -85,7 +85,7 @@ describe('fileUpload directive', function () {
         });
 
         it('should call file-upload-click value on click', function () {
-            spyOn($rootScope, 'clickFn');
+            spyOn($rootScope, 'clickFn').andReturn({ finally: angular.noop });
             expect($rootScope.clickFn).not.toHaveBeenCalled();
             uploadButton.triggerHandler('click');
             expect($rootScope.clickFn).toHaveBeenCalled();
