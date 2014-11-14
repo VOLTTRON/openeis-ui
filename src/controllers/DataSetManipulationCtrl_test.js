@@ -49,7 +49,7 @@
 // under Contract DE-AC05-76RL01830
 
 describe('DataSetManipulateCtrl controller', function () {
-    var $httpBackend, $controller, controller, scope, DataSets, $location, resolve, reject,
+    var $httpBackend, $rootScope, $controller, controller, scope, DataSets, $location, manipulate,
         testProject = { id: 1 };
 
     beforeEach(function () {
@@ -63,17 +63,16 @@ describe('DataSetManipulateCtrl controller', function () {
             });
         });
 
-        DataSets = {
-            manipulate: function () {
-                return { then: function (successCallback, errorCallback) {
-                    resolve = successCallback;
-                    reject = errorCallback;
-                }};
-            },
-        };
+        inject(function (_$httpBackend_, _$rootScope_, _$controller_, _$location_, $q) {
+            DataSets = {
+                manipulate: function () {
+                    manipulate = $q.defer();
+                    return manipulate.promise;
+                },
+            };
 
-        inject(function (_$httpBackend_, $rootScope, _$controller_, _$location_) {
             $httpBackend = _$httpBackend_;
+            $rootScope = _$rootScope_;
             $controller = _$controller_;
             scope = $rootScope.$new();
             scope.project = { id: 1 };
@@ -157,7 +156,7 @@ describe('DataSetManipulateCtrl controller', function () {
 
     describe('apply', function () {
         it('should flatten filters', function () {
-            spyOn(DataSets, 'manipulate').andReturn({ then: angular.noop });
+            spyOn(DataSets, 'manipulate').andCallThrough();
 
             scope.filters = {
                 'topic1': ['topic1Filter'],
@@ -173,7 +172,8 @@ describe('DataSetManipulateCtrl controller', function () {
             spyOn($location, 'url');
 
             scope.apply();
-            resolve();
+            manipulate.resolve();
+            $rootScope.$apply();
             expect($location.url).toHaveBeenCalledWith('projects/' + testProject.id);
         });
 
@@ -182,11 +182,14 @@ describe('DataSetManipulateCtrl controller', function () {
             spyOn($location, 'url');
 
             scope.apply();
-            reject({ data: ['error1', 'error2'] });
+            manipulate.reject({ data: ['error1', 'error2'] });
+            $rootScope.$apply();
             expect(window.alert).toHaveBeenCalledWith('error1\nerror2');
             expect($location.url).not.toHaveBeenCalled();
 
-            reject({ data: 'error' });
+            scope.apply();
+            manipulate.reject({ data: 'error' });
+            $rootScope.$apply();
             expect(window.alert).toHaveBeenCalledWith('error');
             expect($location.url).not.toHaveBeenCalled();
         });

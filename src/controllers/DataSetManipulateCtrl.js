@@ -123,6 +123,8 @@ angular.module('openeis-ui')
     $scope.apply = function () {
         var filters = [];
 
+        $scope.applying = true;
+
         angular.forEach($scope.filters, function (topicFilters) {
             filters = filters.concat(topicFilters);
         });
@@ -139,6 +141,8 @@ angular.module('openeis-ui')
             } else {
                 alert(errors);
             }
+        }).finally(function () {
+            delete $scope.applying;
         });
     };
 });

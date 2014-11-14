@@ -7,20 +7,25 @@
 
     <div class="view view--data-set-manipulate">
         <h2>Manipulate data set: {{dataSet.name}}</h2>
-        <ul>
-            <li class="topic" ng-repeat="(topic, sensor) in dataSet.datamap.sensors" ng-if="sensor.type">
-                {{topic}} <a ng-click="addFilterTo(topic)">Add filter&hellip;</a>
-                <ol>
-                    <li ng-repeat="filter in filters[topic]">
-                        {{filter | json}}
-                        &mdash; <a ng-click="deleteFilter(filter)">Delete</a>
-                        <span ng-if="!$first">&mdash; <a ng-click="raiseFilter(filter)">Up</a></span>
-                        <span ng-if="!$last">&mdash; <a ng-click="lowerFilter(filter)">Down</a></span>
-                    </li>
-                </ol>
-            </li>
-        </ul>
-        <button ng-disabled="!filterAdded()" ng-click="apply()">Apply</button> <a class="button" href="projects/{{project.id}}">Cancel</a>
+        <div ng-if="!applying">
+            <ul>
+                <li class="topic" ng-repeat="(topic, sensor) in dataSet.datamap.sensors" ng-if="sensor.type">
+                    {{topic}} <a ng-click="addFilterTo(topic)">Add filter&hellip;</a>
+                    <ol>
+                        <li ng-repeat="filter in filters[topic]">
+                            {{filter | json}}
+                            &mdash; <a ng-click="deleteFilter(filter)">Delete</a>
+                            <span ng-if="!$first">&mdash; <a ng-click="raiseFilter(filter)">Up</a></span>
+                            <span ng-if="!$last">&mdash; <a ng-click="lowerFilter(filter)">Down</a></span>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+            <button ng-disabled="!filterAdded()" ng-click="apply()">Apply</button> <a class="button" href="projects/{{project.id}}">Cancel</a>
+        </div>
+        <div ng-if="applying">
+            <span class="spinner fa fa-circle-o-notch"></span> Applying filters&hellip;
+        </div>
     </div>
 </div>
 <modal modal-id="newFilter">
