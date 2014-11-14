@@ -542,4 +542,378 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         return svg[0];
     }
+
+    function retroCommissioningOAEDSVG(data) {
+        // ToDo: When display this SVG in the dialog box, clip-path and other layout measures (e.g. margin & padding) are
+        //          messed up. There are some tricks to get this right. However, best not to touch/deal with those things.
+        //var container_class = ".retro-commissioning-oaed .plot-area";
+        var containerWidth = 1000; //$(container_class).width();
+        var containerHeight = 600; //$(container_class).height();
+        var legends = {
+            "GREY": {
+                value: "No Diagnosis",
+                color: "#B3B3B3",
+                state: 0,
+                string: "GREY"
+            },
+            "GREEN": {
+                value: "Normal - No Fault",
+                color: "#509E7A",
+                state: 1,
+                string: "GREEN"
+            },
+            "RED": {
+                value: "Fault",
+                color: "#E22400",
+                state: 2,
+                string: "RED"
+            }
+        };
+        var sample_data = aggregateData(data);
+
+        var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+                    .attr("width", containerWidth)
+                    .attr("height", containerHeight);
+        //Width and height
+        var margin = {top: 30, right: 30, bottom: 0, left: 100}; //margin to the axes of the plot
+        var padding = {top: 0, right: 0, bottom: 0, left: 0}; //padding from the axes to the actual plot
+        var width = containerWidth - margin.left - margin.right;
+        var height = containerHeight - margin.top - margin.bottom - padding.top - padding.bottom;
+        height = 480; //Due to strict sizing, hard code height
+
+        var format = d3.time.format("%b %d");//d3.time.format("%m/%d/%y");
+        var scrollbarStrokeWidth = 10;
+
+        var oneDay = 24*60*60*1000;
+        var rectWidth = height/24;
+        var rectBorderWidth = 1;
+        var maxWidth = width - padding.left - padding.right;
+        var clipPathWidth = containerWidth - margin.left - margin.right + 10; //32 * rectWidth;
+
+        var xScale = d3.time.scale();
+        var yDomainData = makeArray(1,24);
+        var yScale = d3.scale.ordinal()
+                .domain(yDomainData)
+                .rangeRoundBands([height, 0]);
+
+        //Create axises
+        var xAxis = d3.svg.axis()
+                //.scale(xScale)
+                .orient("bottom")
+                .ticks(d3.time.day)
+                .tickFormat(format);
+        var yAxis = d3.svg.axis()
+                //.scale(yScale)
+                .orient("left");
+
+        var plot_area = svg
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var xAxisEle = plot_area.append("g")
+            .attr("id", "xAxisEle")
+            .attr("class", "x axis");
+        xAxisEle.attr("clip-path","url(#clip)")
+            .attr("transform", "translate(0," + height + ")");
+
+        var clip_area = plot_area.append("g")
+            .attr("clip-path","url(#clip)");
+
+        var xScrollbarHeightPos = height + 70 ;
+        var brush = d3.svg.brush();
+        brush.extent([0, 0])
+            .on("brush", brushed);
+        var handle = null;
+
+        var xScrollbarScale = d3.time.scale()
+                .range([padding.left, clipPathWidth]);
+
+        var xDomainData = d3.extent(sample_data, function(d) { return d.date; });
+        var xDomainMax = xDomainData[1];
+        var xDomainMin = xDomainData[0];
+        var noDays = Math.round(Math.abs((xDomainMax - xDomainMin)/(oneDay)));
+        var actualWidth = noDays*rectWidth;
+        if (rectWidth > maxWidth) {
+            rectWidth = maxWidth;
+        }
+
+        xScale.domain([xDomainMin,xDomainMax])
+                //.range([padding.left, actualWidth]);
+                .range([padding.left, actualWidth]);
+
+        xAxis.scale(xScale);
+        yAxis.scale(yScale);
+
+        var yAxisEle = plot_area.append("g")
+            .attr("id", "yAxisEle")
+            .attr("class", "y axis");
+        yAxisEle.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("dx", "-20em")
+                .attr("dy", "-3em")
+                .style("text-anchor", "start")
+                .text("Hour of Day");
+
+        //Tooltip
+        var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                //.offset([-10, 0])
+                .html(function(d) {
+                    return "Timestamp: <strong>" + d.date + "</strong><br/>" +
+                    "Last Run Diagnostic: <strong>" + d.diagnostic + "</strong>" + "</strong><br/>" +
+                    "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>";
+                })
+                .direction(function(d) {
+                    if (d.y>18) {
+                        return "e";
+                    }
+                    return "n";
+                });
+        plot_area.call(tip);
+
+        //Clip area
+        plot_area.append("clipPath")
+                .attr("id", "clip")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", clipPathWidth)
+                .attr("height", height);
+
+        // Plot diagnostic result
+        clip_area.selectAll("rect")
+                .data(sample_data)
+                .enter()
+                .append("rect")
+                .attr("x", function (d) {
+                    return xScale(d.date);
+                })
+                .attr("y", function (d) {
+                    return yScale(d.y+1); //Convert from 0-based to 1-based hour
+                })
+                .attr("width", rectWidth)
+                .attr("height", rectWidth)
+                .attr("fill", function(d) {
+                    return legends[d.state].color;
+                })
+                .attr("opacity", 1)
+                .style({"stroke-width": rectBorderWidth, "stroke": "black"})
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+
+        xScrollbarScale.domain([xDomainMin,xDomainMax]);
+        var xScrollbarAxis = d3.svg.axis()
+                .scale(xScrollbarScale)
+                .tickSize(0)
+                .orient("bottom")
+                .tickPadding(10);
+                //.ticks(d3.time.day)
+                //.tickFormat(function(d) { return d; });
+
+        plot_area.append("g")
+                .attr("class", "x-scrollbar")
+                .attr("transform", "translate(" + padding.left + "," + xScrollbarHeightPos + ")")
+                .call(xScrollbarAxis)
+                .select(".domain")
+                .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+                .attr("class", "halo");
+
+        //brush.x(xScale);
+        brush.x(xScrollbarScale);
+        var slider = plot_area.append("g")
+                .attr("class", "slider")
+                .attr("transform", "translate(" + padding.left + "," + (xScrollbarHeightPos-scrollbarStrokeWidth/2) + ")");
+        handle = slider.append("circle")
+                .attr("class", "handle")
+                //.attr("transform", "translate(" + padding.left + "," + xScrollbarHeightPos + ")")
+                .attr("transform", "translate(" + padding.left + "," + scrollbarStrokeWidth/2 + ")")
+                .attr("r", 7);
+        slider.call(brush);
+        slider.selectAll(".extent,.resize")
+                .remove();
+        slider.select(".background")
+                //.attr("width", 600)
+                .attr("height", scrollbarStrokeWidth);
+
+        slider.call(brush.event);
+
+        return svg[0];
+
+
+        function brushed() {
+            var value = brush.extent();
+            if (value != null) {
+                value = value[0];
+
+                if (d3.event.sourceEvent) { // not a programmatic event
+                    //value = xScale.invert(d3.mouse(this)[0]);
+                    var curPos = d3.mouse(this)[0];
+
+                    if (curPos < padding.left) {
+                        curPos = padding.left;
+
+                    }
+                    if (curPos > clipPathWidth) {
+                        curPos = clipPathWidth;
+
+                    }
+                    value = xScrollbarScale.invert(curPos);
+                    //brush.extent([0, 0]);
+                }
+                if (handle != null) {
+                   handle.attr("cx", xScrollbarScale(value));
+                }
+            }
+            zoomed(value);
+        }
+        function zoomed(value) {
+            xAxisEle.call(xAxis);
+            xAxisEle.selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-1em")
+                    .attr("dy", "0.3em")
+                    .attr("transform", function(d) {
+                        return "rotate(-90)"
+                    });
+            yAxisEle.call(yAxis);
+
+            if (d3.event != null) {
+                if (d3.event.sourceEvent) {
+                    var noDays = ((value.getTime() - xDomainMin) / oneDay); //Convert values to -/+ days and return value
+                    clip_area.selectAll("rect").attr("x", function (d) {
+                        if (value == null) {
+                            return xScale(d.date);
+                        }
+                        else {
+                            //xScale.domain([value,xDomainMax]);
+                            //zoom.translate(value,0);
+                            var newDate = new Date(d.date.getTime());
+                            newDate.setDate(newDate.getDate() - noDays); //Go backwards noDays so the chosen date is in the viewport
+                            // The code below is to fix the coordinates issue when showing D3 on dialog box
+                            var dialogCoordsFixingRes = xScale(newDate);
+                            if (dialogCoordsFixingRes < 0) {
+                                dialogCoordsFixingRes = -1000;
+                            }
+                            return dialogCoordsFixingRes;
+                        }
+                    });
+                    xAxisEle.selectAll("g.tick")
+                        .attr("transform", function (d) {
+                            var newDate = new Date(d.getTime());
+                            newDate.setDate(newDate.getDate() - noDays); //Go backwards noDays so the chosen date is in the viewport
+                            // The code below is to fix the coordinates issue when showing D3 on dialog box
+                            var dialogCoordsFixingRes = xScale(newDate);
+                            if (dialogCoordsFixingRes < 0) {
+                                dialogCoordsFixingRes = -1000;
+                            }
+                            return "translate(" + dialogCoordsFixingRes + ",0)";
+                        });
+                }
+            }
+        }
+        function makeArray(lowEnd, highEnd) {
+            var arr = [];
+            while(lowEnd <= highEnd){
+                arr.push(lowEnd++);
+            }
+            return arr;
+        }
+        function aggregateData(inData) {
+            // resData = {
+            //      "date": {
+            //                  "hr": {
+            //                              "diagnostic_name": {
+            //                                                      datetime
+            //                                                      diagnostic_name:
+            //                                                      diagnostic_message:
+            //                                                      energy_impact:
+            //                                                      color_code:
+            //                              }
+            //                              state: //combined state of all diagnostics
+            //                  }
+            //      }
+            // }
+            // Aggregate & filter duplicated data
+            var resData = {};
+            inData.forEach(function(d) {
+                var tsParts = d.datetime.split("T");
+                var dateParts = tsParts[0];
+                var hrParts = tsParts[1].split(":")[0];
+                if (dateParts in resData) {
+                    if (hrParts in resData[dateParts]) {
+                        if (d.diagnostic_name in resData[dateParts][hrParts]) {
+                            if (d.color_code == legends["RED"].string) {
+                                resData[dateParts][hrParts][d.diagnostic_name] = d;
+                            } else if (d.color_code == legends["GREEN"].string) {
+                                if (resData[dateParts][hrParts][d.diagnostic_name] == legends["GREY"].string) {
+                                    resData[dateParts][hrParts][d.diagnostic_name] = d;
+                                }
+                            }
+                        }
+                        else {
+                            resData[dateParts][hrParts][d.diagnostic_name] = d;
+                        }
+                    } else {
+                        resData[dateParts][hrParts] = {};
+                        resData[dateParts][hrParts][d.diagnostic_name] = d;
+                    }
+                }
+                else {
+                    resData[dateParts] = {};
+                    resData[dateParts][hrParts] = {};
+                    resData[dateParts][hrParts][d.diagnostic_name] = d;
+                }
+            });
+
+            // Set state for each hour
+            for (var dt in resData) {
+                if (resData.hasOwnProperty(dt)) {
+                    for (var hr in resData[dt]) {
+                        if (resData[dt].hasOwnProperty(hr)) {
+                            var state = legends["GREY"].string;
+                            var diagnostic = "";
+                            var diagnostic_message = legends["GREY"].value;
+                            for (var dn in resData[dt][hr]) {
+                                if (resData[dt][hr].hasOwnProperty(dn)) {
+                                    if (resData[dt][hr][dn].color_code == legends["RED"].string) {
+                                        state = legends["RED"].string;
+                                        diagnostic = dn;
+                                        diagnostic_message = resData[dt][hr][dn].diagnostic_message;
+                                        break;
+                                    } else if (resData[dt][hr][dn].color_code == legends["GREEN"].string) {
+                                        state = legends["GREEN"].string;
+                                        diagnostic = dn;
+                                        diagnostic_message = legends["GREEN"].value;
+                                    }
+                                }
+                            } //each_diagnostic
+                            resData[dt][hr].state = state;
+                            resData[dt][hr].diagnostic = diagnostic;
+                            resData[dt][hr].diagnostic_message = diagnostic_message;
+                        }
+                    }//each_hr
+                }
+            }//each_date
+            // Convert hash to array and keep only necessary values
+            var arrData = []
+            for (var dt in resData) {
+                if (resData.hasOwnProperty(dt)) {
+                    var dateParts = dt.split("-");
+                    var k = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 0, 0, 0, 0);
+                    for (var hr in resData[dt]) {
+                        if (resData[dt].hasOwnProperty(hr)) {
+                            arrData.push({
+                                date: k,
+                                y: +hr,
+                                state: resData[dt][hr].state,
+                                diagnostic: resData[dt][hr].diagnostic,
+                                diagnostic_message: resData[dt][hr].diagnostic_message
+                            });
+                        }
+                    }
+                }
+            }
+            return arrData;
+        }
+    }
 });

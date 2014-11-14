@@ -125,6 +125,16 @@ module.exports = function(grunt) {
           ],
         },
       },
+      d3Tip: {
+        options: {
+          banner: '/*\n' + grunt.file.read('bower_components/d3-tip/LICENSE') + '*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/d3-tip.min.js': [
+            '<%= buildDir %>js/d3-tip.min.js',
+          ],
+        },
+      },
       jstz: {
         options: {
           stripBanners: { block: true },
@@ -165,6 +175,7 @@ module.exports = function(grunt) {
           scripts: {
             app: [
               '<%= buildDir %>js/d3.min.js',
+              '<%= buildDir %>js/d3-tip.min.js',
               '<%= buildDir %>js/jstz.min.js',
               '<%= buildDir %>js/angular.min.js',
               '<%= buildDir %>js/angular-file-upload.min.js',
@@ -181,6 +192,7 @@ module.exports = function(grunt) {
           scripts: {
             app: [
               '<%= buildDir %>js/d3.js',
+              '<%= buildDir %>js/index.js', // d3-tip
               '<%= buildDir %>js/jstz.js',
               '<%= buildDir %>js/angular.js',
               '<%= buildDir %>js/angular*.js',
@@ -312,6 +324,7 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'bower_components/d3/d3.js',
+              'bower_components/d3-tip/index.js',
               'bower_components/jstzdetect/jstz.js',
               'bower_components/angular*/angular*.js',
               '!bower_components/angular*/angular*.min.js',
@@ -354,6 +367,13 @@ module.exports = function(grunt) {
         files: {
           '<%= buildDir %>js/autofill-event.min.js': [
             'bower_components/autofill-event/src/autofill-event.js',
+          ],
+        },
+      },
+      d3Tip: {
+        files: {
+          '<%= buildDir %>js/d3-tip.min.js': [
+            'bower_components/d3-tip/index.js',
           ],
         },
       },
