@@ -122,3 +122,38 @@
         pointer-events: none;
     }
 }
+
+.retro-commissioning-afdd {
+    .plot-area {
+        margin: auto;
+        width: 1000px;
+        height: 500px;
+    }
+
+    .axis text {
+        font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 17px;
+        line-height: 26px;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis path,
+    .x.axis line,
+    .y.axis path,
+    .y.axis line,
+    .y2.axis path,
+    .y2.axis line {
+        display: none;
+    }
+
+    rect.pane {
+        fill: none;
+        pointer-events: all;
+    }
+}

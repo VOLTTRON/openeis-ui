@@ -543,6 +543,165 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return svg[0];
     }
 
+    function formatDate(d) {
+        var dd = d.getDate();
+        if (dd<10) dd= '0'+dd;
+        var mm = d.getMonth() + 1;  // now moths are 1-12
+        if (mm<10) mm= '0'+mm;
+        var yy = d.getFullYear();
+
+        return yy+'-'+mm+'-'+dd;
+    }
+
+    function formatHour(hr) {
+        var hh = "";
+        if (hr<10) hh = '0'+hr;
+        else hh = hr.toString();
+        return hh;
+    }
+
+    function oaeAggregateData(inData, legends) {
+        // resData = {
+        //      "date": {
+        //                  "hr": {
+        //                              "diagnostic_name": {
+        //                                                      datetime
+        //                                                      diagnostic_name:
+        //                                                      diagnostic_message:
+        //                                                      energy_impact:
+        //                                                      color_code:
+        //                              }
+        //                              state: //combined state of all diagnostics
+        //                  }
+        //      }
+        // }
+        // Aggregate & filter duplicated data
+        var resData = {};
+        inData.forEach(function(d) {
+            var tsParts = d.datetime.split("T");
+            var dateParts = tsParts[0];
+            var hrParts = tsParts[1].split(":")[0];
+            if (dateParts in resData) {
+                if (hrParts in resData[dateParts]) {
+                    if (d.diagnostic_name in resData[dateParts][hrParts]) {
+                        if (d.color_code == legends["RED"].string) {
+                            resData[dateParts][hrParts][d.diagnostic_name] = d;
+                        } else if (d.color_code == legends["GREEN"].string) {
+                            if (resData[dateParts][hrParts][d.diagnostic_name] == legends["GREY"].string) {
+                                resData[dateParts][hrParts][d.diagnostic_name] = d;
+                            }
+                        }
+                    }
+                    else {
+                        resData[dateParts][hrParts][d.diagnostic_name] = d;
+                    }
+                } else {
+                    resData[dateParts][hrParts] = {};
+                    resData[dateParts][hrParts][d.diagnostic_name] = d;
+                }
+            }
+            else {
+                resData[dateParts] = {};
+                resData[dateParts][hrParts] = {};
+                resData[dateParts][hrParts][d.diagnostic_name] = d;
+            }
+        });
+
+        // Set state & energy impact for each available hour
+        for (var dt in resData) {
+            if (resData.hasOwnProperty(dt)) {
+                for (var hr in resData[dt]) {
+                    if (resData[dt].hasOwnProperty(hr)) {
+                        var state = legends["GREY"].string;
+                        var diagnostic = "";
+                        var diagnostic_message = legends["GREY"].value;
+                        var energy_impact = "NA";
+                        for (var dn in resData[dt][hr]) {
+                            if (resData[dt][hr].hasOwnProperty(dn)) {
+                                if (resData[dt][hr][dn].color_code == legends["RED"].string) {
+                                    state = legends["RED"].string;
+                                    diagnostic = dn;
+                                    diagnostic_message = resData[dt][hr][dn].diagnostic_message;
+                                    if (resData[dt][hr][dn].energy_impact != null)
+                                        energy_impact = resData[dt][hr][dn].energy_impact;
+                                    break;
+                                } else if (resData[dt][hr][dn].color_code == legends["GREEN"].string) {
+                                    state = legends["GREEN"].string;
+                                    diagnostic = dn;
+                                    diagnostic_message = legends["GREEN"].value;
+                                    energy_impact = "NA";
+                                }
+                            }
+                        } //each_diagnostic
+                        resData[dt][hr].state = state;
+                        resData[dt][hr].diagnostic = diagnostic;
+                        resData[dt][hr].diagnostic_message = diagnostic_message;
+                        resData[dt][hr].energy_impact = energy_impact;
+                    }
+                }//each_hr
+            }
+        }//each_date
+
+        var arrData = [];
+        // Get Date min & max
+        var arrDate = [];
+        for (var dt in resData) {
+            if (resData.hasOwnProperty(dt)) {
+                var dateParts = dt.split("-");
+                var tempDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 0, 0, 0, 0);
+                arrDate.push(tempDate);
+            }
+        }
+        var domain = d3.extent(arrDate);
+        var domainMax = domain[1];
+        var domainMin = domain[0];
+        var noDays = Math.round(Math.abs((domainMax - domainMin)/(24*60*60*1000)));
+
+        // Convert hash to array and keep only necessary values
+        // Fill in default result for hours that have no result
+        for (var numberOfDaysToAdd = 0; numberOfDaysToAdd <= noDays; numberOfDaysToAdd++) {
+            var curDate = new Date(domainMin.getTime());
+            curDate.setDate(curDate.getDate() + numberOfDaysToAdd);
+            var strCurDate = formatDate(curDate);
+            if (resData.hasOwnProperty(strCurDate)) {
+                for (var i = 0; i < 24; i++) {
+                    var iStr = formatHour(i);
+                    if (resData[strCurDate].hasOwnProperty(iStr)) {
+                        arrData.push({
+                            date: curDate,
+                            y: i,
+                            state: resData[strCurDate][iStr].state,
+                            diagnostic: resData[strCurDate][iStr].diagnostic,
+                            diagnostic_message: resData[strCurDate][iStr].diagnostic_message,
+                            energy_impact: resData[strCurDate][iStr].energy_impact
+                        });
+                    } else {
+                        arrData.push({
+                            date: curDate,
+                            y: i,
+                            state: legends["GREEN"].string,
+                            diagnostic: "",
+                            diagnostic_message: legends["GREEN"].value,
+                            energy_impact: "NA"
+                        });
+                    }
+                }
+            } else {
+                for (var j = 0; j < 24; j++) {
+                    arrData.push({
+                        date: curDate,
+                        y: j,
+                        state: legends["GREEN"].string,
+                        diagnostic: "",
+                        diagnostic_message: legends["GREEN"].value,
+                        energy_impact: "NA"
+                    });
+                }
+            }
+        }
+        return arrData;
+    }
+
     function retroCommissioningOAEDSVG(data) {
         // ToDo: When display this SVG in the dialog box, clip-path and other layout measures (e.g. margin & padding) are
         //          messed up. There are some tricks to get this right. However, best not to touch/deal with those things.
@@ -553,23 +712,29 @@ angular.module('openeis-ui.directives.analysis-report', [])
             "GREY": {
                 value: "No Diagnosis",
                 color: "#B3B3B3",
-                state: 0,
+                state_value: 0,
                 string: "GREY"
             },
             "GREEN": {
                 value: "Normal - No Fault",
                 color: "#509E7A",
-                state: 1,
+                state_value: 1,
                 string: "GREEN"
             },
             "RED": {
                 value: "Fault",
                 color: "#E22400",
-                state: 2,
+                state_value: 2,
                 string: "RED"
             }
         };
-        var sample_data = aggregateData(data);
+        var DEFAULT = {
+            value: "Default",
+            color: "#509E7A", //GREEN
+            state_value: -1,
+            string: "DEFAULT"
+        };
+        var sample_data = oaeAggregateData(data, legends);
 
         var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
                     .attr("width", containerWidth)
@@ -611,13 +776,13 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var xAxisEle = plot_area.append("g")
-            .attr("id", "xAxisEle")
+            .attr("id", "xAxisEle_OAE")
             .attr("class", "x axis");
-        xAxisEle.attr("clip-path","url(#clip)")
+        xAxisEle.attr("clip-path","url(#clip_OAE)")
             .attr("transform", "translate(0," + height + ")");
 
         var clip_area = plot_area.append("g")
-            .attr("clip-path","url(#clip)");
+            .attr("clip-path","url(#clip_OAE)");
 
         var xScrollbarHeightPos = height + 70 ;
         var brush = d3.svg.brush();
@@ -626,7 +791,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var handle = null;
 
         var xScrollbarScale = d3.time.scale()
-                .range([padding.left, clipPathWidth]);
+            .range([padding.left, clipPathWidth]);
+//        xScale.nice(d3.time.minute, 1440);
+//        xScale.ticks(d3.time.minute, 1440);
+//        xScrollbarScale.ticks(d3.time.minute, 1440);
+//        xScrollbarScale.nice(d3.time.minute, 1440);
 
         var xDomainData = d3.extent(sample_data, function(d) { return d.date; });
         var xDomainMax = xDomainData[1];
@@ -645,7 +814,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         yAxis.scale(yScale);
 
         var yAxisEle = plot_area.append("g")
-            .attr("id", "yAxisEle")
+            .attr("id", "yAxisEle_OAE")
             .attr("class", "y axis");
         yAxisEle.append("text")
                 .attr("transform", "rotate(-90)")
@@ -661,7 +830,8 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 .html(function(d) {
                     return "Timestamp: <strong>" + d.date + "</strong><br/>" +
                     "Last Run Diagnostic: <strong>" + d.diagnostic + "</strong>" + "</strong><br/>" +
-                    "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>";
+                    "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
+                    "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>";
                 })
                 .direction(function(d) {
                     if (d.y>18) {
@@ -673,7 +843,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         //Clip area
         plot_area.append("clipPath")
-                .attr("id", "clip")
+                .attr("id", "clip_OAE")
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
@@ -760,6 +930,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     value = xScrollbarScale.invert(curPos);
                     //brush.extent([0, 0]);
                 }
+                value.setHours(0,0,0,0);
                 if (handle != null) {
                    handle.attr("cx", xScrollbarScale(value));
                 }
@@ -792,7 +963,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                             // The code below is to fix the coordinates issue when showing D3 on dialog box
                             var dialogCoordsFixingRes = xScale(newDate);
                             if (dialogCoordsFixingRes < 0) {
-                                dialogCoordsFixingRes = -1000;
+                                dialogCoordsFixingRes = -10000;
                             }
                             return dialogCoordsFixingRes;
                         }
@@ -804,7 +975,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                             // The code below is to fix the coordinates issue when showing D3 on dialog box
                             var dialogCoordsFixingRes = xScale(newDate);
                             if (dialogCoordsFixingRes < 0) {
-                                dialogCoordsFixingRes = -1000;
+                                dialogCoordsFixingRes = -10000;
                             }
                             return "translate(" + dialogCoordsFixingRes + ",0)";
                         });
@@ -818,102 +989,359 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             return arr;
         }
-        function aggregateData(inData) {
-            // resData = {
-            //      "date": {
-            //                  "hr": {
-            //                              "diagnostic_name": {
-            //                                                      datetime
-            //                                                      diagnostic_name:
-            //                                                      diagnostic_message:
-            //                                                      energy_impact:
-            //                                                      color_code:
-            //                              }
-            //                              state: //combined state of all diagnostics
-            //                  }
-            //      }
-            // }
-            // Aggregate & filter duplicated data
-            var resData = {};
-            inData.forEach(function(d) {
-                var tsParts = d.datetime.split("T");
-                var dateParts = tsParts[0];
-                var hrParts = tsParts[1].split(":")[0];
-                if (dateParts in resData) {
-                    if (hrParts in resData[dateParts]) {
-                        if (d.diagnostic_name in resData[dateParts][hrParts]) {
-                            if (d.color_code == legends["RED"].string) {
-                                resData[dateParts][hrParts][d.diagnostic_name] = d;
-                            } else if (d.color_code == legends["GREEN"].string) {
-                                if (resData[dateParts][hrParts][d.diagnostic_name] == legends["GREY"].string) {
-                                    resData[dateParts][hrParts][d.diagnostic_name] = d;
-                                }
-                            }
-                        }
-                        else {
-                            resData[dateParts][hrParts][d.diagnostic_name] = d;
-                        }
-                    } else {
-                        resData[dateParts][hrParts] = {};
-                        resData[dateParts][hrParts][d.diagnostic_name] = d;
-                    }
-                }
-                else {
-                    resData[dateParts] = {};
-                    resData[dateParts][hrParts] = {};
-                    resData[dateParts][hrParts][d.diagnostic_name] = d;
-                }
-            });
 
-            // Set state for each hour
-            for (var dt in resData) {
-                if (resData.hasOwnProperty(dt)) {
-                    for (var hr in resData[dt]) {
-                        if (resData[dt].hasOwnProperty(hr)) {
-                            var state = legends["GREY"].string;
-                            var diagnostic = "";
-                            var diagnostic_message = legends["GREY"].value;
-                            for (var dn in resData[dt][hr]) {
-                                if (resData[dt][hr].hasOwnProperty(dn)) {
-                                    if (resData[dt][hr][dn].color_code == legends["RED"].string) {
-                                        state = legends["RED"].string;
-                                        diagnostic = dn;
-                                        diagnostic_message = resData[dt][hr][dn].diagnostic_message;
-                                        break;
-                                    } else if (resData[dt][hr][dn].color_code == legends["GREEN"].string) {
-                                        state = legends["GREEN"].string;
-                                        diagnostic = dn;
-                                        diagnostic_message = legends["GREEN"].value;
-                                    }
-                                }
-                            } //each_diagnostic
-                            resData[dt][hr].state = state;
-                            resData[dt][hr].diagnostic = diagnostic;
-                            resData[dt][hr].diagnostic_message = diagnostic_message;
-                        }
-                    }//each_hr
-                }
-            }//each_date
-            // Convert hash to array and keep only necessary values
-            var arrData = []
-            for (var dt in resData) {
-                if (resData.hasOwnProperty(dt)) {
-                    var dateParts = dt.split("-");
-                    var k = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 0, 0, 0, 0);
-                    for (var hr in resData[dt]) {
-                        if (resData[dt].hasOwnProperty(hr)) {
-                            arrData.push({
-                                date: k,
-                                y: +hr,
-                                state: resData[dt][hr].state,
-                                diagnostic: resData[dt][hr].diagnostic,
-                                diagnostic_message: resData[dt][hr].diagnostic_message
-                            });
-                        }
+    }
+
+    function afddAggregateData(inData, legends, diagnosticList) {
+        // resData = {
+        //      "date": {
+        //                      "diagnostic_name": {
+        //                                              datetime
+        //                                              diagnostic_name:
+        //                                              diagnostic_message:
+        //                                              energy_impact:
+        //                                              color_code:
+        //                      }
+        //                      state: //combined state of all diagnostics
+        //      }
+        // }
+        // Aggregate & filter duplicated data
+        var resData = {};
+        inData.forEach(function(d) {
+            var tsParts = d.datetime.split("T");
+            var dateParts = tsParts[0];
+            var diagnostic = d.diagnostic_name;
+            var hrParts = tsParts[1].split(":")[0];
+
+            if (dateParts in resData) {
+                if (diagnostic in resData[dateParts]) {
+                    if (legends[d.color_code].state_value >= legends[resData[dateParts][diagnostic].color_code].state_value) {
+                        resData[dateParts][diagnostic] = d;
                     }
+                } else {
+                    resData[dateParts][diagnostic] = d;
+                }
+            } else {
+                resData[dateParts] = {};
+                resData[dateParts][diagnostic] = d;
+            }
+        });
+
+        var arrData = [];
+        // Get Date min & max
+        var arrDate = [];
+        for (var dt in resData) {
+            if (resData.hasOwnProperty(dt)) {
+                var dateParts = dt.split("-");
+                var tempDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 0, 0, 0, 0);
+                arrDate.push(tempDate);
+            }
+        }
+        var domain = d3.extent(arrDate);
+        var domainMax = domain[1];
+        var domainMin = domain[0];
+        var noDays = Math.round(Math.abs((domainMax - domainMin)/(24*60*60*1000)));
+
+        // Convert hash to array and keep only necessary values
+        // Fill in default result for hours that have no result
+        for (var numberOfDaysToAdd = 0; numberOfDaysToAdd <= noDays; numberOfDaysToAdd++) {
+            var curDate = new Date(domainMin.getTime());
+            curDate.setDate(curDate.getDate() + numberOfDaysToAdd);
+            var strCurDate = formatDate(curDate);
+            if (resData.hasOwnProperty(strCurDate)) {
+                for (var i = 0; i< diagnosticList.length; i++) {
+                    var energy_impact = "NA";
+                    if (resData[strCurDate].hasOwnProperty(diagnosticList[i])) {
+                        if (resData[strCurDate][diagnosticList[i]].energy_impact != null)
+                            energy_impact = resData[strCurDate][diagnosticList[i]].energy_impact;
+                        arrData.push({
+                            date: curDate,
+                            y: i,
+                            state: resData[strCurDate][diagnosticList[i]].color_code,
+                            diagnostic: resData[strCurDate][diagnosticList[i]].diagnostic_name,
+                            diagnostic_message: resData[strCurDate][diagnosticList[i]].diagnostic_message,
+                            energy_impact: energy_impact
+                        });
+                    } else {
+                        arrData.push({
+                            date: curDate,
+                            y: i,
+                            state: legends["GREEN"].string,
+                            diagnostic: "",
+                            diagnostic_message: legends["GREEN"].value,
+                            energy_impact: "NA"
+                        });
+                    }
+                }
+            } else {
+                for (var i = 0; i< diagnosticList.length; i++) {
+                arrData.push({
+                        date: curDate,
+                        y: i,
+                        state: legends["GREEN"].string,
+                        diagnostic: "",
+                        diagnostic_message: legends["GREEN"].value,
+                        energy_impact: "NA"
+                    });
                 }
             }
-            return arrData;
         }
+
+        return arrData;
+    }
+
+    function retroCommissioningAFDDSVG(data) {
+        var containerWidth = 1000; //$(container_class).width();
+        var containerHeight = 400; //$(container_class).height();
+        var margin = {top: 40, right: 0, bottom: 30, left: 350}; //margin of the actual plot
+        var padding = {top: 30, right: 30, bottom: 50, left: 30}; //padding of the actual plot
+        var width = containerWidth - margin.left - margin.right;
+        var height = containerHeight - margin.top - margin.bottom;
+        var radius = 8;
+        var ref_stroke_clr = "#ccc";
+        var format = d3.time.format("%b %d");//d3.time.format("%m/%d/%y");
+
+        var diagnosticList = [
+            'Temperature Sensor Dx',
+            'Economizer Correctly ON Dx',
+            'Economizer Correctly OFF Dx',
+            'Excess Outdoor-air Intake Dx',
+            'Insufficient Outdoor-air Intake Dx'];
+        var yAxisLabels = [
+            'ECON1 - ' + diagnosticList[0],
+            'ECON2 - ' + diagnosticList[1],
+            'ECON3 - ' + diagnosticList[2],
+            'ECON4 - ' + diagnosticList[3],
+            'ECON5 - ' + diagnosticList[4]];
+        var legends = {
+            "GREY": {
+                value: "No Diagnosis",
+                color: "#B3B3B3",
+                state: 0,
+                string: "GREY"
+            },
+            "GREEN": {
+                value: "Normal",
+                color: "#509E7A",
+                state: 1,
+                string: "GREEN"
+            },
+            "RED": {
+                value: "Fault",
+                color: "#E22400",
+                state: 2,
+                string: "RED"
+            }
+        };
+        var yCategories = yAxisLabels;
+        var y2Categories = diagnosticList;
+        var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+            .attr("width", containerWidth)
+            .attr("height", containerHeight);
+
+        var sample_data = afddAggregateData(data, legends, diagnosticList);
+        var xDomain = d3.extent(sample_data, function(d) { return d.date; });
+        var items_per_dayCol = yAxisLabels.length;
+        var items_per_viewport = 10;
+        var inline_padding = Math.floor((width-padding.left-padding.right)/items_per_viewport);
+        var plot_width = inline_padding * (sample_data.length/items_per_dayCol);
+
+        var xScale = d3.time.scale()
+                .domain(xDomain)
+                .range([padding.left, padding.left + plot_width]); //~70
+        var yScale = d3.scale.ordinal()
+                .domain(yCategories)
+                //.rangeRoundBands([0, height], .1);
+                .rangePoints([height - padding.top, padding.bottom ]);
+//        var yScale2 = d3.scale.ordinal()
+//                .domain(y2Categories)
+//                .rangePoints([height - padding.top, padding.bottom ]);
+        //Create axises
+        var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("bottom")
+                .ticks(d3.time.day)
+                .tickFormat(format);
+
+        var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left");
+//        var yAxis2 = d3.svg.axis()
+//                .scale(yScale2)
+//                .orient("right");
+
+        var zoom = d3.behavior.zoom()
+                .scaleExtent([1, 1])
+                .on("zoom", zoomed);
+        zoom.x(xScale);
+
+        var plot_area = svg
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var maxDate = d3.max(sample_data, function(d) { return d.date; });
+        plot_area.append("rect")
+                .attr("class", "pane")
+                .attr("width", width)
+                .attr("height", height)
+                .call(zoom);
+
+
+        //Tooltip
+        var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "Timestamp: <strong>" + d.date + "</strong><br/>" +
+                        "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
+                        "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>";
+                });
+        plot_area.call(tip);
+
+        //Legends
+        var legend_svg = svg.append("g")
+                .attr("transform", "translate(" + containerWidth/3 + "," + margin.top/3 + ")");
+        var legend_width = 324;
+        var legend_height = 34;
+        var lpadding = 15;
+        legend_svg.append("rect")
+                .attr("width", legend_width)
+                .attr("height", legend_height)
+                .attr("x",0)
+                .attr("y",0)
+                .attr("rx",5)
+                .attr("ry",5)
+                .style("stroke","#909090")
+                .style("stroke-width",1)
+                .style("fill","none");
+
+        var lx = lpadding;
+        var arrLegends = [];
+        for (var k in legends) {
+            if (legends.hasOwnProperty(k)) {
+                arrLegends.push(legends[k]);
+            }
+        }
+
+        var litem = legend_svg.selectAll("g")
+                .data(arrLegends)
+                .enter()
+                .append("g")
+                .attr("transform", function(d,i) {
+                    if (i>0) {
+                        var circle_width = radius * 2;
+                        var text_width = getTextWidth(arrLegends[i-1].value, "17pt sans-serif");
+                        lx += circle_width + text_width;
+                    }
+                    return "translate("+ lx + "," + legend_height/2 + ")";
+                });
+        litem.append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", radius)
+                .attr("fill", function(d) {
+                    return d.color;
+                })
+                .attr("opacity", 1)
+                .on('mouseover', null)
+                .on('mouseout', null);
+        litem.append("text")
+                .attr("x", radius*2+1)
+                .attr("y", 0)
+                .attr("dy", ".35em")
+                .text(function(d) { return d.value; })
+                .style("font-size","1em")
+                .style("font-family","sans-serif");
+
+        //Draw axises
+        var xAxisEle = plot_area.append("g")
+            .attr("id", "xAxisEle_AFDD")
+            .attr("class", "x axis");
+        xAxisEle.attr("clip-path","url(#clip_AFDD)")
+            .attr("transform", "translate(0," + (height-5) + ")");
+
+        plot_area.append("g")
+            .attr("class", "y axis");
+            //.attr("transform", "translate(" + 150 + ",0)");
+//        plot_area.append("g")
+//                .attr("class", "y2 axis")
+//                .attr("transform", "translate(" + width + ",0)");
+
+        //Draw y-grid lines for referencing
+        plot_area.selectAll("line.y")
+                .data(yCategories)
+                .enter().append("line")
+                .attr("class", "yAxis")
+                .attr("x1", 0)
+                //.attr("x2", width)
+                .attr("x2", plot_width)
+                .attr("y1", yScale)
+                .attr("y2", yScale)
+                .style("stroke", ref_stroke_clr);
+
+
+        //Clip area
+        plot_area.append("clipPath")
+                .attr("id", "clip_AFDD")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", width)
+                .attr("height", height);
+
+        var radians = 2 * Math.PI, points = 20;
+        var angle = d3.scale.linear()
+                .domain([0, points-1])
+                .range([0, radians]);
+
+        var line = d3.svg.line.radial()
+                .interpolate("basis")
+                .tension(0)
+                .radius(radius)
+                .angle(function(d, i) { return angle(i); });
+
+        var clip_area = plot_area.append("g")
+                .attr("clip-path","url(#clip_AFDD)");
+        clip_area.selectAll("circle")
+                .data(sample_data)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d) {
+                    return xScale(d.date);
+                })
+                .attr("cy", function (d) {
+                    return yScale(yCategories[d.y]);
+                })
+                .attr("r", radius)
+                .attr("fill", function(d) {
+                    return legends[d.state].color;
+                })
+                .attr("opacity", 1)
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+        zoomed();
+
+        return svg[0];
+
+        function zoomed() {
+            plot_area.select("g.x.axis").call(xAxis);
+            plot_area.select("g.y.axis").call(yAxis);
+            //plot_area.select("g.y2.axis").call(yAxis2);
+
+            clip_area.selectAll("circle").attr("cx", function(d) {
+                var value = xScale(d.date);
+                if (value < 0) value = -10000;
+                //if (value > width) value = 10000;
+                return value;
+            });
+        }
+
+        function getTextWidth(text, font) {
+            // re-use canvas object for better performance
+            var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+            var context = canvas.getContext("2d");
+            context.font = font;
+            var metrics = context.measureText(text);
+            return metrics.width;
+        };
     }
 });
