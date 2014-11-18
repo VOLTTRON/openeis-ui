@@ -188,11 +188,19 @@
         </modal>
         <modal class="modal--analysis" modal-id="viewAnalysis">
             <h4>{{viewingAnalysis.name}}</h4>
-            <analysis-report ng-repeat="report in viewingAnalysis.reports" ar-report="report" ar-data="viewingAnalysisData"></analysis-report>
+            <div class="form__group" ng-if="!viewingAnalysisData">
+                <span class="spinner fa fa-circle-o-notch"></span>
+                Loading analysis&hellip;
+            </div>
+            <analysis-report ng-repeat="report in viewingAnalysis.reports"
+                ng-if="viewingAnalysisData"
+                ar-report="report"
+                ar-data="viewingAnalysisData">
+            </analysis-report>
             <button ng-click="Modals.closeModal('viewAnalysis')">Close</button>
         </modal>
         <modal class="modal--view-link" modal-id="viewLink">
-            <p><a href="{{viewingLink.url}}">{{viewingLink.url}}</a></p>
+            <p><a href="{{viewingLink.url}}" target="_self">{{viewingLink.url}}</a></p>
             <button ng-click="revokeLink(viewingLink.sharedAnalysis.analysis)">Revoke</button> <button ng-click="Modals.closeModal('viewLink')">Close</button>
         </modal>
     </div>

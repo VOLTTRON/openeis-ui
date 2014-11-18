@@ -53,8 +53,9 @@ angular.module('openeis-ui')
     $scope.valid = true;
 
     SharedAnalyses.get($routeParams.analysisId, $routeParams.key).$promise.then(function (sharedAnalysis) {
+        $scope.sharedAnalysis = sharedAnalysis;
+
         SharedAnalyses.getData(sharedAnalysis.analysis, $routeParams.key).then(function (data) {
-            $scope.sharedAnalysis = sharedAnalysis;
             $scope.data = data;
         });
     }, function () {

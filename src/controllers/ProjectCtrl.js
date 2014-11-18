@@ -238,10 +238,12 @@ angular.module('openeis-ui')
     };
 
     $scope.viewAnalysis = function (analysis) {
-        $scope.viewingAnalysisData = Analyses.getData(analysis.id).then(function (outputData) {
-            $scope.viewingAnalysis = analysis;
+        $scope.viewingAnalysis = analysis;
+        delete $scope.viewingAnalysisData;
+        Modals.openModal('viewAnalysis');
+
+        Analyses.getData(analysis.id).then(function (outputData) {
             $scope.viewingAnalysisData = outputData;
-            Modals.openModal('viewAnalysis');
         });
     };
 

@@ -1,7 +1,15 @@
 <div class="container">
     <div class="view view--shared-analysis" ng-if="valid">
         <h1>{{sharedAnalysis.name}}</h1>
-        <analysis-report ng-repeat="report in sharedAnalysis.reports" ar-report="report" ar-data="data"></analysis-report>
+        <div class="form__group" ng-if="!data">
+            <span class="spinner fa fa-circle-o-notch"></span>
+            Loading analysis&hellip;
+        </div>
+        <analysis-report ng-repeat="report in sharedAnalysis.reports"
+            ng-if="data"
+            ar-report="report"
+            ar-data="data">
+        </analysis-report>
     </div>
     <p ng-if="!valid">Invalid shared analysis link.</p>
 </div>
