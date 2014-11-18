@@ -543,7 +543,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return svg[0];
     }
 
-    function formatDate(d) {
+        function formatDate(d) {
         var dd = d.getDate();
         if (dd<10) dd= '0'+dd;
         var mm = d.getMonth() + 1;  // now moths are 1-12
@@ -551,13 +551,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var yy = d.getFullYear();
 
         return yy+'-'+mm+'-'+dd;
-    }
-
-    function formatHour(hr) {
-        var hh = "";
-        if (hr<10) hh = '0'+hr;
-        else hh = hr.toString();
-        return hh;
     }
 
     function oaeAggregateData(inData, legends) {
@@ -578,9 +571,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
         // Aggregate & filter duplicated data
         var resData = {};
         inData.forEach(function(d) {
+            var dt1 = new Date(d.datetime);
             var tsParts = d.datetime.split("T");
-            var dateParts = tsParts[0];
-            var hrParts = tsParts[1].split(":")[0];
+            var dateParts = formatDate(dt1);//tsParts[0];
+            var hrParts = dt1.getHours().toString(); //tsParts[1].split(":")[0];
+
             if (dateParts in resData) {
                 if (hrParts in resData[dateParts]) {
                     if (d.diagnostic_name in resData[dateParts][hrParts]) {
@@ -665,7 +660,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var strCurDate = formatDate(curDate);
             if (resData.hasOwnProperty(strCurDate)) {
                 for (var i = 0; i < 24; i++) {
-                    var iStr = formatHour(i);
+                    var iStr = i.toString();//formatHour(i);
                     if (resData[strCurDate].hasOwnProperty(iStr)) {
                         arrData.push({
                             date: curDate,
@@ -1008,10 +1003,14 @@ angular.module('openeis-ui.directives.analysis-report', [])
         // Aggregate & filter duplicated data
         var resData = {};
         inData.forEach(function(d) {
-            var tsParts = d.datetime.split("T");
-            var dateParts = tsParts[0];
+            var dt1 = new Date(d.datetime);
+            //var tsParts = d.datetime.split("T");
+            var dateParts = formatDate(dt1); //tsParts[0];
+            //var hrParts = dt1.getHours().toString(); //tsParts[1].split(":")[0];
+            //var tsParts = d.datetime.split("T");
+            //var dateParts = tsParts[0];
+            //var hrParts = tsParts[1].split(":")[0];
             var diagnostic = d.diagnostic_name;
-            var hrParts = tsParts[1].split(":")[0];
 
             if (dateParts in resData) {
                 if (diagnostic in resData[dateParts]) {
