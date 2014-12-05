@@ -549,8 +549,13 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var mm = d.getMonth() + 1;  // now moths are 1-12
         if (mm<10) mm= '0'+mm;
         var yy = d.getFullYear();
+        return yy +'-' + mm + '-' + dd;
+    }
 
-        return yy+'-'+mm+'-'+dd;
+    function formatFullDate(d) {
+        var weekday = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var dn = weekday[d.getDay()];
+        return dn + ' ' + formatDate(d);
     }
 
     function makeArray(lowEnd, highEnd) {
@@ -832,7 +837,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 .attr('class', 'd3-tip')
                 //.offset([-10, 0])
                 .html(function(d) {
-                    return "Date: <strong>" + formatDate(d.date) + "</strong><br/>" +
+                    return "Date: <strong>" + formatFullDate(d.date) + "</strong><br/>" +
                     "Last Run Diagnostic: <strong>" + d.diagnostic + "</strong>" + "</strong><br/>" +
                     "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
                     "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>";
@@ -1003,6 +1008,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
         //                      state: //combined state of all diagnostics
         //      }
         // }
+        // arrData = [{
+        //            date: ,
+        //            y: ,
+        //            state: ,
+        //            diagnostic: ,
+        //            diagnostic_message: ,
+        //            energy_impact: ,
+        //            hourly_result: [arrHrData]
+        // }]
         // Aggregate & filter duplicated data
         var resData = {};
         inData.forEach(function(d) {
@@ -1180,9 +1194,9 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function retroCommissioningAFDDSVG(data) {
-        var containerWidth = 984; //$(container_class).width();
+        var containerWidth = 1024; //$(container_class).width();
         var containerHeight = 550; //$(container_class).height();
-        var margin = {top: 40, right: 0, bottom: 150, left: 300}; //margin of the actual plot
+        var margin = {top: 40, right: 0, bottom: 150, left: 360}; //margin of the actual plot
         var padding = {top: 30, right: 30, bottom: 50, left: 30}; //padding of the actual plot
         var width = containerWidth - margin.left - margin.right;
         var height = containerHeight - margin.top - margin.bottom;
@@ -1290,7 +1304,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function(d) {
-                return "Date: <strong>" + formatDate(d.date) + "</strong><br/>" +
+                return "Date: <strong>" + formatFullDate(d.date) + "</strong><br/>" +
                     "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
                     "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>" +
                     "(Click to see hourly result)<br/>";
@@ -1299,16 +1313,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function(d) {
-                return "Date: <strong>" + formatDate(d.date) + "</strong><br/>" +
+                return "Date: <strong>" + formatFullDate(d.date) + "</strong><br/>" +
                     "Hour: <strong>" + (d.y+1) + "</strong><br/>" +
                     "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
                     "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>";
             });
-
-
-
-
-
         plot_area.call(tip);
         plot_area.call(hrTip);
 
@@ -1439,25 +1448,37 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 var hrAxis = d3.svg.axis()
                         .scale(hrScale)
                         .orient("bottom");
+                var drawPosition = margin.left + 40;
                 d3.select("#hrData").remove();
                 var hrDataArea = svg
                     .append("g")
                     .attr("id", "hrData")
                     .attr("width", 24*rectWidth)
                     .attr("height", rectWidth)
-                    .attr("transform", "translate(" + (margin.left+40) + "," + (height+100) + ")");
+                    .attr("transform", "translate(0," + (height+100) + ")");
 
                 hrDataArea.append("g")
                     .attr("class", "x axis")
-                    .attr("transform", "translate(0,"+ (rectWidth) +")")
+                    .attr("transform", "translate(" + drawPosition + ","+ (rectWidth) +")")
                     .call(hrAxis);
+
+                var hrLabelArea = hrDataArea.append("g")
+                    .attr("class", "axis");
+                hrLabelArea.append("text")
+                    .attr("x", 80)
+                    .attr("y", rectWidth-7)
+                    .text(diagnosticList[d.y]);
+                hrLabelArea.append("text")
+                    .attr("x", 80)
+                    .attr("y", rectWidth+20)
+                    .text('(' + formatFullDate(d.date) + ')');
 
                 hrDataArea.selectAll("rect")
                 .data(d.hourly_result)
                 .enter()
                 .append("rect")
                 .attr("x", function (d) {
-                    return d.y*rectWidth;
+                    return d.y*rectWidth + drawPosition;
                 })
                 .attr("y", 0)
                 .attr("width", rectWidth)
