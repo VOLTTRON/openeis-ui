@@ -148,7 +148,15 @@ angular.module('openeis-ui')
         });
 
         return $q.all(uploads).catch(function (rejection) {
-                alert(rejection.data.file.join('\n'));
+                var error;
+
+                if (rejection.data.file) {
+                    error = rejection.data.file.join('\n');
+                } else {
+                    error = rejection.data;
+                }
+
+                alert(error);
             }).finally(function () {
                 delete $scope.uploading;
                 Modals.closeModal('uploadFile');
