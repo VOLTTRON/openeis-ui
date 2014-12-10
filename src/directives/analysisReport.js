@@ -1194,8 +1194,51 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function retroCommissioningAFDDSVG(data) {
+        var econDiagnosticList = [
+            'Temperature Sensor Dx',
+            'Economizing When Unit Should Dx',
+            'Economizing When Unit Should Not Dx',
+            'Excess Outdoor-air Intake Dx',
+            'Insufficient Outdoor-air Intake Dx'];
+        var hwDiagnosticList = [
+            'HW Differential Pressure Control Loop Dx',
+            'HW Supply Temperature Control Loop Dx',
+            'HW loop High Differential Pressure Dx',
+            'HW loop Differential Pressure Reset Dx',
+            'HW loop High Supply Temperature Dx',
+            'HW loop Supply Temperature Reset Dx',
+            'HW loop Low Delta-T Dx'];
+        var arDiagnosticList = [
+            'Duct Static Pressure Control Loop Dx',
+            'Low Duct Static Pressure Dx',
+            'High Duct Static Pressure Dx',
+            'No Static Pressure Reset Dx',
+            'Supply-air Temperature Control Loop Dx',
+            'Low Supply-air Temperature Dx',
+            'High Supply-air Temperature Dx',
+            'No Supply-air Temperature Reset Dx',
+            'Operational Schedule Dx'];
+
+        var diagnosticList = null;
+        var foundDiagnosticList = false;
+        // For the purpose of deciding which Rcx is running
+        for (var i = 0; i < data.length && !foundDiagnosticList; i++) {
+            if (econDiagnosticList.indexOf(data[i].diagnostic_name) > -1) {
+                diagnosticList = econDiagnosticList;
+                foundDiagnosticList = true;
+            }
+            if (hwDiagnosticList.indexOf(data[i].diagnostic_name) > -1) {
+                diagnosticList = hwDiagnosticList;
+                foundDiagnosticList = true;
+            }
+            if (arDiagnosticList.indexOf(data[i].diagnostic_name) > -1) {
+                diagnosticList = arDiagnosticList;
+                foundDiagnosticList = true;
+            }
+        }
+
         var containerWidth = 1024; //$(container_class).width();
-        var containerHeight = 550; //$(container_class).height();
+        var containerHeight = 100 * diagnosticList.length; //$(container_class).height();
         var margin = {top: 40, right: 0, bottom: 150, left: 360}; //margin of the actual plot
         var padding = {top: 30, right: 30, bottom: 50, left: 30}; //padding of the actual plot
         var width = containerWidth - margin.left - margin.right;
@@ -1203,33 +1246,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var radius = 8;
         var ref_stroke_clr = "#ccc";
         var format = d3.time.format("%b %d");//d3.time.format("%m/%d/%y");
-
-        var econDiagnosticList = [
-            'Temperature Sensor Dx',
-            'Economizer Correctly ON Dx',
-            'Economizer Correctly OFF Dx',
-            'Excess Outdoor-air Intake Dx',
-            'Insufficient Outdoor-air Intake Dx'];
-        var hwDiagnosticList = [
-            'High HW loop Differential Pressure Dx',
-            'HW loop Differential Pressure Reset Dx',
-            'HW loop High Supply Temperature Dx',
-            'HW loop Supply Temperature Reset Dx',
-            'HW loop Low Delta-T Dx'];
-        var arDiagnosticList = [
-            'Low Duct Static Pressure Dx',
-            'High Duct Static Pressure Dx',
-            'No Static Pressure Reset Dx',
-            'Low Supply-air Temperature Dx',
-            'High Supply-air Temperature Dx',
-            'Supply-air Temperature Reset Dx',
-            'Operational Schedule Dx'];
-
-        var diagnosticList = null;
-        // For the purpose of deciding which Rcx is running
-        if (econDiagnosticList.indexOf(data[0].diagnostic_name) > -1) diagnosticList = econDiagnosticList;
-        if (hwDiagnosticList.indexOf(data[0].diagnostic_name) > -1) diagnosticList = hwDiagnosticList;
-        if (arDiagnosticList.indexOf(data[0].diagnostic_name) > -1) diagnosticList = arDiagnosticList;
 
         var yAxisLabels = diagnosticList;
         var legends = {
