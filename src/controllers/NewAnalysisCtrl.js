@@ -139,6 +139,12 @@ angular.module('openeis-ui')
         }
     });
 
+    $scope.setParamDefault = function (paramName) {
+        if ($scope.newAnalysis.application.parameters[paramName].hasOwnProperty('value_default')) {
+            $scope.newAnalysis.configuration.parameters[paramName] = $scope.newAnalysis.application.parameters[paramName].value_default;
+        }
+    };
+
     $scope.canAddSensor = function (inputName, inputType) {
         var app = $scope.newAnalysis.application,
             config = $scope.newAnalysis.configuration;

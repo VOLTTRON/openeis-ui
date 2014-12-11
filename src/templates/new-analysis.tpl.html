@@ -42,7 +42,8 @@
         <div class="layout__item" style="width: 50%">
             <fieldset>
                 <legend>Parameters</legend>
-                <div class="form__group" ng-repeat="(paramName, param) in newAnalysis.application.parameters">
+                <div class="form__group" ng-repeat="(paramName, param) in newAnalysis.application.parameters"
+                    ng-init="setParamDefault(paramName)">
                     <label>{{param.display_name}}<span ng-if="param.optional">&nbsp;(optional)</span></label>
                     <select ng-if="param.value_list"
                             ng-required="!param.optional"
@@ -50,21 +51,18 @@
                             ng-options="value for value in param.value_list">
                             <option value="">-- Choose value --</option>
                     </select>
-                    <input value="{{param.value_default}}"
-                           type="text"
+                    <input type="text"
                            ng-if="param.config_type === 'str' && !param.value_list"
                            ng-required="!param.optional"
                            ng-model="newAnalysis.configuration.parameters[paramName]">
-                    <input value="{{param.value_default}}"
-                           type="number"
+                    <input type="number"
                            step="1"
                            ng-if="param.config_type === 'int' && !param.value_list"
                            min="{{param.value_min}}"
                            max="{{param.value_max}}"
                            ng-required="!param.optional"
                            ng-model="newAnalysis.configuration.parameters[paramName]">
-                    <input value="{{param.value_default}}"
-                           type="number"
+                    <input type="number"
                            step="0.01"
                            ng-if="param.config_type === 'float' && !param.value_list"
                            min="{{param.value_min}}"
