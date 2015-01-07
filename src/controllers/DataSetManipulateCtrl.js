@@ -49,12 +49,15 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('DataSetManipulateCtrl', function ($location, $scope, DataSetFilters, DataSets, Modals, project, dataSet) {
+.controller('DataSetManipulateCtrl', function ($location, $scope, DataMaps, DataSetFilters, DataSets, Modals, project, dataSet) {
     $scope.Modals = Modals;
     $scope.project = project;
     $scope.dataSet = dataSet;
     $scope.availableFilters = DataSetFilters.query();
-    $scope.filters = {};
+    $scope.topicFilters = {};
+    $scope.globalDropExtra = true;
+    $scope.globalRoundTime = false;
+    $scope.globalPeriodSeconds = 3600;
 
     $scope.$on('$locationChangeStart', function (event) {
         if ($scope.filterAdded() && !confirm('Abandon data set manipulation?')) {
@@ -65,8 +68,9 @@ angular.module('openeis-ui')
     $scope.filterAdded = function () {
         var hasFilter = false;
 
-        angular.forEach($scope.filters, function (topicFilters) {
-            if (topicFilters.length) {
+        angular.forEach($scope.topicFilters, function (topicFilters) {
+            // TODO: check for changes to fill or aggregation filter
+            if (topicFilters.other.length) {
                 hasFilter = true;
             }
         });
@@ -74,8 +78,22 @@ angular.module('openeis-ui')
         return hasFilter;
     };
 
+    $scope.initTopicFilters = function (topic, sensor) {
+        $scope.topicFilters[topic] = {
+            fill: null,
+            aggregation: null,
+            other: [],
+        };
+
+        DataMaps.getDefinition().then(function (definition) {
+            if (definition.sensors[sensor.type]) {
+                $scope.topicFilters[topic].fill = definition.sensors[sensor.type].default_fill;
+                $scope.topicFilters[topic].aggregation = definition.sensors[sensor.type].default_aggregation;
+            }
+        });
+    };
+
     $scope.addFilterTo = function (topic) {
-        $scope.filters[topic] = $scope.filters[topic] || [];
         $scope.newFilter = { topic: topic };
         Modals.openModal('newFilter');
     };
@@ -87,7 +105,7 @@ angular.module('openeis-ui')
             parameters[key] = $scope.newFilter.parameters[key];
         });
 
-        $scope.filters[$scope.newFilter.topic].push([
+        $scope.topicFilters[$scope.newFilter.topic].other.push([
             $scope.newFilter.topic,
             $scope.newFilter.filter.id,
             parameters,
@@ -96,28 +114,28 @@ angular.module('openeis-ui')
     };
 
     $scope.raiseFilter = function (filter) {
-        var topicFilters = $scope.filters[filter[0]],
-            index = topicFilters.indexOf(filter);
+        var otherTopicFilters = $scope.topicFilters[filter[0]].other,
+            index = otherTopicFilters.indexOf(filter);
 
         if (index === 0) { return; }
 
-        topicFilters.splice(index, 1);
-        topicFilters.splice(index - 1, 0, filter);
+        otherTopicFilters.splice(index, 1);
+        otherTopicFilters.splice(index - 1, 0, filter);
     };
 
     $scope.lowerFilter = function (filter) {
-        var topicFilters = $scope.filters[filter[0]],
-            index = topicFilters.indexOf(filter);
+        var otherTopicFilters = $scope.topicFilters[filter[0]].other,
+            index = otherTopicFilters.indexOf(filter);
 
-        if (index === topicFilters.length - 1) { return; }
+        if (index === otherTopicFilters.length - 1) { return; }
 
-        topicFilters.splice(index, 1);
-        topicFilters.splice(index + 1, 0, filter);
+        otherTopicFilters.splice(index, 1);
+        otherTopicFilters.splice(index + 1, 0, filter);
     };
 
     $scope.deleteFilter = function (filter) {
-        var topicFilters = $scope.filters[filter[0]];
-        topicFilters.splice(topicFilters.indexOf(filter), 1);
+        var otherTopicFilters = $scope.topicFilters[filter[0]].other;
+        otherTopicFilters.splice(otherTopicFilters.indexOf(filter), 1);
     };
 
     $scope.apply = function () {
@@ -125,13 +143,24 @@ angular.module('openeis-ui')
 
         $scope.applying = true;
 
-        angular.forEach($scope.filters, function (topicFilters) {
-            filters = filters.concat(topicFilters);
+        angular.forEach($scope.topicFilters, function (topicFilters, topic) {
+            filters.push([topic, topicFilters.fill, {
+                period_seconds: $scope.globalPeriodSeconds,
+                drop_extra: $scope.globalDropExtra,
+            }]);
+            filters.push([topic, topicFilters.aggregation, {
+                period_seconds: $scope.globalPeriodSeconds,
+                round_time: $scope.globalRoundTime,
+            }]);
+
+            if (topicFilters.other.length) {
+                filters = filters.concat(topicFilters.other);
+            }
         });
 
         DataSets.manipulate(dataSet, filters).then(function () {
             // Clear filters so we don't trigger confirmation
-            $scope.filters = {};
+            $scope.topicFilters = {};
             $location.url('projects/' + project.id);
         }, function (rejection) {
             var errors = rejection.data;

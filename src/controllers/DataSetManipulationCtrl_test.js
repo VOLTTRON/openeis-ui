@@ -49,8 +49,14 @@
 // under Contract DE-AC05-76RL01830
 
 describe('DataSetManipulateCtrl controller', function () {
-    var $httpBackend, $rootScope, $controller, controller, scope, DataSets, $location, manipulate,
-        testProject = { id: 1 };
+    var $httpBackend, $rootScope, $controller, controller, scope, DataSets, $location, manipulate, getDefinition,
+        testProject = { id: 1 },
+        generalDefinition = { sensors: {
+            sensor1: {
+                default_fill: 'Sensor1DefaultFill',
+                default_aggregation: 'Sensor1DefaultAggregation',
+            }
+        }};
 
     beforeEach(function () {
         module('openeis-ui');
@@ -64,6 +70,13 @@ describe('DataSetManipulateCtrl controller', function () {
         });
 
         inject(function (_$httpBackend_, _$rootScope_, _$controller_, _$location_, $q) {
+            DataMaps = {
+                getDefinition: function () {
+                    getDefinition = $q.defer();
+                    return getDefinition.promise;
+                },
+            };
+
             DataSets = {
                 manipulate: function () {
                     manipulate = $q.defer();
@@ -76,21 +89,34 @@ describe('DataSetManipulateCtrl controller', function () {
             $controller = _$controller_;
             scope = $rootScope.$new();
             scope.project = { id: 1 };
-            controller = $controller('DataSetManipulateCtrl', { $scope: scope, DataSets: DataSets });
+            controller = $controller('DataSetManipulateCtrl', { $scope: scope, DataMaps: DataMaps, DataSets: DataSets });
             $location = _$location_;
         });
+
+        scope.initTopicFilters('topic1', {type: 'sensor1'});
+        getDefinition.resolve(generalDefinition);
+        scope.$apply();
     });
 
     afterEach(function () {
         $httpBackend.verifyNoOutstandingExpectation();
     });
 
+    it('should initialize topic filters with defaults', function () {
+        expect(scope.topicFilters).toEqual({
+            topic1: {
+                fill: generalDefinition.sensors.sensor1.default_fill,
+                aggregation: generalDefinition.sensors.sensor1.default_aggregation,
+                other: [],
+            },
+        });
+    });
+
     it('should add and save new filters', function () {
-        expect(scope.filters).toEqual({});
+        expect(scope.topicFilters.topic1.other).toEqual([]);
 
         scope.addFilterTo('topic1');
 
-        expect(scope.filters).toEqual({ topic1: [] });
         expect(scope.newFilter).toEqual({ topic: 'topic1' });
 
         scope.newFilter.filter = { id: 'filter1', parameters: { param1: {} } };
@@ -98,74 +124,89 @@ describe('DataSetManipulateCtrl controller', function () {
 
         scope.saveNewFilter();
 
-        expect(scope.filters).toEqual({ topic1: [['topic1', 'filter1', { param1: 'param1Value' }]] });
+        expect(scope.topicFilters.topic1.other).toEqual([['topic1', 'filter1', { param1: 'param1Value' }]]);
     });
 
     it('should raise and lower filters', function () {
-        scope.filters = { topic1: [
+        scope.topicFilters.topic1.other = [
             ['topic1', 'topic1Filter1'],
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter3'],
-        ]};
+        ];
 
-        scope.raiseFilter(scope.filters.topic1[1]);
-        scope.lowerFilter(scope.filters.topic1[1]);
-        scope.raiseFilter(scope.filters.topic1[0]);
-        scope.lowerFilter(scope.filters.topic1[2]);
+        scope.raiseFilter(scope.topicFilters.topic1.other[1]);
+        scope.lowerFilter(scope.topicFilters.topic1.other[1]);
+        scope.raiseFilter(scope.topicFilters.topic1.other[0]);
+        scope.lowerFilter(scope.topicFilters.topic1.other[2]);
 
-        expect(scope.filters).toEqual({ topic1: [
+        expect(scope.topicFilters.topic1.other).toEqual([
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter3'],
             ['topic1', 'topic1Filter1'],
-        ]});
+        ]);
     });
 
     it('should delete filters', function () {
-        scope.filters = { topic1: [
+        scope.topicFilters.topic1.other = [
             ['topic1', 'topic1Filter1'],
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter3'],
             ['topic1', 'topic1Filter4'],
             ['topic1', 'topic1Filter5'],
-        ]};
+        ];
 
-        scope.deleteFilter(scope.filters.topic1[0]);
+        scope.deleteFilter(scope.topicFilters.topic1.other[0]);
 
-        expect(scope.filters).toEqual({ topic1: [
+        expect(scope.topicFilters.topic1.other).toEqual([
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter3'],
             ['topic1', 'topic1Filter4'],
             ['topic1', 'topic1Filter5'],
-        ]});
+        ]);
 
-        scope.deleteFilter(scope.filters.topic1[1]);
+        scope.deleteFilter(scope.topicFilters.topic1.other[1]);
 
-        expect(scope.filters).toEqual({ topic1: [
+        expect(scope.topicFilters.topic1.other).toEqual([
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter4'],
             ['topic1', 'topic1Filter5'],
-        ]});
+        ]);
 
-        scope.deleteFilter(scope.filters.topic1[2]);
+        scope.deleteFilter(scope.topicFilters.topic1.other[2]);
 
-        expect(scope.filters).toEqual({ topic1: [
+        expect(scope.topicFilters.topic1.other).toEqual([
             ['topic1', 'topic1Filter2'],
             ['topic1', 'topic1Filter4'],
-        ]});
+        ]);
     });
 
     describe('apply', function () {
         it('should flatten filters', function () {
             spyOn(DataSets, 'manipulate').andCallThrough();
 
-            scope.filters = {
-                'topic1': ['topic1Filter'],
-                'topic2': ['topic2Filter'],
+            scope.topicFilters = {
+                'topic1': {
+                    fill: 'filter1ID',
+                    aggregation: 'filter2ID',
+                    other: ['filter3'],
+                },
+                'topic2': {
+                    fill: 'filter4ID',
+                    aggregation: 'filter5ID',
+                    other: ['filter6'],
+                },
             };
 
             scope.apply();
 
-            expect(DataSets.manipulate).toHaveBeenCalledWith({}, ['topic1Filter', 'topic2Filter']);
+            expect(DataSets.manipulate).toHaveBeenCalledWith({}, [
+                ['topic1', 'filter1ID', {period_seconds: scope.globalPeriodSeconds, drop_extra: scope.globalDropExtra}],
+                ['topic1', 'filter2ID', {period_seconds: scope.globalPeriodSeconds, round_time: scope.globalRoundTime}],
+                'filter3',
+                ['topic2', 'filter4ID', {period_seconds: scope.globalPeriodSeconds, drop_extra: scope.globalDropExtra}],
+                ['topic2', 'filter5ID', {period_seconds: scope.globalPeriodSeconds, round_time: scope.globalRoundTime}],
+                'filter6',
+            ]);
         });
 
         it('should return to project view on success', function () {
@@ -199,13 +240,11 @@ describe('DataSetManipulateCtrl controller', function () {
         var confirmSpy = spyOn(window, 'confirm'),
             event;
 
-        scope.filters = { 'topic': [] };
-
         event = scope.$broadcast('$locationChangeStart');
         expect(window.confirm.callCount).toBe(0);
         expect(event.defaultPrevented).toBe(false);
 
-        scope.filters = { 'topic': ['filter'] };
+        scope.topicFilters.topic1.other = ['filter'];
 
         confirmSpy.andReturn(false);
         event = scope.$broadcast('$locationChangeStart');

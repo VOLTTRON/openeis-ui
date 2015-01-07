@@ -38,7 +38,7 @@ fieldset {
     @extend %box;
     padding-top: halve($inuit-base-spacing-unit) !important;
     border: 1px solid #ddd;
-    margin-bottom: 20px;
+    margin: 0 0 20px;
 }
 
 legend {
@@ -52,7 +52,7 @@ label:first-child:after,
     content: ":";
 }
 
-input:not([type="checkbox"]) {
+input:not([type="checkbox"]):not([type="radio"]) {
     height: 2 * $inuit-base-spacing-unit;
     border: 1px solid #ddd;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -101,6 +101,10 @@ thead {
 td, th {
     padding: halve($inuit-base-spacing-unit);
     text-align: left;
+}
+
+ol:empty, ul:empty, dl:empty {
+    margin-bottom: 0;
 }
 
 dt {

@@ -326,6 +326,14 @@ $inuit-btn-border-width: 0;
 
     &--data-set-manipulate {
         @extend %box;
+
+        .layout__item:first-child {
+            width: 38.2%;
+        }
+
+        .layout__item:last-child {
+            width: 61.8%;
+        }
     }
 
     &--recovery {

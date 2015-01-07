@@ -5,28 +5,82 @@
         <li>Manipulate data set: {{dataSet.name}}</li>
     </ul>
 
-    <div class="view view--data-set-manipulate">
+    <form class="view view--data-set-manipulate" ng-submit="apply()">
         <h2>Manipulate data set: {{dataSet.name}}</h2>
-        <div ng-if="!applying">
-            <ul>
-                <li class="topic" ng-repeat="(topic, sensor) in dataSet.datamap.sensors" ng-if="sensor.type">
-                    {{topic}} <a ng-click="addFilterTo(topic)">Add filter&hellip;</a>
-                    <ol>
-                        <li ng-repeat="filter in filters[topic]">
-                            {{filter | json}}
-                            &mdash; <a ng-click="deleteFilter(filter)">Delete</a>
-                            <span ng-if="!$first">&mdash; <a ng-click="raiseFilter(filter)">Up</a></span>
-                            <span ng-if="!$last">&mdash; <a ng-click="lowerFilter(filter)">Down</a></span>
-                        </li>
-                    </ol>
-                </li>
-            </ul>
-            <button ng-disabled="!filterAdded()" ng-click="apply()">Apply</button> <a class="button" href="projects/{{project.id}}">Cancel</a>
+        <div ng-show="!applying">
+            <div>
+                <h3>Normalization settings</h3>
+
+                <div class="form__group">
+                    <label>Fill/aggregation time period</label>&nbsp;
+                    <input type="number" step="1" min="1" required
+                        ng-model="globalPeriodSeconds">
+                    second<span ng-if="globalPeriodSeconds > 1">s</span>
+                </div>
+                <div class="form__group">
+                    <label>On fill</label>&nbsp;
+                    <input type="checkbox" ng-model="globalDropExtra">&nbsp;
+                    <label>Drop values that do not line up exactly with specified period</label>
+                </div>
+                <div class="form__group">
+                    <label>On aggregation</label>&nbsp;
+                    <input type="radio" ng-model="globalRoundTime" ng-value="true">&nbsp;
+                    <label>Round time to nearest period</label>&nbsp;
+                    <input type="radio" ng-model="globalRoundTime" ng-value="false">&nbsp;
+                    <label>Truncate time to period</label>
+                </div>
+            </div>
+
+            <h3>Sensors</h3>
+
+            <div class="topic" ng-repeat="(topic, sensor) in dataSet.datamap.sensors" ng-if="sensor.type"
+                ng-init="initTopicFilters(topic, sensor)">
+                <h4>{{topic}}</h4>
+
+                <div class="layout">
+                    <div class="layout__item">
+                        <fieldset>
+                            <legend>Normalization</legend>
+
+                            <div class="form__group">
+                                <label>Fill</label>&nbsp;
+                                <select required ng-options="filter.id as filter.name for filter in availableFilters | filter:{type: 'fill'} | orderBy:'name'"
+                                    ng-model="topicFilters[topic].fill">
+                                    <option value="">-- Choose filter --</option>
+                                    </select>
+                            </div>
+                            <div class="form__group">
+                                <label>Aggregation</label>&nbsp;
+                                <select required ng-options="filter.id as filter.name for filter in availableFilters | filter:{type: 'aggregation'} | orderBy:'name'"
+                                    ng-model="topicFilters[topic].aggregation">
+                                    <option value="">-- Choose filter --</option></select>
+                            </div>
+                        </fieldset>
+                    </div><!--
+                 --><div class="layout__item">
+                        <fieldset>
+                            <legend>Other</legend>
+
+                            <ol>
+                                <li ng-repeat="filter in topicFilters[topic].other">
+                                    {{filter | json}}
+                                    &mdash; <a ng-click="deleteFilter(filter)">Delete</a>
+                                    <span ng-if="!$first">&mdash; <a ng-click="raiseFilter(filter)">Up</a></span>
+                                    <span ng-if="!$last">&mdash; <a ng-click="lowerFilter(filter)">Down</a></span>
+                                </li>
+                            </ol>
+
+                            <p><a ng-click="addFilterTo(topic)">Add filter to {{topic}}&hellip;</a></p>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <button>Apply</button> <a class="button" href="projects/{{project.id}}">Cancel</a>
         </div>
-        <div ng-if="applying">
+        <div ng-show="applying">
             <span class="spinner fa fa-circle-o-notch"></span> Applying filters&hellip;
         </div>
-    </div>
+    </form>
 </div>
 <modal modal-id="newFilter">
     <h3>Add filter</h3>
@@ -38,7 +92,7 @@
         <div class="form__group">
             <label>Filter</label>
             <select required
-                ng-options="filter as filter.name for filter in availableFilters | orderBy:'name'"
+                ng-options="filter as filter.name for filter in availableFilters | filter:{type: 'other'} | orderBy:'name'"
                 ng-model="newFilter.filter">
                 <option value="">-- Choose filter --</option>
             <select>
