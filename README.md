@@ -4,14 +4,13 @@ OpenEIS UI
 Static (AngularJS) front-end client to REST API (Django)
 
 
-Requirements
-------------
+System requirements
+-------------------
 
 * [Node.js](http://nodejs.org/)
-* [npm](https://www.npmjs.org/) (included with Node.js 0.6.3+) 
-* npm modules [bower](http://bower.io/) and [grunt-cli](http://gruntjs.com/)
-* [Ruby](https://www.ruby-lang.org/en/installation/)
-* Ruby gem [Sass](http://sass-lang.com/)
+* [npm](https://docs.npmjs.com/getting-started/installing-node) (included with Node.js 0.6.3+)
+* [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* [RubyGems](https://rubygems.org/pages/download)
 
 
 Installing environment dependencies
@@ -30,32 +29,33 @@ Installing project dependencies
     [openeis-ui]$ bower install
 
 
-Building
---------
-
-Single build: (production/minified)
-
-    [openeis-ui]$ grunt build
-
-Single build: (development)
-
-    [openeis-ui]$ grunt build-dev
-
-Continuous development build (watch for changes and build automatically):
-
-    [openeis-ui]$ grunt
-
-
 Module override
-------------------------------------------
+---------------
 
 A build of the openeis-ui module is bundled with [openeis]
-(https://bitbucket.org/berkeleylab/openeis). To serve your working copy
+(https://github.com/volttron/openeis). To serve your working copy
 instead, install it over the bundled module with `pip`:
 
     $ cd /path/to/openeis
     [openeis]$. env/bin/activate
     (openeis)[openeis]$ pip install --editable /path/to/openeis-ui
+
+
+Building
+--------
+
+Continuous development build:
+(automatically build and refresh page on file change)
+
+    [openeis-ui]$ grunt
+
+Single development build:
+
+    [openeis-ui]$ grunt build-dev
+
+Single production (minified) build:
+
+    [openeis-ui]$ grunt build
 
 
 License
