@@ -12,22 +12,32 @@
                 <h3>Normalization settings</h3>
 
                 <div class="form__group">
+                    <label>Perform</label>&nbsp;
+                    <input type="checkbox" id="perform-fill" ng-model="globalSettings.performFill">&nbsp;
+                    <label for="fill">Fill</label>&nbsp;
+                    <input type="checkbox" id="perform-aggregation" ng-model="globalSettings.performAggregation">&nbsp;
+                    <label for="perform-aggregation">Aggregation</label>
+                </div>
+
+                <div class="form__group">
                     <label>Fill/aggregation time period</label>&nbsp;
                     <input type="number" step="1" min="1" required
-                        ng-model="globalPeriodSeconds">
-                    second<span ng-if="globalPeriodSeconds > 1">s</span>
+                        ng-model="globalSettings.periodSeconds">
+                    second<span ng-if="globalSettings.periodSeconds > 1">s</span>
                 </div>
-                <div class="form__group">
+
+                <div class="form__group" ng-if="globalSettings.performFill">
                     <label>On fill</label>&nbsp;
-                    <input type="checkbox" ng-model="globalDropExtra">&nbsp;
-                    <label>Drop values that do not line up exactly with specified period</label>
+                    <input type="checkbox" id="drop-values" ng-model="globalSettings.dropExtra">&nbsp;
+                    <label for="drop-values">Drop values that do not line up exactly with specified period</label>
                 </div>
-                <div class="form__group">
+
+                <div class="form__group" ng-if="globalSettings.performAggregation">
                     <label>On aggregation</label>&nbsp;
-                    <input type="radio" ng-model="globalRoundTime" ng-value="true">&nbsp;
-                    <label>Round time to nearest period</label>&nbsp;
-                    <input type="radio" ng-model="globalRoundTime" ng-value="false">&nbsp;
-                    <label>Truncate time to period</label>
+                    <input type="radio" id="round-time" ng-model="globalSettings.roundTime" ng-value="true">&nbsp;
+                    <label for="round-time">Round time to nearest period</label>&nbsp;
+                    <input type="radio" id="truncate-time" ng-model="globalSettings.roundTime" ng-value="false">&nbsp;
+                    <label for="truncate-time">Truncate time to period</label>
                 </div>
             </div>
 
@@ -40,16 +50,16 @@
                 <div class="layout">
                     <div class="layout__item">
                         <fieldset>
-                            <legend>Normalization</legend>
+                            <legend>Normalization filters</legend>
 
-                            <div class="form__group">
+                            <div class="form__group" ng-if="globalSettings.performFill">
                                 <label>Fill</label>&nbsp;
-                                <select required ng-options="filter.id as filter.name for filter in availableFilters | filter:{type: 'fill'} | orderBy:'name'"
+                                <select ng-options="filter.id as filter.name for filter in availableFilters | filter:{type: 'fill'} | orderBy:'name'"
                                     ng-model="topicFilters[topic].fill">
-                                    <option value="">-- Choose filter --</option>
+                                    <option value="">None</option>
                                     </select>
                             </div>
-                            <div class="form__group">
+                            <div class="form__group" ng-if="globalSettings.performAggregation">
                                 <label>Aggregation</label>&nbsp;
                                 <select required ng-options="filter.id as filter.name for filter in availableFilters | filter:{type: 'aggregation'} | orderBy:'name'"
                                     ng-model="topicFilters[topic].aggregation">
@@ -59,7 +69,7 @@
                     </div><!--
                  --><div class="layout__item">
                         <fieldset>
-                            <legend>Other</legend>
+                            <legend>Other filters</legend>
 
                             <ol>
                                 <li ng-repeat="filter in topicFilters[topic].other">

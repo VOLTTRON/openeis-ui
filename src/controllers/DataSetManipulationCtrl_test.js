@@ -181,7 +181,7 @@ describe('DataSetManipulateCtrl controller', function () {
     });
 
     describe('apply', function () {
-        it('should flatten filters', function () {
+        beforeEach(function () {
             spyOn(DataSets, 'manipulate').andCallThrough();
 
             scope.topicFilters = {
@@ -196,15 +196,57 @@ describe('DataSetManipulateCtrl controller', function () {
                     other: ['filter6'],
                 },
             };
+        });
+
+        it('should flatten filters', function () {
+            scope.apply();
+
+            expect(DataSets.manipulate).toHaveBeenCalledWith({}, [
+                ['topic1', 'filter1ID', {period_seconds: scope.globalSettings.periodSeconds, drop_extra: scope.globalSettings.dropExtra}],
+                ['topic1', 'filter2ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
+                'filter3',
+                ['topic2', 'filter4ID', {period_seconds: scope.globalSettings.periodSeconds, drop_extra: scope.globalSettings.dropExtra}],
+                ['topic2', 'filter5ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
+                'filter6',
+            ]);
+        });
+
+        it('should only perform fill if selected', function () {
+            scope.globalSettings.performFill = false;
 
             scope.apply();
 
             expect(DataSets.manipulate).toHaveBeenCalledWith({}, [
-                ['topic1', 'filter1ID', {period_seconds: scope.globalPeriodSeconds, drop_extra: scope.globalDropExtra}],
-                ['topic1', 'filter2ID', {period_seconds: scope.globalPeriodSeconds, round_time: scope.globalRoundTime}],
+                ['topic1', 'filter2ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
                 'filter3',
-                ['topic2', 'filter4ID', {period_seconds: scope.globalPeriodSeconds, drop_extra: scope.globalDropExtra}],
-                ['topic2', 'filter5ID', {period_seconds: scope.globalPeriodSeconds, round_time: scope.globalRoundTime}],
+                ['topic2', 'filter5ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
+                'filter6',
+            ]);
+        });
+
+        it('should only perform aggregation if selected', function () {
+            scope.globalSettings.performAggregation = false;
+
+            scope.apply();
+
+            expect(DataSets.manipulate).toHaveBeenCalledWith({}, [
+                ['topic1', 'filter1ID', {period_seconds: scope.globalSettings.periodSeconds, drop_extra: scope.globalSettings.dropExtra}],
+                'filter3',
+                ['topic2', 'filter4ID', {period_seconds: scope.globalSettings.periodSeconds, drop_extra: scope.globalSettings.dropExtra}],
+                'filter6',
+            ]);
+        });
+
+        it('should not perform fill if not selected', function () {
+            scope.topicFilters.topic2.fill = null;
+
+            scope.apply();
+
+            expect(DataSets.manipulate).toHaveBeenCalledWith({}, [
+                ['topic1', 'filter1ID', {period_seconds: scope.globalSettings.periodSeconds, drop_extra: scope.globalSettings.dropExtra}],
+                ['topic1', 'filter2ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
+                'filter3',
+                ['topic2', 'filter5ID', {period_seconds: scope.globalSettings.periodSeconds, round_time: scope.globalSettings.roundTime}],
                 'filter6',
             ]);
         });

@@ -55,9 +55,13 @@ angular.module('openeis-ui')
     $scope.dataSet = dataSet;
     $scope.availableFilters = DataSetFilters.query();
     $scope.topicFilters = {};
-    $scope.globalDropExtra = true;
-    $scope.globalRoundTime = false;
-    $scope.globalPeriodSeconds = 3600;
+    $scope.globalSettings = {
+        performFill: true,
+        performAggregation: true,
+        periodSeconds: 3600,
+        dropExtra: true,
+        roundTime: false,
+    };
 
     $scope.$on('$locationChangeStart', function (event) {
         if ($scope.filterAdded() && !confirm('Abandon data set manipulation?')) {
@@ -144,14 +148,18 @@ angular.module('openeis-ui')
         $scope.applying = true;
 
         angular.forEach($scope.topicFilters, function (topicFilters, topic) {
-            filters.push([topic, topicFilters.fill, {
-                period_seconds: $scope.globalPeriodSeconds,
-                drop_extra: $scope.globalDropExtra,
-            }]);
-            filters.push([topic, topicFilters.aggregation, {
-                period_seconds: $scope.globalPeriodSeconds,
-                round_time: $scope.globalRoundTime,
-            }]);
+            if ($scope.globalSettings.performFill && topicFilters.fill) {
+                filters.push([topic, topicFilters.fill, {
+                    period_seconds: $scope.globalSettings.periodSeconds,
+                    drop_extra: $scope.globalSettings.dropExtra,
+                }]);
+            }
+            if ($scope.globalSettings.performAggregation) {
+                filters.push([topic, topicFilters.aggregation, {
+                    period_seconds: $scope.globalSettings.periodSeconds,
+                    round_time: $scope.globalSettings.roundTime,
+                }]);
+            }
 
             if (topicFilters.other.length) {
                 filters = filters.concat(topicFilters.other);
