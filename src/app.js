@@ -160,6 +160,18 @@ angular.module('openeis-ui', [
                 }],
             },
         })
+        .whenAuth('/projects/:projectId/datamaps/:dataMapId', {
+            controller: 'DataMapCtrl',
+            templateUrl: 'data-map.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataMap: ['DataMaps', '$route', function(DataMaps, $route) {
+                    return DataMaps.get($route.current.params.dataMapId).$promise;
+                }],
+            },
+        })
         .whenAuth('/projects/:projectId/datasets/:dataSetId', {
             controller: 'DataSetCtrl',
             templateUrl: 'data-set.tpl.html',

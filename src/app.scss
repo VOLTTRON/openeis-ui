@@ -312,14 +312,9 @@ $inuit-btn-border-width: 0;
         }
     }
 
-    &--new-data-map {
-        @extend %box;
-    }
-
-    &--new-data-set {
-        @extend %box;
-    }
-
+    &--new-data-map,
+    &--new-data-set,
+    &--data-map,
     &--data-set {
         @extend %box;
     }

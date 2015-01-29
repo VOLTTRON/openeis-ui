@@ -1,0 +1,13 @@
+<div class="container">
+    <ul class="breadcrumbs">
+        <li><a href="projects">Projects</a></li>
+        <li><a href="projects/{{project.id}}">{{project.name}}</a></li>
+        <li>Data map: {{dataMap.name}}</li>
+    </ul>
+
+    <div class="view view--data-map">
+        <h2>Data map: {{dataMap.name}}</h2>
+        <pre>{{dataMap.map | json}}</pre>
+        <a class="button" href="projects/{{project.id}}">Back</a>
+    </div>
+</div>
