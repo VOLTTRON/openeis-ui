@@ -52,7 +52,7 @@ angular.module('openeis-ui.services.data-maps', [
     'ngResource',
     'openeis-ui.services.data-files',
 ])
-.service('DataMaps', function ($http, $resource, DataFiles) {
+.service('DataMaps', function ($http, $q, $resource, DataFiles) {
     var DataMaps = this,
         resource = $resource(settings.API_URL + 'datamaps/:mapId', { mapId: '@id' }, {
             create: { method: 'POST' },
@@ -163,6 +163,64 @@ angular.module('openeis-ui.services.data-maps', [
         return mapCopy;
     };
 
+    DataMaps.unFlattenMap = function (dataMap, dataFiles) {
+        var topics = Object.getOwnPropertyNames(dataMap.map.sensors).sort();
+
+        console.log(dataFiles);
+
+        angular.forEach(dataMap.map.files, function (file, key) {
+            angular.forEach(dataFiles, function (dataFile) {
+                if (angular.equals(file.signature, dataFile.signature) && angular.equals(file.timestamp, dataFile.timestamp)) {
+                    dataMap.map.files[key] = dataFile;
+                }
+            });
+        });
+
+        dataMap.map.children = [];
+
+        angular.forEach(topics, function (topic) {
+            var mapObject = dataMap.map.sensors[topic],
+                topicParts = topic.split('/'),
+                parent = dataMap.map;
+
+            function childIsNewParent(child) {
+                if (child.name === topicPart) {
+                    parent = child;
+                }
+            }
+
+            while (topicParts.length > 1) {
+                var topicPart = topicParts.shift();
+
+                angular.forEach(parent.children, childIsNewParent);
+            }
+
+            mapObject.name = topicParts[0];
+
+            if (mapObject.level) {
+                // object is a container
+                mapObject.children = [];
+                mapObject.sensors = [];
+                parent.children.push(mapObject);
+            } else if (mapObject.type) {
+                // object is a sensor
+                mapObject.file = dataMap.map.files[mapObject.file];
+                if (mapObject.file.hasHeader) {
+                    mapObject.column = mapObject.file.columns.indexOf(mapObject.column);
+                }
+                parent.sensors.push(mapObject);
+            }
+        });
+
+        delete dataMap.id;
+        delete dataMap.map.files;
+        delete dataMap.map.sensors;
+
+        dataMap.name += ' copy';
+
+        return dataMap;
+    };
+
     DataMaps.validateMap = function (map) {
         return $http.get(settings.DATAMAP_SCHEMA_URL)
             .then(function (response) {
@@ -171,9 +229,11 @@ angular.module('openeis-ui.services.data-maps', [
     };
 
     DataMaps.ensureFileMetaData = function (files) {
+        var promises = [];
+
         angular.forEach(files, function(file) {
             if (!(file.hasOwnProperty('signature') && file.hasOwnProperty('columns') && file.hasOwnProperty('hasHeader'))) {
-                DataFiles.head(file.id).then(function (headResponse) {
+                promises.push(DataFiles.head(file.id).then(function (headResponse) {
                     file.signature = { headers: [] };
                     file.columns = [];
                     file.hasHeader = headResponse.has_header;
@@ -187,8 +247,10 @@ angular.module('openeis-ui.services.data-maps', [
                             file.columns.push("Column " + (k + 1));
                         }
                     });
-                });
+                }));
             }
         });
+
+        return $q.all(promises);
     };
 });

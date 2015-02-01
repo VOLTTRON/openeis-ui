@@ -175,6 +175,28 @@ angular.module('openeis-ui', [
                 }],
             },
         })
+        .whenAuth('/projects/:projectId/datamaps/:dataMapId/clone-and-edit', {
+            controller: 'NewDataMapCtrl',
+            templateUrl: 'new-data-map.tpl.html',
+            resolve: {
+                project: ['Projects', '$route', function(Projects, $route) {
+                    return Projects.get($route.current.params.projectId);
+                }],
+                dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
+                    return DataFiles.query($route.current.params.projectId);
+                }],
+                newDataMap: ['$q', '$route', 'DataFiles', 'DataMaps', function ($q, $route, DataFiles, DataMaps) {
+                    return $q.all({
+                        dataMap: DataMaps.get($route.current.params.dataMapId).$promise,
+                        dataFiles: DataFiles.query($route.current.params.projectId),
+                    }).then(function (responses) {
+                        return DataMaps.ensureFileMetaData(responses.dataFiles).then(function () {
+                            return DataMaps.unFlattenMap(responses.dataMap, responses.dataFiles);
+                        });
+                    });
+                }],
+            },
+        })
         .whenAuth('/projects/:projectId/datasets/:dataSetId', {
             controller: 'DataSetCtrl',
             templateUrl: 'data-set.tpl.html',
