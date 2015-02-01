@@ -143,6 +143,9 @@ angular.module('openeis-ui', [
                 dataFiles: ['DataFiles', '$route', function(DataFiles, $route) {
                     return DataFiles.query($route.current.params.projectId);
                 }],
+                newDataMap: ['$route', 'DataMaps', function ($route, DataMaps) {
+                    return DataMaps.getDefaultMap($route.current.params.projectId);
+                }],
             },
         })
         .whenAuth('/projects/:projectId/new-data-set', {

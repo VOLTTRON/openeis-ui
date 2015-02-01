@@ -73,6 +73,20 @@ angular.module('openeis-ui.services.data-maps', [
         return resource.create(copy);
     };
 
+    DataMaps.getDefaultMap = function (projectId) {
+        return {
+            project: projectId,
+            map: {
+                version: 1,
+                children: [{
+                    level: 'building',
+                    name: 'New building',
+                }],
+            },
+            valid: false,
+        };
+    };
+
     DataMaps.getDefinition = function () {
         return $http.get(settings.GENERAL_DEFINITION_URL).then(function (response) {
             return response.data;

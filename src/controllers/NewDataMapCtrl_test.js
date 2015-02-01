@@ -58,6 +58,10 @@ describe('NewDataMapCtrl controller', function () {
         module(function($provide) {
             $provide.value('project', testProject);
             $provide.value('dataFiles', []);
+            $provide.value('newDataMap', {
+                map: { children: [] },
+                valid: false,
+            });
         });
 
         DataMaps = {
@@ -95,17 +99,9 @@ describe('NewDataMapCtrl controller', function () {
         expect(DataMaps.ensureFileMetaData).toHaveBeenCalled();
     });
 
-    it('should start with a building named "New building"', function () {
-        expect(scope.newDataMap.map.children.length).toBe(1);
-        expect(scope.newDataMap.map.children[0]).toEqual({
-            level: 'building',
-            name: 'New building',
-        });
-    });
-
     describe('addChild', function () {
         it('should add child objects', function () {
-            expect(scope.newDataMap.map.children.length).toBe(1);
+            expect(scope.newDataMap.map.children.length).toBe(0);
 
             var newChild = {
                     level: 'site',
@@ -113,7 +109,7 @@ describe('NewDataMapCtrl controller', function () {
                 };
             spyOn(window, 'prompt').andReturn(newChild.name);
             scope.addChild(newChild.level);
-            expect(scope.newDataMap.map.children.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(1);
             // Slashes should be replaced with dashes
             expect(scope.newDataMap.map.children[0].name).toBe('NameWith-Slash');
         });
@@ -133,11 +129,11 @@ describe('NewDataMapCtrl controller', function () {
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(1);
-            expect(scope.newDataMap.map.children.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(1);
 
             scope.addChild('site');
             expect(window.prompt.callCount).toBe(3);
-            expect(scope.newDataMap.map.children.length).toBe(2);
+            expect(scope.newDataMap.map.children.length).toBe(1);
         });
     });
 
@@ -183,9 +179,6 @@ describe('NewDataMapCtrl controller', function () {
     it('should confirm on page leave if and only if child objects have been added', function () {
         var confirmSpy = spyOn(window, 'confirm'),
             event;
-
-        // Clear default building
-        scope.newDataMap.map.children = [];
 
         event = scope.$broadcast('$locationChangeStart');
         expect(window.confirm.callCount).toBe(0);

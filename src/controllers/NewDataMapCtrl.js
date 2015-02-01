@@ -49,7 +49,7 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui')
-.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps, DataSets, Modals) {
+.controller('NewDataMapCtrl', function ($location, $scope, project, dataFiles, DataMaps, DataSets, Modals, newDataMap) {
     $scope.project = project;
     $scope.dataFiles = dataFiles;
     $scope.Modals = Modals;
@@ -57,17 +57,7 @@ angular.module('openeis-ui')
 
     DataMaps.ensureFileMetaData($scope.dataFiles);
 
-    $scope.newDataMap = {
-        project: $scope.project.id,
-        map: {
-            version: 1,
-            children: [{
-                level: 'building',
-                name: 'New building',
-            }],
-        },
-        valid: false,
-    };
+    $scope.newDataMap = newDataMap;
 
     $scope.$on('$locationChangeStart', function (event) {
         if ($scope.newDataMap.map.children.length && !confirm('Abandon unsaved data map?')) {

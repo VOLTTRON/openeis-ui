@@ -80,6 +80,16 @@ describe('DataMaps service', function () {
         }
     });
 
+    it('should provide the default map with a building named "New building"', function () {
+        var defaultMap = DataMaps.getDefaultMap(0);
+
+        expect(defaultMap.map.children.length).toBe(1);
+        expect(defaultMap.map.children[0]).toEqual({
+            level: 'building',
+            name: 'New building',
+        });
+    });
+
     it('should create data maps from non-flattened data maps', function () {
         var newDataMap = { map: { children: [] } },
             result;
