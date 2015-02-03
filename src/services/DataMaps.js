@@ -166,8 +166,6 @@ angular.module('openeis-ui.services.data-maps', [
     DataMaps.unFlattenMap = function (dataMap, dataFiles) {
         var topics = Object.getOwnPropertyNames(dataMap.map.sensors).sort();
 
-        console.log(dataFiles);
-
         angular.forEach(dataMap.map.files, function (file, key) {
             angular.forEach(dataFiles, function (dataFile) {
                 if (angular.equals(file.signature, dataFile.signature) && angular.equals(file.timestamp, dataFile.timestamp)) {

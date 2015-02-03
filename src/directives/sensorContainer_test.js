@@ -217,8 +217,6 @@ describe('sensorContainer directive', function () {
 
         // Attribute should be added to container.attributes
         expect(isolateScope.container.attributes.attribute1).toBe('attributeValue');
-        // Attribute should be removed from attribute_list
-        expect(isolateScope.objectDefinition.attribute_list.length).toBe(0);
 
         expect(directive.find('dt').length).toBe(0);
         scope.$digest();
@@ -248,8 +246,6 @@ describe('sensorContainer directive', function () {
 
         // Sensor should be added to container.sensors
         expect(isolateScope.container.sensors[0].type).toBe('sensor1');
-        // Sensor should be removed from sensor_list
-        expect(isolateScope.objectDefinition.sensor_list.length).toBe(0);
 
         expect(directive.find('dt').length).toBe(0);
         scope.$digest();

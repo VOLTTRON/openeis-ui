@@ -9,14 +9,14 @@
     </h1>
 
     <div class="layout">
-        <div class="layout__item" style="width:50%" ng-if="objectDefinition.attribute_list.length || container.attributes">
+        <div class="layout__item" style="width:50%" ng-if="(objectDefinition.attribute_list | filter:showAttribute).length || container.attributes">
             <fieldset>
                 <legend>Attributes</legend>
-                <modal modal-id="newAttribute-{{container.$$hashKey}}" ng-if="objectDefinition.attribute_list.length">
+                <modal modal-id="newAttribute-{{container.$$hashKey}}" ng-if="(objectDefinition.attribute_list | filter:showAttribute).length">
                     <form class="form--stacked" ng-submit="addAttribute()">
                         <div class="form__group">
                             <label>New attribute</label>
-                            <select required ng-options="attribute for attribute in objectDefinition.attribute_list" ng-model="newAttribute.name">
+                            <select required ng-options="attribute for attribute in objectDefinition.attribute_list | filter:showAttribute" ng-model="newAttribute.name">
                                 <option value="">-- Choose attribute --</option>
                             </select>
                         </div>
@@ -36,19 +36,19 @@
                     <dt ng-repeat-start="(attribute, value) in container.attributes">{{attribute}} <a ng-click="deleteAttribute(attribute)">Delete</a></dt>
                     <dd ng-repeat-end><pre>{{value | json}}</pre></dd>
                 </dl>
-                <div class="form__group" ng-if="objectDefinition.attribute_list.length">
+                <div class="form__group" ng-if="(objectDefinition.attribute_list | filter:showAttribute).length">
                     <button ng-click="prompt('newAttribute')">Add attribute</button>
                 </div>
             </fieldset>
         </div>
-        <div class="layout__item" style="width:50%" ng-if="objectDefinition.sensor_list.length || container.sensors">
+        <div class="layout__item" style="width:50%" ng-if="(objectDefinition.sensor_list | filter:showSensor).length || container.sensors">
             <fieldset>
                 <legend>Sensors</legend>
-                <modal modal-id="newSensor-{{container.$$hashKey}}" ng-if="objectDefinition.sensor_list.length">
+                <modal modal-id="newSensor-{{container.$$hashKey}}" ng-if="(objectDefinition.sensor_list | filter:showSensor).length">
                     <form class="form--stacked" ng-submit="addSensor()">
                         <div class="form__group">
                             <label>New sensor</label>
-                            <select required ng-options="sensor for sensor in objectDefinition.sensor_list" ng-model="newSensor.name">
+                            <select required ng-options="sensor for sensor in objectDefinition.sensor_list | filter:showSensor" ng-model="newSensor.name">
                                 <option value="">-- Choose sensor --</option>
                             </select>
                         </div>
@@ -74,7 +74,7 @@
                     <dt ng-repeat-start="sensor in container.sensors">{{sensor.name}} <a ng-click="deleteSensor($index)">Delete</a></dt>
                     <dd ng-repeat-end>{{sensor.file.name}} &rarr; {{sensor.file.columns[sensor.column]}}<span ng-if="sensor.unit">&nbsp;({{sensor.unit}})</span></dd>
                 </dl>
-                <div class="form__group" ng-if="objectDefinition.sensor_list.length">
+                <div class="form__group" ng-if="(objectDefinition.sensor_list | filter:showSensor).length">
                     <button ng-click="prompt('newSensor')">Add sensor</button>
                 </div>
             </fieldset>

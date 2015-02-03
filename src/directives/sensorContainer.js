@@ -129,18 +129,17 @@ angular.module('openeis-ui.directives.sensor-container', [
 
             $scope.newAttribute = {};
 
+            $scope.showAttribute = function (attributeName) {
+                return !($scope.container.attributes && $scope.container.attributes[attributeName]);
+            };
+
             $scope.addAttribute = function () {
                 $scope.container.attributes = $scope.container.attributes || {};
                 $scope.container.attributes[$scope.newAttribute.name] = $scope.newAttribute.value;
-                $scope.objectDefinition.attribute_list.splice(
-                    $scope.objectDefinition.attribute_list.indexOf($scope.newAttribute.name), 1
-                );
                 $scope.cancel('newAttribute');
             };
 
             $scope.deleteAttribute = function (attribute) {
-                $scope.objectDefinition.attribute_list.push(attribute);
-                $scope.objectDefinition.attribute_list.sort();
                 delete $scope.container.attributes[attribute];
 
                 if (!Object.keys($scope.container.attributes).length) {
@@ -162,19 +161,26 @@ angular.module('openeis-ui.directives.sensor-container', [
                 }
             });
 
+            $scope.showSensor = function (sensorName) {
+                var alreadyAdded = false;
+
+                angular.forEach($scope.container.sensors, function (addedSensor) {
+                    if (!alreadyAdded && addedSensor.type === sensorName) {
+                        alreadyAdded = true;
+                    }
+                });
+
+                return !alreadyAdded;
+            };
+
             $scope.addSensor = function () {
                 $scope.newSensor.type = $scope.newSensor.name;
                 $scope.container.sensors = $scope.container.sensors || [];
                 $scope.container.sensors.unshift(angular.copy($scope.newSensor));
-                $scope.objectDefinition.sensor_list.splice(
-                    $scope.objectDefinition.sensor_list.indexOf($scope.newSensor.name), 1
-                );
                 $scope.cancel('newSensor');
             };
 
             $scope.deleteSensor = function (index) {
-                $scope.objectDefinition.sensor_list.push($scope.container.sensors[index].name);
-                $scope.objectDefinition.sensor_list.sort();
                 $scope.container.sensors.splice(index, 1);
             };
 
