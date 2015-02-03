@@ -166,10 +166,13 @@ angular.module('openeis-ui.services.data-maps', [
     DataMaps.unFlattenMap = function (dataMap, dataFiles) {
         var topics = Object.getOwnPropertyNames(dataMap.map.sensors).sort();
 
+        // Reverse map signatures to available files
         angular.forEach(dataMap.map.files, function (file, key) {
             angular.forEach(dataFiles, function (dataFile) {
                 if (angular.equals(file.signature, dataFile.signature) && angular.equals(file.timestamp, dataFile.timestamp)) {
                     dataMap.map.files[key] = dataFile;
+                } else {
+                    delete dataMap.map.files[key];
                 }
             });
         });
@@ -202,10 +205,21 @@ angular.module('openeis-ui.services.data-maps', [
                 parent.children.push(mapObject);
             } else if (mapObject.type) {
                 // object is a sensor
-                mapObject.file = dataMap.map.files[mapObject.file];
-                if (mapObject.file.hasHeader) {
-                    mapObject.column = mapObject.file.columns.indexOf(mapObject.column);
+                if (dataMap.map.files[mapObject.file]) {
+                    mapObject.file = dataMap.map.files[mapObject.file];
+
+                    if (mapObject.file.hasHeader) {
+                        mapObject.column = mapObject.file.columns.indexOf(mapObject.column);
+                    }
+                } else {
+                    mapObject.file = {
+                        name: 'MISSING FILE',
+                        columns: {},
+                    };
+
+                    mapObject.file.columns[mapObject.column] = 'MISSING COLUMN';
                 }
+
                 parent.sensors.push(mapObject);
             }
         });
