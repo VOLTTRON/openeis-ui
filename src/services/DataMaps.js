@@ -171,8 +171,6 @@ angular.module('openeis-ui.services.data-maps', [
             angular.forEach(dataFiles, function (dataFile) {
                 if (angular.equals(file.signature, dataFile.signature) && angular.equals(file.timestamp, dataFile.timestamp)) {
                     dataMap.map.files[key] = dataFile;
-                } else {
-                    delete dataMap.map.files[key];
                 }
             });
         });
@@ -205,7 +203,8 @@ angular.module('openeis-ui.services.data-maps', [
                 parent.children.push(mapObject);
             } else if (mapObject.type) {
                 // object is a sensor
-                if (dataMap.map.files[mapObject.file]) {
+                if (dataMap.map.files[mapObject.file].name) {
+                    // If file with matching signature was found, file object will have a name
                     mapObject.file = dataMap.map.files[mapObject.file];
 
                     if (mapObject.file.hasHeader) {
