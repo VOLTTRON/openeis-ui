@@ -40,7 +40,9 @@
     "jstzdetect": "~1.0.6",
     "font-awesome": "~4.2.0",
     "angular-sanitize": "~1.2",
-    "d3-tip": "~0.6.6"
+    "d3-tip": "~0.6.6",
+    "jquery-1.11.3": "http://code.jquery.com/jquery-1.11.3.js",
+    "rickshaw"
   },
   "devDependencies": {
     "angular-mocks": "~1.2"

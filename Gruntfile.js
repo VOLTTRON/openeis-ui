@@ -135,6 +135,19 @@ module.exports = function(grunt) {
           ],
         },
       },
+      Rickshaw: {
+        options: {
+          banner: '/*\n' + grunt.file.read('src/viz/Rickshaw/LICENSE') + '*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/rickshaw.js': [
+            'src/viz/Rickshaw/rickshaw.js',
+          ],
+          '<%= buildDir %>js/rickshaw_ex.js': [
+            'src/viz/Rickshaw/rickshaw_ex.js',
+          ],
+        },
+      },
       jstz: {
         options: {
           stripBanners: { block: true },
@@ -374,6 +387,16 @@ module.exports = function(grunt) {
         files: {
           '<%= buildDir %>js/d3-tip.min.js': [
             'bower_components/d3-tip/index.js',
+          ],
+        },
+      },
+      Rickshaw: {
+        files: {
+          '<%= buildDir %>js/rickshaw.js': [
+            'src/viz/Rickshaw/rickshaw.js',
+          ],
+          '<%= buildDir %>js/rickshaw_ex.js': [
+            'src/viz/Rickshaw/rickshaw_ex.js',
           ],
         },
       },
