@@ -41,8 +41,7 @@
     "font-awesome": "~4.2.0",
     "angular-sanitize": "~1.2",
     "d3-tip": "~0.6.6",
-    "jquery-1.11.3": "http://code.jquery.com/jquery-1.11.3.js",
-    "rickshaw"
+    "jquery-1.11.3": "http://code.jquery.com/jquery-1.11.3.js"
   },
   "devDependencies": {
     "angular-mocks": "~1.2"

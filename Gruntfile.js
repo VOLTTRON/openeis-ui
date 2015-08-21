@@ -135,6 +135,17 @@ module.exports = function(grunt) {
           ],
         },
       },
+      jstz: {
+        options: {
+          stripBanners: { block: true },
+          banner: '/*\n' + grunt.file.read('bower_components/jstzdetect/LICENCE.txt') + '\n*/\n',
+        },
+        files: {
+          '<%= buildDir %>js/jstz.min.js': [
+            'bower_components/jstzdetect/jstz.min.js',
+          ],
+        },
+      },
       Rickshaw: {
         options: {
           banner: '/*\n' + grunt.file.read('src/viz/Rickshaw/LICENSE') + '*/\n',
@@ -148,14 +159,13 @@ module.exports = function(grunt) {
           ],
         },
       },
-      jstz: {
+      Bootstrap: {
         options: {
-          stripBanners: { block: true },
-          banner: '/*\n' + grunt.file.read('bower_components/jstzdetect/LICENCE.txt') + '\n*/\n',
+          banner: '/*\n' + grunt.file.read('src/viz/Bootstrap/LICENSE') + '*/\n',
         },
         files: {
-          '<%= buildDir %>js/jstz.min.js': [
-            'bower_components/jstzdetect/jstz.min.js',
+          '<%= buildDir %>js/bootstrap.min.js': [
+            '<%= buildDir %>js/bootstrap.min.js',
           ],
         },
       },
@@ -187,9 +197,13 @@ module.exports = function(grunt) {
         options: {
           scripts: {
             app: [
+              '<%= buildDir %>js/jquery.min.js',
               '<%= buildDir %>js/d3.min.js',
               '<%= buildDir %>js/d3-tip.min.js',
               '<%= buildDir %>js/jstz.min.js',
+              '<%= buildDir %>js/bootstrap.min.js',
+              '<%= buildDir %>js/rickshaw.js', //Minify rickshaw creates bugs for some reasons
+              '<%= buildDir %>js/rickshaw_ex.js', //Minify rickshaw creates bugs for some reasons
               '<%= buildDir %>js/angular.min.js',
               '<%= buildDir %>js/angular-file-upload.min.js',
               '<%= buildDir %>js/angular-recursion.min.js',
@@ -204,6 +218,7 @@ module.exports = function(grunt) {
         options: {
           scripts: {
             app: [
+              '<%= buildDir %>js/jquery.js',
               '<%= buildDir %>js/d3.js',
               '<%= buildDir %>js/index.js', // d3-tip
               '<%= buildDir %>js/jstz.js',
@@ -260,6 +275,9 @@ module.exports = function(grunt) {
           '<%= buildDir %>js/app.js': [
             'src/**/*.js',
             '!src/**/*_test.js',
+            '!src/viz/Bootstrap/bootstrap.js',
+            '!src/viz/Rickshaw/rickshaw.js',
+            '!src/viz/Rickshaw/rickshaw_ex.js',
           ]
         },
       },
@@ -351,6 +369,14 @@ module.exports = function(grunt) {
             dest: '<%= buildDir %>js/',
             flatten: true,
           },
+          {
+            expand: true,
+            src: 'bower_components/jquery-1.11.3/index.js',
+            dest: '<%= buildDir %>js/',
+            rename: function(dest, src) {
+              return dest + "jquery.js";
+            }
+          }
         ],
       },
       package: {
@@ -390,13 +416,17 @@ module.exports = function(grunt) {
           ],
         },
       },
-      Rickshaw: {
+      Bootstrap: {
         files: {
-          '<%= buildDir %>js/rickshaw.js': [
-            'src/viz/Rickshaw/rickshaw.js',
+          '<%= buildDir %>js/bootstrap.min.js': [
+            'src/viz/Bootstrap/bootstrap.js',
           ],
-          '<%= buildDir %>js/rickshaw_ex.js': [
-            'src/viz/Rickshaw/rickshaw_ex.js',
+        },
+      },
+      jquery: {
+        files: {
+          '<%= buildDir %>js/jquery.min.js': [
+            'bower_components/jquery-1.11.3/index.js',
           ],
         },
       },

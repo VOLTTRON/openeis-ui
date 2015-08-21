@@ -48,7 +48,7 @@
 // operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
 // under Contract DE-AC05-76RL01830
 
-angular.module('openeis-ui.directives.analysis-report', ['ui.bootstrap'])
+angular.module('openeis-ui.directives.analysis-report', [])
 .directive('analysisReport', function ($compile) {
     return {
         restrict: 'E',
@@ -234,12 +234,6 @@ angular.module('openeis-ui.directives.analysis-report', ['ui.bootstrap'])
 
 
                     break;
-
-
-
-
-
-
 
                 case 'Ecam':
 //                    element.append(angular.element('<div class="ecam" />')
@@ -1343,7 +1337,8 @@ angular.module('openeis-ui.directives.analysis-report', ['ui.bootstrap'])
         inData.forEach(function(d) {
             var diagnostic = d.diagnostic_name;
             if (diagnostic === null) { return; }
-            var dt1 = new Date(d.datetime);
+            //var dt1 = new Date(d.datetime);
+            var dt1 = parseDate(d.datetime);
             //var tsParts = d.datetime.split("T");
             var dateParts = formatDate(dt1); //tsParts[0];
             //var hrParts = dt1.getHours().toString(); //tsParts[1].split(":")[0];
@@ -1856,6 +1851,11 @@ angular.module('openeis-ui.directives.analysis-report', ['ui.bootstrap'])
             var metrics = context.measureText(text);
             return metrics.width;
         };
+    }
+
+    function parseDate(s) {
+        var a = s.split(/[^0-9]/);
+        return new Date (a[0],a[1]-1,a[2],a[3],a[4],a[5] );
     }
 
     function ecam(data) {

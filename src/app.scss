@@ -19,6 +19,8 @@ $inuit-btn-radius: 3px;
 $inuit-btn-background: $primary-action-color;
 $inuit-btn-border-width: 0;
 
+
+
 @import "inuit-defaults/settings.defaults";
 
 @import "inuit-functions/tools.functions";
@@ -28,6 +30,8 @@ $inuit-btn-border-width: 0;
 
 @import "inuit-headings/base.headings";
 @import "inuit-lists/base.lists";
+
+@import "objects.bootstrap"; //Allow other styles after bootstrap to override its style
 @import "base";
 
 @import "inuit-list-bare/objects.list-bare";
@@ -49,6 +53,7 @@ $inuit-btn-border-width: 0;
 
 @import "objects.ecam";
 @import "objects.rickshaw";
+
 
 .top-bar {
     background-color: #333;
