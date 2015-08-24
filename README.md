@@ -28,8 +28,8 @@ Installing project dependencies
     [openeis-ui]$ npm install
     [openeis-ui]$ bower install
 
- Note if you get an error on the bower install for using git:// you can issue the following git 
- command to translate that into an https:// call
+- Note if you get an error on the bower install (ECMDERR Failed to execute "git ls-remote --tags --heads   git://github.com/angular/bower-angular.git").  The problem should be fixed by issuing the following 
+git command.
 
     git config --global url."https://".insteadOf git:// 
 
