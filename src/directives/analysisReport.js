@@ -49,10 +49,11 @@
 // under Contract DE-AC05-76RL01830
 
 angular.module('openeis-ui.directives.analysis-report', [])
-.directive('analysisReport', function () {
+.directive('analysisReport', function ($compile) {
     return {
         restrict: 'E',
         terminal: true,
+        transclude: true,
         scope: {
             arReport: '=',
             arData: '=',
@@ -151,6 +152,140 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 case 'RetroCommissioningAFDD':
                     element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name])));
                     break;
+
+                case 'RetroCommissioningAFDDEcam':
+                    var result_ele = angular.element("<div id='result' class='result' />");
+                    var tab_ele = angular.element("\
+                        <ul class='nav nav-tabs'>\
+                            <li heading='data' id='data' class='active' style=''>\
+                                <a href=''>data</a>\
+                            </li>\
+                            <li heading='analysis' id='analysis' class='' style=''>\
+                                <a href=''>analysis</a>\
+                            </li>\
+                        </ul>");
+                    var tab_content = angular.element("<div class='tab-content'></div>");
+                    var data_ele = angular.element("\
+                        <div id='data-content' class='tab-pane active' style=''>\
+                            <div id='ecam' class='ecam' />\
+                                <div id='temps-chart-box' class='rs-chart-container hidden'>\
+                                    <div class='title noselect'></div>\
+                                    <div class='rs-chart-area time-series'>\
+                                      <div class='rs-y-axis'></div>\
+                                      <div class='rs-chart'></div>\
+                                      <div class='rs-y-axis2'></div>\
+                                      <div class='rs-legend'></div>\
+                                      <div class='rs-slider'></div>\
+                                    </div>\
+                                </div>\
+                                <div id='hcv-box' class='rs-chart-container hidden'>\
+                                        <div class='title noselect'></div>\
+                                        <div class='rs-chart-area time-series'>\
+                                            <div class='rs-y-axis'></div>\
+                                            <div class='rs-chart'></div>\
+                                            <div class='rs-y-axis2'></div>\
+                                            <div class='rs-legend'></div>\
+                                            <div class='rs-slider'></div>\
+                                        </div>\
+                                </div>\
+                                <div id='mat-oat-box' class='rs-chart-container hidden'>\
+                                        <div class='title noselect'></div>\
+                                        <div class='rs-chart-area'>\
+                                            <div class='rs-y-axis'></div>\
+                                            <div class='rs-chart'></div>\
+                                            <div class='rs-legend'></div>\
+                                        </div>\
+                                </div>\
+                            </div>\
+                        </div>");
+                    var rcx_tab = angular.element("<div id='analysis-content' class='tab-pane' style=''></div>");
+                    var rcx_ele = angular.element("<div class='retro-commissioning-afdd' />")
+                        .append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name]));
+                    rcx_tab.append(rcx_ele);
+                    tab_content.append(data_ele);
+                    tab_content.append(rcx_tab);
+                    result_ele.append(tab_ele);
+                    result_ele.append(tab_content);
+                    element.append(result_ele);
+                    ecam(scope.arData[reportElement.table_name]);
+                    //$("#ecam").tabs();
+                    $compile(element.contents())(scope);
+
+                    //plot title clicked
+                    $(".rs-chart-container .title").click(function() {
+                        var plot = $(this).parent().find(".rs-chart-area");
+                        plot.toggle();
+                    });
+                    $("#data").click(function() {
+                        $("#data").removeClass("active").addClass("active");
+                        $("#data-content").removeClass("active").addClass("active");
+                        $("#analysis").removeClass("active");
+                        $("#analysis-content").removeClass("active");
+                    });
+                    $("#analysis").click(function() {
+                        $("#analysis").removeClass("active").addClass("active");
+                        $("#analysis-content").removeClass("active").addClass("active");
+                        $("#data").removeClass("active");
+                        $("#data-content").removeClass("active");
+                    });
+
+                    //$(ecam_ele[0]).tabs();
+
+
+
+                    break;
+
+                case 'Ecam':
+//                    element.append(angular.element('<div class="ecam" />')
+//                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
+//                                    <div class='title noselect'></div>\
+//                                    <div class='rs-chart-area time-series'>\
+//                                      <div class='rs-y-axis'></div>\
+//                                      <div class='rs-chart'></div>\
+//                                      <div class='rs-y-axis2'></div>\
+//                                      <div class='rs-legend'></div>\
+//                                      <div class='rs-slider'></div>\
+//                                    </div>\
+//                                  </div>\
+//                                  <div id='hcv-box' class='rs-chart-container hidden'>\
+//                                    <div class='title noselect'></div>\
+//                                    <div class='rs-chart-area time-series'>\
+//                                      <div class='rs-y-axis'></div>\
+//                                      <div class='rs-chart'></div>\
+//                                      <div class='rs-y-axis2'></div>\
+//                                      <div class='rs-legend'></div>\
+//                                      <div class='rs-slider'></div>\
+//                                    </div>\
+//                                  </div>\
+//                                  <div id='mat-oat-box' class='rs-chart-container hidden'>\
+//                                    <div class='title noselect'></div>\
+//                                    <div class='rs-chart-area'>\
+//                                      <div class='rs-y-axis'></div>\
+//                                      <div class='rs-chart'></div>\
+//                                      <div class='rs-legend'></div>\
+//                                    </div>\
+//                                  </div>"));
+//                    ecam(scope.arData[reportElement.table_name]);
+//                      <div ng-controller="myCtrl">
+//                        <div data-hbo-tabs id="tabs">
+//                            <ul>
+//                                <li><a href="#tabs-1">Tab 1</a></li>
+//                                <li><a href="#tabs-2">Tab 2</a></li>
+//                                <li><a href="#tabs-3">Tab 3</a></li>
+//                            </ul>
+//                            <div id="tabs-1">
+//                                <p>Content for Tab 1</p>
+//                            </div>
+//                            <div id="tabs-2">
+//                                <p>Content for Tab 2</p>
+//                            </div>
+//                            <div id="tabs-3">
+//                                <p>Content for Tab 3</p>
+//                            </div>
+//                        </div>
+//                      </div>
+                    break;
+
                 }
             });
         }
@@ -564,6 +699,186 @@ angular.module('openeis-ui.directives.analysis-report', [])
             arr.push(lowEnd++);
         }
         return arr;
+    }
+
+    function padDateTime(val) {
+        var dec = val - Math.floor(val);
+        val = val - dec;
+        return ("0" + val).slice(-2) + dec.toString().substr(1);
+    }
+
+    function getTimeUnit(startTime, endTime, timeArr) {
+        //var timeUnit = defTimeUnit(d[0][fTsName],d[-1][fTsName],[d[0][fTsName],d[1][fTsName],d[2][fTsName]]);
+        //Determine timestamp using timeArr: (end-start)/step
+        var stepArr = [];
+        var sum = 0;
+        for (i=1; i<timeArr.length; i++)
+        {
+            stepArr[i-1] = (timeArr[i]-timeArr[i-1]);
+            sum += stepArr[i-1];
+        }
+        var step = sum/stepArr.length; //step is second-wise
+        var noOfPoints = (endTime-startTime)/step;
+        //Return appropirate timeUnit
+        var time = new Rickshaw.Fixtures.Time();
+        var tickStepInSec = (endTime-startTime)/6; //the width of the plot could hold ~6 tick marks
+        //Find a whole-hour number closest to tickStepInSec
+        var rickshawTimeUnit = [0.01,0.1,1,15,60,60*15,60*60,60*60*6,86400,86400*7,86400*30.5,86400*365.25,86400*365.25*10];
+        var rickshawTime = [{
+			name: 'decade',
+			seconds: 86400 * 365.25 * 10,
+			formatter: function(d) { return (parseInt(d.getUTCFullYear() / 10, 10) * 10) }
+		}, {
+			name: 'year',
+			seconds: 86400 * 365.25,
+			formatter: function(d) { return d.getUTCFullYear() }
+		}, {
+			name: 'month',
+			seconds: 86400 * 30.5,
+			formatter: function(d) { return (new Rickshaw.Fixtures.Time()).months[d.getUTCMonth()] }
+		}, {
+			name: 'week',
+			seconds: 86400 * 7,
+			formatter: function(d) { return (new Rickshaw.Fixtures.Time()).formatDate(d) }
+		}, {
+			name: 'day',
+			seconds: 86400,
+			formatter: function(d) {
+                return (new Rickshaw.Fixtures.Time()).formatDate(d);
+                //return d.getMonth() + "-" + d.getDate() + "-" + d.getYear();
+            }
+		}, {
+			name: '6 hour',
+			seconds: 3600 * 6,
+			formatter: function(d) {
+                if (d.getHours()==11) {
+                    return padDateTime(d.getMonth()) + "-" + padDateTime(d.getDate()) +
+                        " " + padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+                }
+                return padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+
+                //return (new Rickshaw.Fixtures.Time()).formatTime(d)
+            }
+		}, {
+			name: 'hour',
+			seconds: 3600,
+			formatter: function(d) {
+                if (d.getHours()==11) {
+                    return padDateTime(d.getMonth()) + "-" + padDateTime(d.getDate()) +
+                        " " + padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+                }
+                return padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+
+                //return (new Rickshaw.Fixtures.Time()).formatTime(d)
+            }
+		}, {
+			name: '15 minute',
+			seconds: 60 * 15,
+			formatter: function(d) {
+                if (d.getHours()==11) {
+                    return padDateTime(d.getMonth()) + "-" + padDateTime(d.getDate()) +
+                        " " + padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+                }
+                return padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+
+                //return (new Rickshaw.Fixtures.Time()).formatTime(d)
+            }
+		}, {
+			name: 'minute',
+			seconds: 60,
+			formatter: function(d) {
+                if (d.getHours()==11) {
+                    return padDateTime(d.getMonth()) + "-" + padDateTime(d.getDate()) +
+                        " " + padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+                }
+                return padDateTime(d.getHours()) + ":" + padDateTime(d.getMinutes());
+
+                //return (new Rickshaw.Fixtures.Time()).formatTime(d)
+            }
+		}, {
+			name: '15 second',
+			seconds: 15,
+			formatter: function(d) { return d.getUTCSeconds() + 's' }
+		}, {
+			name: 'second',
+			seconds: 1,
+			formatter: function(d) { return d.getUTCSeconds() + 's' }
+		}, {
+			name: 'decisecond',
+			seconds: 1/10,
+			formatter: function(d) { return d.getUTCMilliseconds() + 'ms' }
+		}, {
+			name: 'centisecond',
+			seconds: 1/100,
+			formatter: function(d) { return d.getUTCMilliseconds() + 'ms' }
+		}];
+        var curMinIdx = 0;
+        var curMin = 86400*362.25*10;
+        for (i=0; i<rickshawTime.length; i++)
+        {
+             if (Math.abs(tickStepInSec-rickshawTime[i].seconds) < curMin) {
+                 curMin = Math.abs(tickStepInSec - rickshawTime[i].seconds);
+                 curMinIdx = i;
+             }
+        }
+        var tickStep = rickshawTime[curMinIdx].seconds;
+        var formatter = rickshawTime[curMinIdx].formatter;
+
+        var timeUnit = {};
+        timeUnit.formatTime = function(d) {
+            return formatter(d);
+          //return d.toUTCString().match(/(\d+:\d+):/)[1];
+        };
+        timeUnit.formatter = function(d) { return this.formatTime(d)};
+        timeUnit.name = "auto-defined";
+        timeUnit.seconds = tickStep;
+
+        return timeUnit;
+
+        //        switch(true) {
+//            case (step<0.01): //1/100 sec
+//                timeUnit = time.unit('centisecond');
+//                break;
+//            case (step<0.1): //1/10 sec
+//                timeUnit = time.unit('decisecond');
+//                break;
+//            case (step<1): //1 sec
+//                timeUnit = time.unit('second');
+//                break;
+//            case (step<15): //15 secs
+//                timeUnit = time.unit('15 second');
+//                break;
+//            case (step<60): //1 min
+//                timeUnit = time.unit('minute');
+//                break;
+//            case (step<60*15): //15 min
+//                timeUnit = time.unit('15 minute');
+//                break;
+//            case (step<60*60): //1 hour
+//                timeUnit = time.unit('hour');
+//                break;
+//            case (step<60*60*6): //6 hours
+//                timeUnit = time.unit('6 hour');
+//                break;
+//            case (step<86400): //day
+//                timeUnit = time.unit('day');
+//                break;
+//            case (step<86400*7): //week
+//                timeUnit = time.unit('week');
+//                break;
+//            case (step<86400*30.5): //month
+//                timeUnit = time.unit('month');
+//                break;
+//            case (step<86400*365.25): //year
+//                timeUnit = time.unit('year');
+//                break;
+//            case (step<86400*365.25*10): //decade
+//                timeUnit = time.unit('decade');
+//                break;
+//            default:
+//                timeUnit = time.unit('hour');//default
+//        }
+
     }
 
     function oaeAggregateData(inData, legends) {
@@ -1020,7 +1335,10 @@ angular.module('openeis-ui.directives.analysis-report', [])
         // Aggregate & filter duplicated data
         var resData = {};
         inData.forEach(function(d) {
-            var dt1 = new Date(d.datetime);
+            var diagnostic = d.diagnostic_name;
+            if (diagnostic === null) { return; }
+            //var dt1 = new Date(d.datetime);
+            var dt1 = parseDate(d.datetime);
             //var tsParts = d.datetime.split("T");
             var dateParts = formatDate(dt1); //tsParts[0];
             //var hrParts = dt1.getHours().toString(); //tsParts[1].split(":")[0];
@@ -1028,7 +1346,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //var dateParts = tsParts[0];
             //var hrParts = tsParts[1].split(":")[0];
             var hrParts = dt1.getHours().toString();
-            var diagnostic = d.diagnostic_name;
+
 
             if (dateParts in resData) {
                 if (diagnostic in resData[dateParts]) {
@@ -1236,6 +1554,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 foundDiagnosticList = true;
             }
         }
+        if (!foundDiagnosticList) return;
 
         var containerWidth = 1024; //$(container_class).width();
         var containerHeight = 100 * diagnosticList.length; //$(container_class).height();
@@ -1533,4 +1852,526 @@ angular.module('openeis-ui.directives.analysis-report', [])
             return metrics.width;
         };
     }
+
+    function parseDate(s) {
+        var a = s.split(/[^0-9]/);
+        return new Date (a[0],a[1]-1,a[2],a[3],a[4],a[5] );
+    }
+
+    function ecam(data) {
+        //console.log(data);
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points
+        var points = {
+          //OATemp: 'OATemp',
+          OAF: 'OutdoorAirFraction',
+          OATemp: 'OutdoorAirTemperature',
+          MATemp: 'MixedAirTemperature',
+          RATemp: 'ReturnAirTemperature',
+          DATemp: 'DischargeAirTemperature',
+          DATempSetpoint: 'DischargeAirTemperatureSetPoint',
+          OADamper: 'OutdoorDamper',
+          CCValve: 'CCV',
+          HCValve: ''
+        }
+
+        //object to contain definition for point colors
+        //http://www.w3schools.com/html/html_colornames.asp
+        var colors = {
+          OATemp: 'blue',
+          MATemp: 'pink',
+          RATemp: 'red',
+          DATemp: 'green',
+          OADamper: 'brown',
+          OAF: 'blueviolet',
+          CCValve: 'darkorange',
+          HCValve: 'darkorchid',
+          DATempSetpoint: 'darkred'
+        };
+
+        function existPoint(p) {
+          return p != '' ? true : false;
+        }
+
+        function parseDataType(d, points) {
+          for (var key in points) {
+            if (points.hasOwnProperty(key)) {
+              d[points[key]] = parseFloat(d[points[key]]);
+            }
+          }
+        }
+
+        function plotTempsChart(data, points, colors, args) {
+          if (!(existPoint(rawTsName) && existPoint(points.OATemp)
+              && existPoint(points.MATemp))) return false;
+//          if (!(existPoint(points.RATemp)
+//              || existPoint(points.DATemp)
+//              || existPoint(points.OADamper))) return false;
+          //Set UI Args
+          var timeUnit = args.TimeUnit;
+          var container = args.Container;
+          var chartId = container + " .rs-chart";
+          var chartY = container + " .rs-y-axis";
+          var chartY2 = container + " .rs-y-axis2";
+          var chartLegend = container + " .rs-legend";
+          var chartTitle = container + " .title";
+          var chartSlider = container + " .rs-slider";
+
+          document.querySelector(chartTitle).innerHTML = args.Title;
+          //TODO: Change the min max of y1Scale
+          var y1Scale = d3.scale.linear().domain([0, 100]);
+          var y2Scale = d3.scale.linear().domain([0, 300]);
+          //Set up data series: change this for different data sources
+
+          var ySeries = {}
+          if (existPoint(points.OATemp)) {
+            ySeries['OATemp'] = {
+              name: points.OATemp,
+              color: colors.OATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.OATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.MATemp)) {
+            ySeries['MATemp'] = {
+              name: points.MATemp,
+              color: colors.MATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.MATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.RATemp)) {
+            ySeries['RATemp'] = {
+              name: points.RATemp,
+              color: colors.RATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.RATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.RATemp) && existPoint(points.OATemp) && existPoint(points.MATemp)) {
+            ySeries['OAF'] = {
+              name: points.OAF,
+              color: colors.OAF,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: (d[points.MATemp]-d[points.RATemp])/(d[points.OATemp]-d[points.RATemp])};
+              }),
+              scale: y2Scale
+            }
+          }
+
+          if (existPoint(points.DATemp)) {
+            ySeries['DATemp'] = {
+              name: points.DATemp,
+              color: colors.DATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.DATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.OADamper)) {
+            ySeries['OADamper'] = {
+              name: points.OADamper,
+              color: colors.OADamper,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.OADamper]};
+              }),
+              scale: y2Scale
+            }
+          }
+          //Plotting
+//          var plotSeries = ySeries.map(function(value, index) {
+//            return [value];
+//          });
+          var plotSeries = [];
+          angular.forEach(ySeries, function(value, key) {
+              plotSeries.push(value);
+          });
+          var graph = new Rickshaw.Graph({
+            element: document.querySelector(chartId),
+            renderer: 'line',
+            series: plotSeries,
+            interpolation: 'linear'
+          });
+          graph.render();
+
+          //Tooltip for hovering
+          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+            graph: graph,
+            formatter: function(series, x, y) {
+              var date = '<span class="date">' + new Date(x*1000).toUTCString() + '</span>';
+              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+              var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+              return content;
+            }
+          } );
+          //Display & Toggle Legends
+          var legend = new Rickshaw.Graph.Legend( {
+            graph: graph,
+            element: document.querySelector(chartLegend)
+          } );
+          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+            graph: graph,
+            legend: legend
+          } );
+          //Render X Y Axes
+          //var xAxis = new Rickshaw.Graph.Axis.Time({
+          //  graph: graph,
+          //  timeUnit: unit
+          //});
+          //var time = new Rickshaw.Fixtures.Time();
+          //var timeUnit = time.unit('hour');
+          var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+              {
+                graph: graph,
+                //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                pixelsPerTick: 50,
+                tickSpacing: 6*60*60, // 6 hours
+                timeUnit: timeUnit
+              } );
+          xAxis.render();
+          var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+            graph: graph,
+            berthRate: 0.0,
+            orientation: 'left',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.querySelector(chartY),
+            scale: y1Scale
+          });
+          yAxis.render();
+
+          var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled( {
+            graph: graph,
+            berthRate: 0,
+            orientation: 'right',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.querySelector(chartY2),
+            scale: y2Scale,
+            ticks: 5
+            //tickValues: [0,20,40,60,80,100]
+          });
+          yAxis2.render();
+
+          var slider = new Rickshaw.Graph.RangeSlider.Preview({
+            graph: graph,
+            element: document.querySelector(chartSlider)
+          });
+
+          //graph.render();
+
+
+
+          //There is another way to give more granular control over Y axis: using scale that is ~ d3
+          //This way you can control the stick on the X or Y Axis
+          //new Rickshaw.Graph.Axis.Y.Scaled( {
+          //  graph: graph,
+          //  orientation: 'right',
+          //  tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+          //  element: document.getElementById('y_axis_2'),
+          //  scale: linearScale,
+          //  grid: false
+          //} );
+
+        }
+
+        //Plot heating/cooling valve position
+        function plotHCVChart(data, points, colors, args) {
+          if (!(existPoint(rawTsName) && existPoint(points.OATemp)
+                && existPoint(points.DATemp))) return false;
+//          if (!(existPoint(points.DATempSetpoint)
+//              || existPoint(points.CCValve)
+//              || existPoint(points.HCValve)
+//              || existPoint(points.OADamper))) return false;
+          //Set UI Args
+          var timeUnit = args.TimeUnit;
+          var container = args.Container;
+          var chartId = container + " .rs-chart";
+          var chartY = container + " .rs-y-axis";
+          var chartY2 = container + " .rs-y-axis2";
+          var chartLegend = container + " .rs-legend";
+          var chartTitle = container + " .title";
+          var chartSlider = container + " .rs-slider";
+
+          document.querySelector(chartTitle).innerHTML = args.Title;
+          //TODO: Change the min max of y1Scale
+          var y1Scale = d3.scale.linear().domain([0, 100]);
+          var y2Scale = d3.scale.linear().domain([0, 300]);
+          //Set up data series: change this for different data sources
+
+          var ySeries = {}
+          //if (points.hasOwnProperty('OATemp')) {
+          if (existPoint(points.OATemp)) {
+            ySeries['OATemp'] = {
+              name: points.OATemp,
+              color: colors.OATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.OATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.DATemp)) {
+            ySeries['DATemp'] = {
+              name: points.DATemp,
+              color: colors.DATemp,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.DATemp]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.DATempSetpoint)) {
+            ySeries['DATempSetpoint'] = {
+              name: points.DATempSetpoint,
+              color: colors.DATempSetpoint,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.DATempSetpoint]};
+              }),
+              scale: y1Scale
+            }
+          }
+          if (existPoint(points.OADamper)) {
+            ySeries['OADamper'] = {
+              name: points.OADamper,
+              color: colors.OADamper,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.OADamper]};
+              }),
+              scale: y2Scale
+            }
+          }
+          if (existPoint(points.CCValve)) {
+            ySeries['CCValve'] = {
+              name: points.CCValve,
+              color: colors.CCValve,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.CCValve]};
+              }),
+              scale: y2Scale
+            }
+          }
+          if (existPoint(points.HCValve)) {
+            ySeries['HCValve'] = {
+              name: points.HCValve,
+              color: colors.HCValve,
+              data: data.map(function (d) {
+                return {x: d[args.Timestamp], y: d[points.HCValve]};
+              }),
+              scale: y2Scale
+            }
+          }
+          //Plotting
+//          var plotSeries = ySeries.map(function(value, index) {
+//            return [value];
+//          });
+          var plotSeries = [];
+          angular.forEach(ySeries, function(value, key) {
+              plotSeries.push(value);
+          });
+          var graph = new Rickshaw.Graph({
+            element: document.querySelector(chartId),
+            renderer: 'line',
+            series: plotSeries,
+            interpolation: 'linear'
+          });
+          graph.render();
+
+          //Tooltip for hovering
+          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+            graph: graph,
+            formatter: function(series, x, y) {
+              var date = '<span class="date">' + new Date(x*1000).toUTCString() + '</span>';
+              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+              var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+              return content;
+            }
+          } );
+          //Display & Toggle Legends
+          var legend = new Rickshaw.Graph.Legend( {
+            graph: graph,
+            element: document.querySelector(chartLegend)
+          } );
+          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+            graph: graph,
+            legend: legend
+          } );
+          //Render X Y Axes
+          //var xAxis = new Rickshaw.Graph.Axis.Time({
+          //  graph: graph,
+          //  timeUnit: unit
+          //});
+          //var time = new Rickshaw.Fixtures.Time();
+          //var timeUnit = time.unit('hour');
+          var xAxis = new Rickshaw.Graph.Axis.ExtendedTime({
+            graph: graph,
+            //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            pixelsPerTick: 50,
+            tickSpacing: 6*60*60, // 1 hour
+            timeUnit: timeUnit
+          });
+          xAxis.render();
+          var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+            graph: graph,
+            berthRate: 0.0,
+            orientation: 'left',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.querySelector(chartY),
+            scale: y1Scale
+          });
+          yAxis.render();
+
+          var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled( {
+            graph: graph,
+            berthRate: 0,
+            orientation: 'right',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.querySelector(chartY2),
+            scale: y2Scale,
+            ticks: 5
+            //tickValues: [0,20,40,60,80,100]
+          });
+          yAxis2.render();
+
+          var slider = new Rickshaw.Graph.RangeSlider.Preview({
+            graph: graph,
+            element: document.querySelector(chartSlider)
+          });
+        }
+
+        function plotMaOaTempChart(data, points, colors, args) {
+          if (!(existPoint(points.MATemp) && existPoint(points.OATemp))) return false;
+          //Set UI Args
+          var container = args.Container;
+          var chartId = container + " .rs-chart";
+          var chartY = container + " .rs-y-axis";
+          var chartLegend = container + " .rs-legend";
+          var chartTitle = container + " .title";
+
+          document.querySelector(chartTitle).innerHTML = args.Title;
+
+          //Set up data series: change this for different data sources
+          data.sort(function (a,b) {
+            if (a[points.OATemp] < b[points.OATemp])
+              return -1;
+            if (a[points.OATemp] > b[points.OATemp])
+              return 1;
+            return 0;
+          });
+          var ySeries = {
+            MAOAT: {
+              name: points.MATemp,
+              xName: points.OATemp,
+              color: colors.MATemp,
+              data: data.map(function (d) {
+                return {x: d[points.OATemp], y: d[points.MATemp]};
+              })
+            }
+          }
+          //Plotting
+          var graph = new Rickshaw.Graph({
+            element: document.querySelector(chartId),
+            renderer: 'scatterplot',
+            series: [ySeries.MAOAT]
+          });
+          graph.renderer.dotSize = 2;
+          graph.render();
+          //Tooltip for hovering
+          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+            graph: graph,
+            formatter: function(series, x, y) {
+              var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+              var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+              return content;
+            }
+          } );
+          //Display & Toggle Legends
+          var legend = new Rickshaw.Graph.Legend( {
+            graph: graph,
+            element: document.querySelector(chartLegend)
+          } );
+          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+            graph: graph,
+            legend: legend
+          } );
+          //Render X Y Axes
+          var xAxis = new Rickshaw.Graph.Axis.X({
+            graph: graph
+          });
+          xAxis.render();
+          var yAxis = new Rickshaw.Graph.Axis.Y({
+            graph: graph,
+            berthRate: 0.0,
+            orientation: 'left',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.querySelector(chartY)
+          });
+          yAxis.render();
+
+
+
+        }
+
+
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function(d) {
+          //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+          var t = d[rawTsName].split('+')[0];
+          t = t.replace(' ','T');
+          t = Date.parse(t)/1000;
+          d[fTsName] = t;
+          parseDataType(d, points);
+        });
+        var timeUnit = getTimeUnit(data[0][fTsName],data[data.length-1][fTsName],[data[0][fTsName],data[1][fTsName],data[2][fTsName]]);
+        var tArgs = {
+          Timestamp: fTsName,
+          Title: 'Temperatures',
+          Container: '#temps-chart-box',
+          TimeUnit: timeUnit
+        };
+        plotTempsChart(data, points, colors, tArgs);
+        var hcvArgs = {
+          Timestamp: fTsName,
+          Title: 'DATSP, DAT, OAT, OAD, CCV, HCV vs. Time',
+          Container: '#hcv-box',
+          TimeUnit: timeUnit
+        };
+        plotHCVChart(data, points, colors, hcvArgs);
+        //Plot this one last because it sorts the data in-place
+        var motArgs = {
+          Timestamp: fTsName,
+          Title: 'Mixed Air vs. Outdoor Air',
+          Container: '#mat-oat-box'
+        };
+        plotMaOaTempChart(data, points, colors, motArgs);
+
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+        //Fix styling of D3: when the min value is at the bottom of the Y axis, we can see only upper half of the value
+        //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
+
+    }
 });
+
+
+//File changes for Ecam:
+//openeis:
+//0. applications/ecam.py, reports/__init__.py
+//openeis-ui:
+//1. objects.ecam.scss, objects.rickshaw.scss
+//2. analysisReport.js, jquery-1.11.2.min.js, rickshaw.js, rickshaw_ex.js
+//Question: how to run testing w/o running the UI: ecam_config.py
+// python ./env/bin/openeis-script.py runapplication openeis/applications/economizer_ecam_rcx_config.ini
+//  There should be no space in the inputs in the config file
+//  python ./env/bin/openeis-script.py runapplication openeis/applications/ecam_config.ini
+//Bug: RAT is not mapped but it is displayed as 0, should not be displayed at all
+
+

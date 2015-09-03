@@ -19,6 +19,8 @@ $inuit-btn-radius: 3px;
 $inuit-btn-background: $primary-action-color;
 $inuit-btn-border-width: 0;
 
+
+
 @import "inuit-defaults/settings.defaults";
 
 @import "inuit-functions/tools.functions";
@@ -46,6 +48,11 @@ $inuit-btn-border-width: 0;
 @import "font-awesome/scss/_core";
 @import "font-awesome/scss/_icons";
 @import "font-awesome/scss/_spinning";
+
+@import "objects.bootstrap";
+@import "objects.ecam";
+@import "objects.rickshaw";
+
 
 .top-bar {
     background-color: #333;

@@ -1,0 +1,109 @@
+
+.result .nav {
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.result .nav > li {
+  position: relative;
+  display: block;
+}
+.result .nav > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+.result .nav > li > a:hover,
+.result .nav > li > a:focus {
+  text-decoration: none;
+  background-color: #eeeeee;
+}
+.result .nav > li.disabled > a {
+  color: #777777;
+}
+.result .nav > li.disabled > a:hover,
+.result .nav > li.disabled > a:focus {
+  color: #777777;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: not-allowed;
+}
+.result .nav .open > a,
+.result .nav .open > a:hover,
+.result .nav .open > a:focus {
+  background-color: #eeeeee;
+  border-color: #337ab7;
+}
+.result .nav .nav-divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+.result .nav > li > a > img {
+  max-width: none;
+}
+.result .nav-tabs {
+  border-bottom: 1px solid #dddddd;
+}
+.result .nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
+}
+.result .nav-tabs > li > a {
+  margin-right: 2px;
+  line-height: 1.42857143;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+.result .nav-tabs > li > a:hover {
+  border-color: #eeeeee #eeeeee #dddddd;
+}
+.result .nav-tabs > li.active > a,
+.result .nav-tabs > li.active > a:hover,
+.result .nav-tabs > li.active > a:focus {
+  color: #555555;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+
+.result .tab-content > .tab-pane {
+  display: none;
+}
+.result .tab-content > .active {
+  display: block;
+}
+.result .nav-tabs .dropdown-menu {
+  margin-top: -1px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.result .hide {
+  display: none !important;
+}
+.result .show {
+  display: block !important;
+}
+.result .invisible {
+  visibility: hidden;
+}
+.result .hidden {
+  display: none !important;
+}
+
+.clearfix:before,
+.clearfix:after,
+.nav:before,
+.nav:after,
+{
+  content: " ";
+  display: table;
+}
+.clearfix:after,
+.nav:after,
+.modal-footer:after {
+  clear: both;
+}
