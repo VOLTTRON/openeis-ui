@@ -56,7 +56,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         transclude: true,
         scope: {
             arReport: '=',
-            arData: '=',
+            arData: '='
         },
         link: function (scope, element, attrs) {
             if (scope.arReport.description) {
@@ -145,10 +145,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element.append(angular.element('<div class="heat-map" />').append(heatMapSVG(data, reportElement.x_label, reportElement.y_label)));
                     break;
 
-                case 'RetroCommissioningOAED':
-                    element.append(angular.element('<div class="retro-commissioning-oaed" />').append(retroCommissioningOAEDSVG(scope.arData[reportElement.table_name])));
-                    break;
-
                 case 'RetroCommissioningAFDD':
                     element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name])));
                     break;
@@ -207,86 +203,176 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     result_ele.append(tab_ele);
                     result_ele.append(tab_content);
                     element.append(result_ele);
-                    ecam(scope.arData[reportElement.table_name]);
+                    afdd_ecam(scope.arData[reportElement.table_name]);
                     //$("#ecam").tabs();
                     $compile(element.contents())(scope);
-
-                    //plot title clicked
-                    $(".rs-chart-container .title").click(function() {
-                        var plot = $(this).parent().find(".rs-chart-area");
-                        plot.toggle();
-                    });
-                    $("#data").click(function() {
-                        $("#data").removeClass("active").addClass("active");
-                        $("#data-content").removeClass("active").addClass("active");
-                        $("#analysis").removeClass("active");
-                        $("#analysis-content").removeClass("active");
-                    });
-                    $("#analysis").click(function() {
-                        $("#analysis").removeClass("active").addClass("active");
-                        $("#analysis-content").removeClass("active").addClass("active");
-                        $("#data").removeClass("active");
-                        $("#data-content").removeClass("active");
-                    });
-
-                    //$(ecam_ele[0]).tabs();
-
-
-
                     break;
 
-                case 'Ecam':
-//                    element.append(angular.element('<div class="ecam" />')
-//                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
-//                                    <div class='title noselect'></div>\
-//                                    <div class='rs-chart-area time-series'>\
-//                                      <div class='rs-y-axis'></div>\
-//                                      <div class='rs-chart'></div>\
-//                                      <div class='rs-y-axis2'></div>\
-//                                      <div class='rs-legend'></div>\
-//                                      <div class='rs-slider'></div>\
-//                                    </div>\
-//                                  </div>\
-//                                  <div id='hcv-box' class='rs-chart-container hidden'>\
-//                                    <div class='title noselect'></div>\
-//                                    <div class='rs-chart-area time-series'>\
-//                                      <div class='rs-y-axis'></div>\
-//                                      <div class='rs-chart'></div>\
-//                                      <div class='rs-y-axis2'></div>\
-//                                      <div class='rs-legend'></div>\
-//                                      <div class='rs-slider'></div>\
-//                                    </div>\
-//                                  </div>\
-//                                  <div id='mat-oat-box' class='rs-chart-container hidden'>\
-//                                    <div class='title noselect'></div>\
-//                                    <div class='rs-chart-area'>\
-//                                      <div class='rs-y-axis'></div>\
-//                                      <div class='rs-chart'></div>\
-//                                      <div class='rs-legend'></div>\
-//                                    </div>\
-//                                  </div>"));
-//                    ecam(scope.arData[reportElement.table_name]);
-//                      <div ng-controller="myCtrl">
-//                        <div data-hbo-tabs id="tabs">
-//                            <ul>
-//                                <li><a href="#tabs-1">Tab 1</a></li>
-//                                <li><a href="#tabs-2">Tab 2</a></li>
-//                                <li><a href="#tabs-3">Tab 3</a></li>
-//                            </ul>
-//                            <div id="tabs-1">
-//                                <p>Content for Tab 1</p>
-//                            </div>
-//                            <div id="tabs-2">
-//                                <p>Content for Tab 2</p>
-//                            </div>
-//                            <div id="tabs-3">
-//                                <p>Content for Tab 3</p>
-//                            </div>
-//                        </div>
-//                      </div>
+                case 'AhuEcam':
+                    element.append(angular.element('<div class="ecam" />')
+                        .html("<div id='oa-chart-box1' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='oa-chart-box2' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='sp-chart-box1' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='sp-chart-box2' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='coil-chart-box1' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='coil-chart-box2' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='discharge-chart-box1' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='discharge-chart-box2' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='fan-chart-box1' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    ahu_ecam(scope.arData[reportElement.table_name]);
                     break;
 
+                case 'ZoneEcam':
+                    element.append(angular.element('<div class="ecam" />')
+                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    zone_ecam(scope.arData[reportElement.table_name]);
+                    break;
+
+                case 'HWPlantViz':
+                  element.append(angular.element('<div class="ecam" />')
+                    .html("<div id='temp-box' class='rs-chart-container hidden'>\
+                        <div class='title noselect'></div>\
+                        <div class='rs-chart-area time-series'>\
+                          <div class='rs-y-axis'></div>\
+                          <div class='rs-chart'></div>\
+                          <div class='rs-y-axis2'></div>\
+                          <div class='rs-legend'></div>\
+                          <div class='rs-slider'></div>\
+                        </div>\
+                      </div>\
+                      <div id='pressure-box' class='rs-chart-container hidden'>\
+                        <div class='title noselect'></div>\
+                        <div class='rs-chart-area time-series'>\
+                          <div class='rs-y-axis'></div>\
+                          <div class='rs-chart'></div>\
+                          <div class='rs-y-axis2'></div>\
+                          <div class='rs-legend'></div>\
+                          <div class='rs-slider'></div>\
+                        </div>\
+                      </div>\
+                      <div id='hws-oat-box' class='rs-chart-container hidden'>\
+                        <div class='title noselect'></div>\
+                        <div class='rs-chart-area time-series'>\
+                          <div class='rs-y-axis'></div>\
+                          <div class='rs-chart'></div>\
+                          <div class='rs-y-axis2'></div>\
+                          <div class='rs-legend'></div>\
+                          <div class='rs-slider'></div>\
+                        </div>\
+                      </div>"));
+                  hwplant_ecam(scope.arData[reportElement.table_name]);
+                  break;
                 }
+
+
+            });
+
+            //plot title clicked
+            $(".rs-chart-container .title").click(function() {
+                var plot = $(this).parent().find(".rs-chart-area");
+                plot.toggle();
+            });
+            $("#data").click(function() {
+                $("#data").removeClass("active").addClass("active");
+                $("#data-content").removeClass("active").addClass("active");
+                $("#analysis").removeClass("active");
+                $("#analysis-content").removeClass("active");
+            });
+            $("#analysis").click(function() {
+                $("#analysis").removeClass("active").addClass("active");
+                $("#analysis-content").removeClass("active").addClass("active");
+                $("#data").removeClass("active");
+                $("#data-content").removeClass("active");
             });
         }
     };
@@ -538,7 +624,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 ['%Y-%m', function (d) { return d.getMonth(); }],
                 ['%Y-%m-%d', function (d) { return d.getDate(); }],
                 ['%Y-%m-%d %H:%M', function (d) { return d.getHours(); }],
-                ['%Y-%m-%d %H:%M:%S', function (d) { return d.getSeconds(); }],
+                ['%Y-%m-%d %H:%M:%S', function (d) { return d.getSeconds(); }]
             ];
 
         xAxis.tickFormat(d3.time.format('%Y')); // default format
@@ -878,435 +964,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
 //            default:
 //                timeUnit = time.unit('hour');//default
 //        }
-
-    }
-
-    function oaeAggregateData(inData, legends) {
-        // resData = {
-        //      "date": {
-        //                  "hr": {
-        //                              "diagnostic_name": {
-        //                                                      datetime
-        //                                                      diagnostic_name:
-        //                                                      diagnostic_message:
-        //                                                      energy_impact:
-        //                                                      color_code:
-        //                              }
-        //                              state: //combined state of all diagnostics
-        //                  }
-        //      }
-        // }
-        // Aggregate & filter duplicated data
-        var resData = {};
-        inData.forEach(function(d) {
-            var dt1 = new Date(d.datetime);
-            var tsParts = d.datetime.split("T");
-            var dateParts = formatDate(dt1);//tsParts[0];
-            var hrParts = dt1.getHours().toString(); //tsParts[1].split(":")[0];
-
-            if (dateParts in resData) {
-                if (hrParts in resData[dateParts]) {
-                    if (d.diagnostic_name in resData[dateParts][hrParts]) {
-                        if (d.color_code == legends["RED"].string) {
-                            resData[dateParts][hrParts][d.diagnostic_name] = d;
-                        } else if (d.color_code == legends["GREEN"].string) {
-                            if (resData[dateParts][hrParts][d.diagnostic_name] == legends["GREY"].string) {
-                                resData[dateParts][hrParts][d.diagnostic_name] = d;
-                            }
-                        }
-                    }
-                    else {
-                        resData[dateParts][hrParts][d.diagnostic_name] = d;
-                    }
-                } else {
-                    resData[dateParts][hrParts] = {};
-                    resData[dateParts][hrParts][d.diagnostic_name] = d;
-                }
-            }
-            else {
-                resData[dateParts] = {};
-                resData[dateParts][hrParts] = {};
-                resData[dateParts][hrParts][d.diagnostic_name] = d;
-            }
-        });
-
-        // Set state & energy impact for each available hour
-        for (var dt in resData) {
-            if (resData.hasOwnProperty(dt)) {
-                for (var hr in resData[dt]) {
-                    if (resData[dt].hasOwnProperty(hr)) {
-                        var state = legends["GREY"].string;
-                        var diagnostic = "";
-                        var diagnostic_message = legends["GREY"].value;
-                        var energy_impact = "NA";
-                        for (var dn in resData[dt][hr]) {
-                            if (resData[dt][hr].hasOwnProperty(dn)) {
-                                if (resData[dt][hr][dn].color_code == legends["RED"].string) {
-                                    state = legends["RED"].string;
-                                    diagnostic = dn;
-                                    diagnostic_message = resData[dt][hr][dn].diagnostic_message;
-                                    if (resData[dt][hr][dn].energy_impact != null)
-                                        energy_impact = resData[dt][hr][dn].energy_impact;
-                                    break;
-                                } else if (resData[dt][hr][dn].color_code == legends["GREEN"].string) {
-                                    state = legends["GREEN"].string;
-                                    diagnostic = dn;
-                                    diagnostic_message = legends["GREEN"].value;
-                                    energy_impact = "NA";
-                                }
-                            }
-                        } //each_diagnostic
-                        resData[dt][hr].state = state;
-                        resData[dt][hr].diagnostic = diagnostic;
-                        resData[dt][hr].diagnostic_message = diagnostic_message;
-                        resData[dt][hr].energy_impact = energy_impact;
-                    }
-                }//each_hr
-            }
-        }//each_date
-
-        var arrData = [];
-        // Get Date min & max
-        var arrDate = [];
-        for (var dt in resData) {
-            if (resData.hasOwnProperty(dt)) {
-                var dateParts = dt.split("-");
-                var tempDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 0, 0, 0, 0);
-                arrDate.push(tempDate);
-            }
-        }
-        var domain = d3.extent(arrDate);
-        var domainMax = domain[1];
-        var domainMin = domain[0];
-        var noDays = Math.round(Math.abs((domainMax - domainMin)/(24*60*60*1000)));
-
-        // Convert hash to array and keep only necessary values
-        // Fill in default result for hours that have no result
-        for (var numberOfDaysToAdd = 0; numberOfDaysToAdd <= noDays; numberOfDaysToAdd++) {
-            var curDate = new Date(domainMin.getTime());
-            curDate.setDate(curDate.getDate() + numberOfDaysToAdd);
-            var strCurDate = formatDate(curDate);
-            if (resData.hasOwnProperty(strCurDate)) {
-                for (var i = 0; i < 24; i++) {
-                    var iStr = i.toString();//formatHour(i);
-                    if (resData[strCurDate].hasOwnProperty(iStr)) {
-                        arrData.push({
-                            date: curDate,
-                            y: i,
-                            state: resData[strCurDate][iStr].state,
-                            diagnostic: resData[strCurDate][iStr].diagnostic,
-                            diagnostic_message: resData[strCurDate][iStr].diagnostic_message,
-                            energy_impact: resData[strCurDate][iStr].energy_impact
-                        });
-                    } else {
-                        arrData.push({
-                            date: curDate,
-                            y: i,
-                            state: legends["GREEN"].string,
-                            diagnostic: "",
-                            diagnostic_message: legends["GREEN"].value,
-                            energy_impact: "NA"
-                        });
-                    }
-                }
-            } else {
-                for (var j = 0; j < 24; j++) {
-                    arrData.push({
-                        date: curDate,
-                        y: j,
-                        state: legends["GREEN"].string,
-                        diagnostic: "",
-                        diagnostic_message: legends["GREEN"].value,
-                        energy_impact: "NA"
-                    });
-                }
-            }
-        }
-        return arrData;
-    }
-
-    function retroCommissioningOAEDSVG(data) {
-        return null;
-        // ToDo: When display this SVG in the dialog box, clip-path and other layout measures (e.g. margin & padding) are
-        //          messed up. There are some tricks to get this right. However, best not to touch/deal with those things.
-        //var container_class = ".retro-commissioning-oaed .plot-area";
-        var containerWidth = 1000; //$(container_class).width();
-        var containerHeight = 600; //$(container_class).height();
-        var legends = {
-            "GREY": {
-                value: "No Diagnosis",
-                color: "#B3B3B3",
-                state_value: 0,
-                string: "GREY"
-            },
-            "GREEN": {
-                value: "Normal - No Fault",
-                color: "#509E7A",
-                state_value: 1,
-                string: "GREEN"
-            },
-            "RED": {
-                value: "Fault",
-                color: "#E22400",
-                state_value: 2,
-                string: "RED"
-            }
-        };
-        var DEFAULT = {
-            value: "Default",
-            color: "#509E7A", //GREEN
-            state_value: -1,
-            string: "DEFAULT"
-        };
-        var sample_data = oaeAggregateData(data, legends);
-
-        var svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
-                    .attr("width", containerWidth)
-                    .attr("height", containerHeight);
-        //Width and height
-        var margin = {top: 30, right: 30, bottom: 0, left: 100}; //margin to the axes of the plot
-        var padding = {top: 0, right: 0, bottom: 0, left: 0}; //padding from the axes to the actual plot
-        var width = containerWidth - margin.left - margin.right;
-        var height = containerHeight - margin.top - margin.bottom - padding.top - padding.bottom;
-        height = 480; //Due to strict sizing, hard code height
-
-        var format = d3.time.format("%b %d");//d3.time.format("%m/%d/%y");
-        var scrollbarStrokeWidth = 10;
-
-        var oneDay = 24*60*60*1000;
-        var rectWidth = height/24;
-        var rectBorderWidth = 1;
-        var maxWidth = width - padding.left - padding.right;
-        var clipPathWidth = containerWidth - margin.left - margin.right + 10; //32 * rectWidth;
-
-        var xScale = d3.time.scale();
-        var yDomainData = makeArray(1,24);
-        var yScale = d3.scale.ordinal()
-                .domain(yDomainData)
-                .rangeRoundBands([height, 0]);
-
-        //Create axises
-        var xAxis = d3.svg.axis()
-                //.scale(xScale)
-                .orient("bottom")
-                .ticks(d3.time.day)
-                .tickFormat(format);
-        var yAxis = d3.svg.axis()
-                //.scale(yScale)
-                .orient("left");
-
-        var plot_area = svg
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var xAxisEle = plot_area.append("g")
-            .attr("id", "xAxisEle_OAE")
-            .attr("class", "x axis");
-        xAxisEle.attr("clip-path","url(#clip_OAE)")
-            .attr("transform", "translate(0," + height + ")");
-
-        var clip_area = plot_area.append("g")
-            .attr("clip-path","url(#clip_OAE)");
-
-        var xScrollbarHeightPos = height + 70 ;
-        var brush = d3.svg.brush();
-        brush.extent([0, 0])
-            .on("brush", brushed);
-        var handle = null;
-
-        var xScrollbarScale = d3.time.scale()
-            .range([padding.left, clipPathWidth]);
-//        xScale.nice(d3.time.minute, 1440);
-//        xScale.ticks(d3.time.minute, 1440);
-//        xScrollbarScale.ticks(d3.time.minute, 1440);
-//        xScrollbarScale.nice(d3.time.minute, 1440);
-
-        var xDomainData = d3.extent(sample_data, function(d) { return d.date; });
-        var xDomainMax = xDomainData[1];
-        var xDomainMin = xDomainData[0];
-        var noDays = Math.round(Math.abs((xDomainMax - xDomainMin)/(oneDay)));
-        var actualWidth = noDays*rectWidth;
-        if (rectWidth > maxWidth) {
-            rectWidth = maxWidth;
-        }
-
-        xScale.domain([xDomainMin,xDomainMax])
-                //.range([padding.left, actualWidth]);
-                .range([padding.left, actualWidth]);
-
-        xAxis.scale(xScale);
-        yAxis.scale(yScale);
-
-        var yAxisEle = plot_area.append("g")
-            .attr("id", "yAxisEle_OAE")
-            .attr("class", "y axis");
-        yAxisEle.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("dx", "-20em")
-                .attr("dy", "-3em")
-                .style("text-anchor", "start")
-                .text("Hour of Day");
-
-        //Tooltip
-        var tip = d3.tip()
-                .attr('class', 'd3-tip')
-                //.offset([-10, 0])
-                .html(function(d) {
-                    return "Date: <strong>" + formatFullDate(d.date) + "</strong><br/>" +
-                    "Last Run Diagnostic: <strong>" + d.diagnostic + "</strong>" + "</strong><br/>" +
-                    "Diagnostic Message: <strong>" + d.diagnostic_message + "</strong>" + "</strong><br/>" +
-                    "Energy Impact: <strong>" + d.energy_impact + "</strong>" + "</strong><br/>";
-                })
-                .direction(function(d) {
-                    if (d.y>18) {
-                        return "e";
-                    }
-                    return "n";
-                });
-        plot_area.call(tip);
-
-        //Clip area
-        plot_area.append("clipPath")
-                .attr("id", "clip_OAE")
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", clipPathWidth)
-                .attr("height", height);
-
-        // Plot diagnostic result
-        clip_area.selectAll("rect")
-                .data(sample_data)
-                .enter()
-                .append("rect")
-                .attr("x", function (d) {
-                    return xScale(d.date);
-                })
-                .attr("y", function (d) {
-                    return yScale(d.y+1); //Convert from 0-based to 1-based hour
-                })
-                .attr("width", rectWidth)
-                .attr("height", rectWidth)
-                .attr("fill", function(d) {
-                    return legends[d.state].color;
-                })
-                .attr("opacity", 1)
-                .style({"stroke-width": rectBorderWidth, "stroke": "black"})
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
-
-        xScrollbarScale.domain([xDomainMin,xDomainMax]);
-        var xScrollbarAxis = d3.svg.axis()
-                .scale(xScrollbarScale)
-                .tickSize(0)
-                .orient("bottom")
-                .tickPadding(10);
-                //.ticks(d3.time.day)
-                //.tickFormat(function(d) { return d; });
-
-        plot_area.append("g")
-                .attr("class", "x-scrollbar")
-                .attr("transform", "translate(" + padding.left + "," + xScrollbarHeightPos + ")")
-                .call(xScrollbarAxis)
-                .select(".domain")
-                .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-                .attr("class", "halo");
-
-        //brush.x(xScale);
-        brush.x(xScrollbarScale);
-        var slider = plot_area.append("g")
-                .attr("class", "slider")
-                .attr("transform", "translate(" + padding.left + "," + (xScrollbarHeightPos-scrollbarStrokeWidth/2) + ")");
-        handle = slider.append("circle")
-                .attr("class", "handle")
-                //.attr("transform", "translate(" + padding.left + "," + xScrollbarHeightPos + ")")
-                .attr("transform", "translate(" + padding.left + "," + scrollbarStrokeWidth/2 + ")")
-                .attr("r", 7);
-        slider.call(brush);
-        slider.selectAll(".extent,.resize")
-                .remove();
-        slider.select(".background")
-                //.attr("width", 600)
-                .attr("height", scrollbarStrokeWidth);
-
-        slider.call(brush.event);
-
-        return svg[0];
-
-
-        function brushed() {
-            var value = brush.extent();
-            if (value != null) {
-                value = value[0];
-
-                if (d3.event.sourceEvent) { // not a programmatic event
-                    //value = xScale.invert(d3.mouse(this)[0]);
-                    var curPos = d3.mouse(this)[0];
-
-                    if (curPos < padding.left) {
-                        curPos = padding.left;
-
-                    }
-                    if (curPos > clipPathWidth) {
-                        curPos = clipPathWidth;
-
-                    }
-                    value = xScrollbarScale.invert(curPos);
-                    //brush.extent([0, 0]);
-                }
-                value.setHours(0,0,0,0);
-                if (handle != null) {
-                   handle.attr("cx", xScrollbarScale(value));
-                }
-            }
-            zoomed(value);
-        }
-        function zoomed(value) {
-            xAxisEle.call(xAxis);
-            xAxisEle.selectAll("text")
-                    .style("text-anchor", "end")
-                    .attr("dx", "-1em")
-                    .attr("dy", "0.3em")
-                    .attr("transform", function(d) {
-                        return "rotate(-90)"
-                    });
-            yAxisEle.call(yAxis);
-
-            if (d3.event != null) {
-                if (d3.event.sourceEvent) {
-                    var noDays = ((value.getTime() - xDomainMin) / oneDay); //Convert values to -/+ days and return value
-                    clip_area.selectAll("rect").attr("x", function (d) {
-                        if (value == null) {
-                            return xScale(d.date);
-                        }
-                        else {
-                            //xScale.domain([value,xDomainMax]);
-                            //zoom.translate(value,0);
-                            var newDate = new Date(d.date.getTime());
-                            newDate.setDate(newDate.getDate() - noDays); //Go backwards noDays so the chosen date is in the viewport
-                            // The code below is to fix the coordinates issue when showing D3 on dialog box
-                            var dialogCoordsFixingRes = xScale(newDate);
-                            if (dialogCoordsFixingRes < 0) {
-                                dialogCoordsFixingRes = -10000;
-                            }
-                            return dialogCoordsFixingRes;
-                        }
-                    });
-                    xAxisEle.selectAll("g.tick")
-                        .attr("transform", function (d) {
-                            var newDate = new Date(d.getTime());
-                            newDate.setDate(newDate.getDate() - noDays); //Go backwards noDays so the chosen date is in the viewport
-                            // The code below is to fix the coordinates issue when showing D3 on dialog box
-                            var dialogCoordsFixingRes = xScale(newDate);
-                            if (dialogCoordsFixingRes < 0) {
-                                dialogCoordsFixingRes = -10000;
-                            }
-                            return "translate(" + dialogCoordsFixingRes + ",0)";
-                        });
-                }
-            }
-        }
-
 
     }
 
@@ -1853,505 +1510,616 @@ angular.module('openeis-ui.directives.analysis-report', [])
         };
     }
 
+    function existPoint(p, points) {
+        if (points.hasOwnProperty(p)) {
+            return true;
+        }
+        return false;
+        //return p != '' ? true : false;
+    }
+
+    function startWith(str, substr) {
+        if (str.substring(0, substr.length+3) === substr+"___"){
+            return true;
+        }
+        return false;
+    }
+
+    function existPointStartWith(p, points) {
+        for (var point in points) {
+            if (points.hasOwnProperty(point)) {
+                if (startWith(point, p)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function labelX(text) {
+        text = typeof text !== 'undefined' ? text : 'Temperature';
+        var obj = {
+            text: text,
+            color: 'black',
+            opacity: 0.5,
+            fontSize: '12px',
+            offsetX: '18.5em',
+            offsetY: '30em'
+        };
+        return obj;
+    }
+
+    function labelY1(text) {
+        text = typeof text !== 'undefined' ? text : 'Temperature';
+        var obj = {
+            text: text,
+            color: 'black',
+            opacity: 0.5,
+            fontSize: '12px',
+            offsetX: '0.8em',
+            offsetY: '-8.5em'
+        };
+        return obj;
+    }
+
+    function labelY2(text) {
+        text = typeof text !== 'undefined' ? text : 'Command/Status';
+        var obj = {
+            text: text,
+            color: 'black',
+            opacity: 0.5,
+            fontSize: '12px',
+            offsetX: '3em',
+            offsetY: '-8em'
+        };
+        return obj;
+    }
+
+    function parseDataType(d, points, counts) {
+        for (var key in points) {
+            if (points.hasOwnProperty(key)) {
+                if (d[points[key]] == null) {
+                    delete d[points[key]];
+                } else {
+                    d[points[key]] = parseFloat(d[points[key]]);
+                    counts[key] += 1;
+                }
+            }
+        }
+    }
+
     function parseDate(s) {
         var a = s.split(/[^0-9]/);
         return new Date (a[0],a[1]-1,a[2],a[3],a[4],a[5] );
     }
 
-    function ecam(data) {
+    function getColor(c) {
+        //object to contain definition for point colors
+        //http://www.w3schools.com/html/html_colornames.asp
+        var arr = ["Blue","BlueViolet","Brown","BurlyWood","CadetBlue","DarkGray","DarkGrey",
+            "DarkGreen","DarkKhaki","Magenta","Green","Red","Chocolate","HotPink","LightPink",
+            "Gainsboro","AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige",
+            "Bisque","Black","BlanchedAlmond","Chartreuse","Coral","CornflowerBlue","Cornsilk",
+            "Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkMagenta","DarkOliveGreen",
+            "Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue",
+            "DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue",
+            "DimGray","DimGrey","DodgerBlue","FireBrick",
+            "FloralWhite","ForestGreen","Fuchsia","GhostWhite","Gold","GoldenRod","Gray","Grey",
+            "GreenYellow","HoneyDew","IndianRed","Indigo","Ivory","Khaki","Lavender",
+            "LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan",
+            "LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightSalmon",
+            "LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow",
+            "Lime","LimeGreen","Linen","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid",
+            "MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise",
+            "MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy",
+            "OldLace","Olive","OliveDrab",
+            "Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed",
+            "PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","RosyBrown",
+            "RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver",
+            "SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal",
+            "Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
+        return arr[c];
+    }
+
+    function afdd_ecam(data) {
         //console.log(data);
         var rawTsName = 'datetime';
 
         //object to contain definition for points
-        var points = {
-          //OATemp: 'OATemp',
-          OAF: 'OutdoorAirFraction',
-          OATemp: 'OutdoorAirTemperature',
-          MATemp: 'MixedAirTemperature',
-          RATemp: 'ReturnAirTemperature',
-          DATemp: 'DischargeAirTemperature',
-          DATempSetpoint: 'DischargeAirTemperatureSetPoint',
-          OADamper: 'OutdoorDamper',
-          CCValve: 'CCV',
-          HCValve: ''
+        var allPoints = {
+            //OATemp: 'OATemp',
+            OAF: 'OutdoorAirFraction',
+            OATemp: 'OutdoorAirTemperature',
+            MATemp: 'MixedAirTemperature',
+            RATemp: 'ReturnAirTemperature',
+            DATemp: 'DischargeAirTemperature',
+            DATempSetPoint: 'DischargeAirTemperatureSetPoint',
+            OADamper: 'OutdoorDamper',
+            CCValve: 'CCV',
+            HCValve: 'HCV'
+        };
+        counts = {};
+        points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
         }
 
         //object to contain definition for point colors
         //http://www.w3schools.com/html/html_colornames.asp
         var colors = {
-          OATemp: 'blue',
-          MATemp: 'pink',
-          RATemp: 'red',
-          DATemp: 'green',
-          OADamper: 'brown',
-          OAF: 'blueviolet',
-          CCValve: 'darkorange',
-          HCValve: 'darkorchid',
-          DATempSetpoint: 'darkred'
+            OATemp: 'blue',
+            MATemp: 'pink',
+            RATemp: 'red',
+            DATemp: 'green',
+            OADamper: 'brown',
+            OAF: 'blueviolet',
+            CCValve: 'darkorange',
+            HCValve: 'darkorchid',
+            DATempSetPoint: 'darkred'
         };
 
-        function existPoint(p) {
-          return p != '' ? true : false;
-        }
+        function plotTempsChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
 
-        function parseDataType(d, points) {
-          for (var key in points) {
-            if (points.hasOwnProperty(key)) {
-              d[points[key]] = parseFloat(d[points[key]]);
-            }
-          }
-        }
+            //if (!(existPoint(rawTsName) && existPoint(points.OATemp)
+            if (!(existPoint('OATemp', points) && existPoint('MATemp', points))) return false;
 
-        function plotTempsChart(data, points, colors, args) {
-          if (!(existPoint(rawTsName) && existPoint(points.OATemp)
-              && existPoint(points.MATemp))) return false;
-//          if (!(existPoint(points.RATemp)
-//              || existPoint(points.DATemp)
-//              || existPoint(points.OADamper))) return false;
-          //Set UI Args
-          var timeUnit = args.TimeUnit;
-          var container = args.Container;
-          var chartId = container + " .rs-chart";
-          var chartY = container + " .rs-y-axis";
-          var chartY2 = container + " .rs-y-axis2";
-          var chartLegend = container + " .rs-legend";
-          var chartTitle = container + " .title";
-          var chartSlider = container + " .rs-slider";
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 100]);
+            var y2Scale = d3.scale.linear().domain([0, 300]);
+            //Set up data series: change this for different data sources
 
-          document.querySelector(chartTitle).innerHTML = args.Title;
-          //TODO: Change the min max of y1Scale
-          var y1Scale = d3.scale.linear().domain([0, 100]);
-          var y2Scale = d3.scale.linear().domain([0, 300]);
-          //Set up data series: change this for different data sources
+            var ySeries = {}
+            if (existPoint('OATemp', points)) {
+                ySeries['OATemp'] = {
+                    name: points.OATemp,
+                    color: colors.OATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OATemp]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('MATemp', points)) {
+                ySeries['MATemp'] = {
+                    name: points.MATemp,
+                    color: colors.MATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.MATemp]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('RATemp', points)) {
+                ySeries['RATemp'] = {
+                    name: points.RATemp,
+                    color: colors.RATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.RATemp]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('RATemp', points) &&
+                existPoint('OATemp', points) &&
+                existPoint('MATemp', points)) {
+                ySeries['OAF'] = {
+                    name: points.OAF,
+                    color: colors.OAF,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: (d[points.MATemp] - d[points.RATemp]) / (d[points.OATemp] - d[points.RATemp])};
+                    }),
+                    scale: y2Scale
+                }
+            }
 
-          var ySeries = {}
-          if (existPoint(points.OATemp)) {
-            ySeries['OATemp'] = {
-              name: points.OATemp,
-              color: colors.OATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.OATemp]};
-              }),
-              scale: y1Scale
+            if (existPoint('DATemp', points)) {
+                ySeries['DATemp'] = {
+                    name: points.DATemp,
+                    color: colors.DATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DATemp]};
+                    }),
+                    scale: y1Scale
+                }
             }
-          }
-          if (existPoint(points.MATemp)) {
-            ySeries['MATemp'] = {
-              name: points.MATemp,
-              color: colors.MATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.MATemp]};
-              }),
-              scale: y1Scale
+            if (existPoint('OADamper', points)) {
+                ySeries['OADamper'] = {
+                    name: points.OADamper,
+                    color: colors.OADamper,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OADamper]};
+                    }),
+                    scale: y2Scale
+                }
             }
-          }
-          if (existPoint(points.RATemp)) {
-            ySeries['RATemp'] = {
-              name: points.RATemp,
-              color: colors.RATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.RATemp]};
-              }),
-              scale: y1Scale
-            }
-          }
-          if (existPoint(points.RATemp) && existPoint(points.OATemp) && existPoint(points.MATemp)) {
-            ySeries['OAF'] = {
-              name: points.OAF,
-              color: colors.OAF,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: (d[points.MATemp]-d[points.RATemp])/(d[points.OATemp]-d[points.RATemp])};
-              }),
-              scale: y2Scale
-            }
-          }
-
-          if (existPoint(points.DATemp)) {
-            ySeries['DATemp'] = {
-              name: points.DATemp,
-              color: colors.DATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.DATemp]};
-              }),
-              scale: y1Scale
-            }
-          }
-          if (existPoint(points.OADamper)) {
-            ySeries['OADamper'] = {
-              name: points.OADamper,
-              color: colors.OADamper,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.OADamper]};
-              }),
-              scale: y2Scale
-            }
-          }
-          //Plotting
+            //Plotting
 //          var plotSeries = ySeries.map(function(value, index) {
 //            return [value];
 //          });
-          var plotSeries = [];
-          angular.forEach(ySeries, function(value, key) {
-              plotSeries.push(value);
-          });
-          var graph = new Rickshaw.Graph({
-            element: document.querySelector(chartId),
-            renderer: 'line',
-            series: plotSeries,
-            interpolation: 'linear'
-          });
-          graph.render();
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'linear'
+            });
+            graph.render();
 
-          //Tooltip for hovering
-          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph,
-            formatter: function(series, x, y) {
-              var date = '<span class="date">' + new Date(x*1000).toUTCString() + '</span>';
-              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-              var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-              return content;
-            }
-          } );
-          //Display & Toggle Legends
-          var legend = new Rickshaw.Graph.Legend( {
-            graph: graph,
-            element: document.querySelector(chartLegend)
-          } );
-          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
-            graph: graph,
-            legend: legend
-          } );
-          //Render X Y Axes
-          //var xAxis = new Rickshaw.Graph.Axis.Time({
-          //  graph: graph,
-          //  timeUnit: unit
-          //});
-          //var time = new Rickshaw.Fixtures.Time();
-          //var timeUnit = time.unit('hour');
-          var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
-              {
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
                 graph: graph,
-                //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                pixelsPerTick: 50,
-                tickSpacing: 6*60*60, // 6 hours
-                timeUnit: timeUnit
-              } );
-          xAxis.render();
-          var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
-            graph: graph,
-            berthRate: 0.0,
-            orientation: 'left',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.querySelector(chartY),
-            scale: y1Scale
-          });
-          yAxis.render();
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            //var xAxis = new Rickshaw.Graph.Axis.Time({
+            //  graph: graph,
+            //  timeUnit: unit
+            //});
+            //var time = new Rickshaw.Fixtures.Time();
+            //var timeUnit = time.unit('hour');
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
 
-          var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled( {
-            graph: graph,
-            berthRate: 0,
-            orientation: 'right',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.querySelector(chartY2),
-            scale: y2Scale,
-            ticks: 5
-            //tickValues: [0,20,40,60,80,100]
-          });
-          yAxis2.render();
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
 
-          var slider = new Rickshaw.Graph.RangeSlider.Preview({
-            graph: graph,
-            element: document.querySelector(chartSlider)
-          });
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
 
-          //graph.render();
+            //graph.render();
 
 
-
-          //There is another way to give more granular control over Y axis: using scale that is ~ d3
-          //This way you can control the stick on the X or Y Axis
-          //new Rickshaw.Graph.Axis.Y.Scaled( {
-          //  graph: graph,
-          //  orientation: 'right',
-          //  tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-          //  element: document.getElementById('y_axis_2'),
-          //  scale: linearScale,
-          //  grid: false
-          //} );
+            //There is another way to give more granular control over Y axis: using scale that is ~ d3
+            //This way you can control the stick on the X or Y Axis
+            //new Rickshaw.Graph.Axis.Y.Scaled( {
+            //  graph: graph,
+            //  orientation: 'right',
+            //  tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            //  element: document.getElementById('y_axis_2'),
+            //  scale: linearScale,
+            //  grid: false
+            //} );
 
         }
 
-        //Plot heating/cooling valve position
-        function plotHCVChart(data, points, colors, args) {
-          if (!(existPoint(rawTsName) && existPoint(points.OATemp)
-                && existPoint(points.DATemp))) return false;
-//          if (!(existPoint(points.DATempSetpoint)
+        function plotHCVChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName) && existPoint(points.OATemp)
+            if (!(existPoint('OATemp', points)
+                && existPoint('DATemp', points))) return false;
+//          if (!(existPoint(points.DATempSetPoint)
 //              || existPoint(points.CCValve)
 //              || existPoint(points.HCValve)
 //              || existPoint(points.OADamper))) return false;
-          //Set UI Args
-          var timeUnit = args.TimeUnit;
-          var container = args.Container;
-          var chartId = container + " .rs-chart";
-          var chartY = container + " .rs-y-axis";
-          var chartY2 = container + " .rs-y-axis2";
-          var chartLegend = container + " .rs-legend";
-          var chartTitle = container + " .title";
-          var chartSlider = container + " .rs-slider";
 
-          document.querySelector(chartTitle).innerHTML = args.Title;
-          //TODO: Change the min max of y1Scale
-          var y1Scale = d3.scale.linear().domain([0, 100]);
-          var y2Scale = d3.scale.linear().domain([0, 300]);
-          //Set up data series: change this for different data sources
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 100]);
+            var y2Scale = d3.scale.linear().domain([0, 300]);
+            //Set up data series: change this for different data sources
 
-          var ySeries = {}
-          //if (points.hasOwnProperty('OATemp')) {
-          if (existPoint(points.OATemp)) {
-            ySeries['OATemp'] = {
-              name: points.OATemp,
-              color: colors.OATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.OATemp]};
-              }),
-              scale: y1Scale
+            var ySeries = {}
+            //if (points.hasOwnProperty('OATemp')) {
+            if (existPoint('OATemp', points)) {
+                ySeries['OATemp'] = {
+                    name: points.OATemp,
+                    color: colors.OATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OATemp]};
+                    }),
+                    scale: y1Scale
+                }
             }
-          }
-          if (existPoint(points.DATemp)) {
-            ySeries['DATemp'] = {
-              name: points.DATemp,
-              color: colors.DATemp,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.DATemp]};
-              }),
-              scale: y1Scale
+            if (existPoint('DATemp', points)) {
+                ySeries['DATemp'] = {
+                    name: points.DATemp,
+                    color: colors.DATemp,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DATemp]};
+                    }),
+                    scale: y1Scale
+                }
             }
-          }
-          if (existPoint(points.DATempSetpoint)) {
-            ySeries['DATempSetpoint'] = {
-              name: points.DATempSetpoint,
-              color: colors.DATempSetpoint,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.DATempSetpoint]};
-              }),
-              scale: y1Scale
+            if (existPoint('DATempSetPoint', points)) {
+                ySeries['DATempSetPoint'] = {
+                    name: points.DATempSetPoint,
+                    color: colors.DATempSetPoint,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DATempSetPoint]};
+                    }),
+                    scale: y1Scale
+                }
             }
-          }
-          if (existPoint(points.OADamper)) {
-            ySeries['OADamper'] = {
-              name: points.OADamper,
-              color: colors.OADamper,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.OADamper]};
-              }),
-              scale: y2Scale
+            if (existPoint('OADamper', points)) {
+                ySeries['OADamper'] = {
+                    name: points.OADamper,
+                    color: colors.OADamper,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OADamper]};
+                    }),
+                    scale: y2Scale
+                }
             }
-          }
-          if (existPoint(points.CCValve)) {
-            ySeries['CCValve'] = {
-              name: points.CCValve,
-              color: colors.CCValve,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.CCValve]};
-              }),
-              scale: y2Scale
+            if (existPoint('CCValve', points)) {
+                ySeries['CCValve'] = {
+                    name: points.CCValve,
+                    color: colors.CCValve,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.CCValve]};
+                    }),
+                    scale: y2Scale
+                }
             }
-          }
-          if (existPoint(points.HCValve)) {
-            ySeries['HCValve'] = {
-              name: points.HCValve,
-              color: colors.HCValve,
-              data: data.map(function (d) {
-                return {x: d[args.Timestamp], y: d[points.HCValve]};
-              }),
-              scale: y2Scale
+            if (existPoint('HCValve', points)) {
+                ySeries['HCValve'] = {
+                    name: points.HCValve,
+                    color: colors.HCValve,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.HCValve]};
+                    }),
+                    scale: y2Scale
+                }
             }
-          }
-          //Plotting
+            //Plotting
 //          var plotSeries = ySeries.map(function(value, index) {
 //            return [value];
 //          });
-          var plotSeries = [];
-          angular.forEach(ySeries, function(value, key) {
-              plotSeries.push(value);
-          });
-          var graph = new Rickshaw.Graph({
-            element: document.querySelector(chartId),
-            renderer: 'line',
-            series: plotSeries,
-            interpolation: 'linear'
-          });
-          graph.render();
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'linear'
+            });
+            graph.render();
 
-          //Tooltip for hovering
-          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph,
-            formatter: function(series, x, y) {
-              var date = '<span class="date">' + new Date(x*1000).toUTCString() + '</span>';
-              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-              var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-              return content;
-            }
-          } );
-          //Display & Toggle Legends
-          var legend = new Rickshaw.Graph.Legend( {
-            graph: graph,
-            element: document.querySelector(chartLegend)
-          } );
-          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
-            graph: graph,
-            legend: legend
-          } );
-          //Render X Y Axes
-          //var xAxis = new Rickshaw.Graph.Axis.Time({
-          //  graph: graph,
-          //  timeUnit: unit
-          //});
-          //var time = new Rickshaw.Fixtures.Time();
-          //var timeUnit = time.unit('hour');
-          var xAxis = new Rickshaw.Graph.Axis.ExtendedTime({
-            graph: graph,
-            //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            pixelsPerTick: 50,
-            tickSpacing: 6*60*60, // 1 hour
-            timeUnit: timeUnit
-          });
-          xAxis.render();
-          var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
-            graph: graph,
-            berthRate: 0.0,
-            orientation: 'left',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.querySelector(chartY),
-            scale: y1Scale
-          });
-          yAxis.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            //var xAxis = new Rickshaw.Graph.Axis.Time({
+            //  graph: graph,
+            //  timeUnit: unit
+            //});
+            //var time = new Rickshaw.Fixtures.Time();
+            //var timeUnit = time.unit('hour');
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime({
+                graph: graph,
+                //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                pixelsPerTick: 50,
+                tickSpacing: 6 * 60 * 60, // 1 hour
+                timeUnit: timeUnit
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
 
-          var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled( {
-            graph: graph,
-            berthRate: 0,
-            orientation: 'right',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.querySelector(chartY2),
-            scale: y2Scale,
-            ticks: 5
-            //tickValues: [0,20,40,60,80,100]
-          });
-          yAxis2.render();
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
 
-          var slider = new Rickshaw.Graph.RangeSlider.Preview({
-            graph: graph,
-            element: document.querySelector(chartSlider)
-          });
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
         }
 
-        function plotMaOaTempChart(data, points, colors, args) {
-          if (!(existPoint(points.MATemp) && existPoint(points.OATemp))) return false;
-          //Set UI Args
-          var container = args.Container;
-          var chartId = container + " .rs-chart";
-          var chartY = container + " .rs-y-axis";
-          var chartLegend = container + " .rs-legend";
-          var chartTitle = container + " .title";
+        function plotMaOaTempChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
 
-          document.querySelector(chartTitle).innerHTML = args.Title;
+            if (!(existPoint('MATemp', points) && existPoint('OATemp', points))) return false;
 
-          //Set up data series: change this for different data sources
-          data.sort(function (a,b) {
-            if (a[points.OATemp] < b[points.OATemp])
-              return -1;
-            if (a[points.OATemp] > b[points.OATemp])
-              return 1;
-            return 0;
-          });
-          var ySeries = {
-            MAOAT: {
-              name: points.MATemp,
-              xName: points.OATemp,
-              color: colors.MATemp,
-              data: data.map(function (d) {
-                return {x: d[points.OATemp], y: d[points.MATemp]};
-              })
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[allPoints.OATemp] < b[allPoints.OATemp])
+                    return -1;
+                if (a[allPoints.OATemp] > b[allPoints.OATemp])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {
+                MAOAT: {
+                    name: allPoints.MATemp,
+                    xName: allPoints.OATemp,
+                    color: colors.MATemp,
+                    data: data.map(function (d) {
+                        return {x: d[points.OATemp], y: d[points.MATemp]};
+                    })
+                }
             }
-          }
-          //Plotting
-          var graph = new Rickshaw.Graph({
-            element: document.querySelector(chartId),
-            renderer: 'scatterplot',
-            series: [ySeries.MAOAT]
-          });
-          graph.renderer.dotSize = 2;
-          graph.render();
-          //Tooltip for hovering
-          var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph,
-            formatter: function(series, x, y) {
-              var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-              var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-              var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-              return content;
-            }
-          } );
-          //Display & Toggle Legends
-          var legend = new Rickshaw.Graph.Legend( {
-            graph: graph,
-            element: document.querySelector(chartLegend)
-          } );
-          var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
-            graph: graph,
-            legend: legend
-          } );
-          //Render X Y Axes
-          var xAxis = new Rickshaw.Graph.Axis.X({
-            graph: graph
-          });
-          xAxis.render();
-          var yAxis = new Rickshaw.Graph.Axis.Y({
-            graph: graph,
-            berthRate: 0.0,
-            orientation: 'left',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.querySelector(chartY)
-          });
-          yAxis.render();
-
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries.MAOAT]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Outdoor Temperature')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Mixed-Air Temperature')
+            });
+            yAxis.render();
 
 
         }
-
 
         var fTsName = 'FTimestamp';
         //Assume data is sorted by Timestamp
-        data.forEach(function(d) {
-          //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
-          var t = d[rawTsName].split('+')[0];
-          t = t.replace(' ','T');
-          t = Date.parse(t)/1000;
-          d[fTsName] = t;
-          parseDataType(d, points);
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
         });
-        var timeUnit = getTimeUnit(data[0][fTsName],data[data.length-1][fTsName],[data[0][fTsName],data[1][fTsName],data[2][fTsName]]);
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
         var tArgs = {
-          Timestamp: fTsName,
-          Title: 'Temperatures',
-          Container: '#temps-chart-box',
-          TimeUnit: timeUnit
+            Timestamp: fTsName,
+            Title: 'Temperatures',
+            Container: '#temps-chart-box',
+            TimeUnit: timeUnit
         };
-        plotTempsChart(data, points, colors, tArgs);
+        plotTempsChart(data, allPoints, points, colors, tArgs);
         var hcvArgs = {
-          Timestamp: fTsName,
-          Title: 'DATSP, DAT, OAT, OAD, CCV, HCV vs. Time',
-          Container: '#hcv-box',
-          TimeUnit: timeUnit
+            Timestamp: fTsName,
+            Title: 'DATSP, DAT, OAT, OAD, CCV, HCV vs. Time',
+            Container: '#hcv-box',
+            TimeUnit: timeUnit
         };
-        plotHCVChart(data, points, colors, hcvArgs);
+        plotHCVChart(data, allPoints, points, colors, hcvArgs);
         //Plot this one last because it sorts the data in-place
         var motArgs = {
-          Timestamp: fTsName,
-          Title: 'Mixed Air vs. Outdoor Air',
-          Container: '#mat-oat-box'
+            Timestamp: fTsName,
+            Title: 'Mixed Air vs. Outdoor Air',
+            Container: '#mat-oat-box'
         };
-        plotMaOaTempChart(data, points, colors, motArgs);
+        plotMaOaTempChart(data, allPoints, points, colors, motArgs);
 
 
         $(".rs-chart-container.hidden").removeClass("hidden");
@@ -2359,6 +2127,1711 @@ angular.module('openeis-ui.directives.analysis-report', [])
         //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
 
     }
+
+    function ahu_ecam(data) {
+        console.log(data);
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points
+        var allPoints = { //all points available in the output_format from backend
+            OutdoorAirTemperature: 'OutdoorAirTemperature',
+            MixedAirTemperature: 'MixedAirTemperature',
+            ReturnAirTemperature: 'ReturnAirTemperature',
+            DischargeAirTemperature: 'DischargeAirTemperature',
+            DischargeAirTemperatureSetPoint: 'DischargeAirTemperatureSetPoint',
+            SupplyFanStatus: 'SupplyFanStatus',
+            SupplyFanSpeed: 'SupplyFanSpeed',
+            OutdoorDamper: 'OutdoorDamper',
+            CCV: 'CCV',
+            HCV: 'HCV',
+            OutdoorAirFraction: 'OutdoorAirFraction',
+            ReturnFanSpeed: 'ReturnFanSpeed',
+            OccupancyMode: 'OccupancyMode',
+            DuctStaticPressure: 'DuctStaticPressure',
+            DuctStaticPressureSetPoint: 'DuctStaticPressureSetPoint'
+        };
+        counts = {};
+        points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
+        }
+
+        //object to contain definition for point colors
+        //http://www.w3schools.com/html/html_colornames.asp
+        var colors = {
+            OutdoorAirTemperature: 'blue',
+            MixedAirTemperature: 'LightPink',
+            ReturnAirTemperature: 'HotPink',
+            DischargeAirTemperature: 'Gainsboro',
+            DischargeAirTemperatureSetPoint: 'DarkKhaki',
+            SupplyFanStatus: 'BurlyWood',
+            SupplyFanSpeed: 'Chocolate',
+            OutdoorDamper: 'blueviolet',
+            CCV: 'Green',
+            HCV: 'Red',
+            OutdoorAirFraction: 'DarkBlue',
+            ReturnFanSpeed: 'CadetBlue',
+            OccupancyMode: 'Brown',
+            DuctStaticPressure: 'Magenta',
+            DuctStaticPressureSetPoint: 'DarkMagenta'
+        };
+
+        function plotOAChart1(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('OutdoorAirTemperature', points) &&
+                !existPoint('OutdoorDamper', points)) return false;
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 200]);
+            var y2Scale = d3.scale.linear().domain([0, 100]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {}
+            if (existPoint('OutdoorAirTemperature', points)) {
+                ySeries['OutdoorAirTemperature'] = {
+                    name: points.OutdoorAirTemperature,
+                    color: colors.OutdoorAirTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('OutdoorAirFraction', points)) {
+                ySeries['OutdoorAirFraction'] = {
+                    name: points.OutdoorAirFraction,
+                    color: colors.OutdoorAirFraction,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OutdoorAirFraction]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('OutdoorDamper', points)) {
+                ySeries['OutdoorDamper'] = {
+                    name: points.OutdoorDamper,
+                    color: colors.OutdoorDamper,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OutdoorDamper]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('OccupancyMode', points)) {
+                ySeries['OccupancyMode'] = {
+                    name: points.OccupancyMode,
+                    color: colors.OccupancyMode,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OccupancyMode]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'cardinal'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+        function plotSPChart1(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('DuctStaticPressure', points) &&
+                !existPoint('DuctStaticPressureSetPoint', points) &&
+                !existPoint('SupplyFanSpeed', points)) return false;
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 100]);
+            var y2Scale = d3.scale.linear().domain([0, 200]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {}
+            if (existPoint('DuctStaticPressure', points)) {
+                ySeries['DuctStaticPressure'] = {
+                    name: points.DuctStaticPressure,
+                    color: colors.DuctStaticPressure,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DuctStaticPressure]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('DuctStaticPressureSetPoint', points)) {
+                ySeries['DuctStaticPressureSetPoint'] = {
+                    name: points.DuctStaticPressureSetPoint,
+                    color: colors.DuctStaticPressureSetPoint,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DuctStaticPressureSetPoint]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('SupplyFanSpeed', points)) {
+                ySeries['SupplyFanSpeed'] = {
+                    name: points.SupplyFanSpeed,
+                    color: colors.SupplyFanSpeed,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.SupplyFanSpeed]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'cardinal'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1('Pressure')
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+        function plotCoilChart1(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('CCV', points) &&
+                !existPoint('HCV', points) &&
+                !existPoint('OutdoorAirTemperature', points)) return false;
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 200]);
+            var y2Scale = d3.scale.linear().domain([0, 100]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {};
+            if (existPoint('OutdoorAirTemperature', points)) {
+                ySeries['OutdoorAirTemperature'] = {
+                    name: points.OutdoorAirTemperature,
+                    color: colors.OutdoorAirTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('CCV', points)) {
+                ySeries['CCV'] = {
+                    name: points.CCV,
+                    color: colors.CCV,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.CCV]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('HCV', points)) {
+                ySeries['HCV'] = {
+                    name: points.HCV,
+                    color: colors.HCV,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.HCV]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'cardinal'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+        function plotDischargeTempChart1(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('DischargeAirTemperature', points) &&
+                !existPoint('DischargeAirTemperatureSetPoint', points) &&
+                !existPoint('OutdoorAirTemperature', points)) return false;
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 200]);
+            var y2Scale = d3.scale.linear().domain([0, 100]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {};
+            if (existPoint('OutdoorAirTemperature', points)) {
+                ySeries['OutdoorAirTemperature'] = {
+                    name: points.OutdoorAirTemperature,
+                    color: colors.OutdoorAirTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('DischargeAirTemperature', points)) {
+                ySeries['DischargeAirTemperature'] = {
+                    name: points.DischargeAirTemperature,
+                    color: colors.DischargeAirTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DischargeAirTemperature]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('DischargeAirTemperatureSetPoint', points)) {
+                ySeries['DischargeAirTemperatureSetPoint'] = {
+                    name: points.DischargeAirTemperatureSetPoint,
+                    color: colors.DischargeAirTemperatureSetPoint,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DischargeAirTemperatureSetPoint]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'cardinal'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+        function plotFanChart1(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('SupplyFanSpeed', points) &&
+                !existPoint('SupplyFanStatus', points) &&
+                !existPoint('DuctStaticPressure', points) &&
+                !existPoint('ReturnFanSpeed', points)) return false;
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([0, 200]);
+            var y2Scale = d3.scale.linear().domain([0, 100]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {};
+
+            if (existPoint('DuctStaticPressure', points)) {
+                ySeries['DuctStaticPressure'] = {
+                    name: points.DuctStaticPressure,
+                    color: colors.DuctStaticPressure,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.DuctStaticPressure]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('SupplyFanSpeed', points)) {
+                ySeries['SupplyFanSpeed'] = {
+                    name: points.SupplyFanSpeed,
+                    color: colors.SupplyFanSpeed,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.SupplyFanSpeed]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('SupplyFanStatus', points)) {
+                ySeries['SupplyFanStatus'] = {
+                    name: points.SupplyFanStatus,
+                    color: colors.SupplyFanStatus,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.SupplyFanStatus]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('ReturnFanSpeed', points)) {
+                ySeries['ReturnFanSpeed'] = {
+                    name: points.ReturnFanSpeed,
+                    color: colors.ReturnFanSpeed,
+                    data: data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.ReturnFanSpeed]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: plotSeries,
+                interpolation: 'cardinal'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1('Pressure')
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+        function plotOAChart2(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('OutdoorAirTemperature', points)) return false;
+            if (!existPoint('OutdoorDamper', points)) return false;
+
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[points.OutdoorAirTemperature] < b[points.OutdoorAirTemperature])
+                    return -1;
+                if (a[points.OutdoorAirTemperature] > b[points.OutdoorAirTemperature])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {};
+            if (existPoint('OutdoorDamper', points)) {
+                ySeries['OutdoorDamper'] = {
+                    name: points.OutdoorDamper,
+                    xName: points.OutdoorAirTemperature,
+                    color: colors.OutdoorDamper,
+                    data: data.map(function (d) {
+                        return {x: d[points.OutdoorAirTemperature], y: d[points.OutdoorDamper]};
+                    })
+                }
+            }
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries['OutdoorDamper']]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Outdoor Temperature')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Outdoor Damper Position')
+            });
+            yAxis.render();
+        }
+        function plotSPChart2(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('SupplyFanSpeed', points)) return false;
+            if (!existPoint('ReturnFanSpeed', points)) return false;
+
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[points.ReturnFanSpeed] < b[points.ReturnFanSpeed])
+                    return -1;
+                if (a[points.ReturnFanSpeed] > b[points.ReturnFanSpeed])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {};
+            if (existPoint('SupplyFanSpeed', points)) {
+                ySeries['SupplyFanSpeed'] = {
+                    name: points.SupplyFanSpeed,
+                    xName: points.ReturnFanSpeed,
+                    color: colors.SupplyFanSpeed,
+                    data: data.map(function (d) {
+                        return {x: d[points.ReturnFanSpeed], y: d[points.SupplyFanSpeed]};
+                    })
+                }
+            }
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries['SupplyFanSpeed']]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Return Fan Speed')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Supply Fan Speed')
+            });
+            yAxis.render();
+        }
+        function plotCoilChart2(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('HCV', points)) return false;
+            if (!existPoint('CCV', points)) return false;
+
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[points.CCV] < b[points.CCV])
+                    return -1;
+                if (a[points.CCV] > b[points.CCV])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {};
+            if (existPoint('HCV', points)) {
+                ySeries['HCV'] = {
+                    name: points.HCV,
+                    xName: points.CCV,
+                    color: colors.HCV,
+                    data: data.map(function (d) {
+                        return {x: d[points.CCV], y: d[points.HCV]};
+                    })
+                }
+            }
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries['HCV']]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Cooling Coil Valve')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Heating Coil Valve')
+            });
+            yAxis.render();
+        }
+        function plotDischargeTempChart2(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('DischargeAirTemperatureSetPoint', points)) return false;
+            if (!existPoint('DischargeAirTemperature', points)) return false;
+
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[points.DischargeAirTemperatureSetPoint] < b[points.DischargeAirTemperatureSetPoint])
+                    return -1;
+                if (a[points.DischargeAirTemperatureSetPoint] > b[points.DischargeAirTemperatureSetPoint])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {};
+            if (existPoint('DischargeAirTemperature', points)) {
+                ySeries['DischargeAirTemperature'] = {
+                    name: points.DischargeAirTemperature,
+                    xName: points.DischargeAirTemperatureSetPoint,
+                    color: colors.DischargeAirTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[points.DischargeAirTemperatureSetPoint], y: d[points.DischargeAirTemperature]};
+                    })
+                }
+            }
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries['DischargeAirTemperature']]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Discharge Temperature SetPoint')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Discharge Temperature')
+            });
+            yAxis.render();
+        }
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
+        });
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
+        var tArgs = {
+            Timestamp: fTsName,
+            Title: 'Time series data',
+            Container: '#oa-chart-box1',
+            TimeUnit: timeUnit
+        };
+        plotOAChart1(data, allPoints, points, colors, tArgs);
+
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Pressure vs Time',
+          Container: '#sp-chart-box1'
+        };
+        plotSPChart1(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Heating and Cooling Coils vs Time',
+          Container: '#coil-chart-box1'
+        };
+        plotCoilChart1(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Discharge Air Temperature vs Time',
+          Container: '#discharge-chart-box1'
+        };
+        plotDischargeTempChart1(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Fan vs Time',
+          Container: '#fan-chart-box1'
+        };
+        plotFanChart1(data, allPoints, points, colors, args);
+
+        //All scatter charts need to be after this point
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Outdoor Damper Position vs Outdoor Air Temperature',
+          Container: '#oa-chart-box2'
+        };
+        plotOAChart2(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Supply Fan Speed vs Return Fan Speed',
+          Container: '#sp-chart-box2'
+        };
+        plotSPChart2(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Heating Coil Valve vs Cooling Coil Valve',
+          Container: '#coil-chart-box2'
+        };
+        plotCoilChart2(data, allPoints, points, colors, args);
+
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Discharge Air Temperature vs Discharge Air Temperature SetPoint',
+          Container: '#discharge-chart-box2'
+        };
+        plotDischargeTempChart2(data, allPoints, points, colors, args);
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+        //Fix styling of D3: when the min value is at the bottom of the Y axis, we can see only upper half of the value
+        //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
+
+    }
+
+    function zone_ecam(data) {
+            var rawTsName = 'datetime';
+
+            //object to contain definition for points:
+            // this should match the output_format received from the server
+            var allPointsPrefix = {
+                ZoneTemp: 'ZoneTemperature',
+                ZoneRhtVlvSignal: 'TerminalBoxReheatValvePosition',
+                ZoneDamperPos: 'TerminalBoxDamperCommand',
+                ZoneOcc: 'ZoneOccupancyMode',
+                ZoneFanStatus: 'ZoneFanStatus',
+                ZoneSetPoint: 'ZoneTemperatureSetPoint',
+                ZoneCFM: 'TerminalBoxFanAirflow'
+            };
+
+            var allPoints = {};
+            if (data.length > 0) {
+                d = data[0];
+                for (var k in d){ //k is input data point name
+                    if (d.hasOwnProperty(k)) {
+                        for (var point in allPointsPrefix) {
+                            if (allPointsPrefix.hasOwnProperty(point)) {
+                                if (startWith(k, allPointsPrefix[point])) {
+                                    allPoints[k] = k;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            var counts = {};
+            var points = {}; //Points actually used for visualization
+            for (var prop in allPoints) {
+                counts[prop] = 0;
+                points[prop] = allPoints[prop];
+            }
+
+            var colors = {};
+            var i = 0;
+            for (var point in points) {
+                //if (startWith(point, 'ZoneTemp')) {
+                    colors[point] = getColor(i++);
+                //}
+            }
+
+            function plotTsChart(data, allPoints, points, colors, args) {
+                //Set UI Args
+                var timeUnit = args.TimeUnit;
+                var container = args.Container;
+                var chartId = container + " .rs-chart";
+                var chartY = container + " .rs-y-axis";
+                var chartY2 = container + " .rs-y-axis2";
+                var chartLegend = container + " .rs-legend";
+                var chartTitle = container + " .title";
+                var chartSlider = container + " .rs-slider";
+                document.querySelector(chartTitle).innerHTML = args.Title;
+
+                //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+                if (!existPointStartWith(allPointsPrefix['ZoneTemp'], points)) return false;
+
+                //TODO: Change the min max of y1Scale
+                var y1Scale = d3.scale.linear().domain([0, 200]);
+                var y2Scale = d3.scale.linear().domain([0, 100]);
+                //Set up data series: change this for different data sources
+
+                var ySeries = {};
+                for (var point in points) {
+                    if (startWith(point, allPointsPrefix['ZoneTemp']) ||
+                        startWith(point, allPointsPrefix['ZoneSetPoint'])) {
+                        ySeries[point] = {
+                            name: point.replace(/^Zone/,'').replace(/^TerminalBox/,''),
+                            color: colors[point],
+                            data: data.map(function (d) {
+                                return {x: d[args.Timestamp], y: d[point]};
+                            }),
+                            scale: y1Scale
+                        }
+                    }
+                    if (startWith(point, allPointsPrefix['ZoneRhtVlvSignal']) ||
+                        startWith(point, allPointsPrefix['ZoneDamperPos']) ||
+                        startWith(point, allPointsPrefix['ZoneOcc']) ||
+                        startWith(point, allPointsPrefix['ZoneFanStatus']) ||
+                        startWith(point, allPointsPrefix['ZoneCFM'])) {
+                        ySeries[point] = {
+                            name: point.replace(/^Zone/,'').replace(/^TerminalBox/,''),
+                            color: colors[point],
+                            data: data.map(function (d) {
+                                return {x: d[args.Timestamp], y: d[point]};
+                            }),
+                            scale: y2Scale
+                        }
+                    }
+                }
+                //Plotting
+                var plotSeries = [];
+                angular.forEach(ySeries, function (value, key) {
+                    plotSeries.push(value);
+                });
+                var graph = new Rickshaw.Graph({
+                    element: document.querySelector(chartId),
+                    renderer: 'line',
+                    series: plotSeries,
+                    interpolation: 'cardinal'
+                });
+                graph.render();
+
+                //Tooltip for hovering
+                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                    graph: graph,
+                    formatter: function (series, x, y) {
+                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                        return content;
+                    }
+                });
+                //Display & Toggle Legends
+                var legend = new Rickshaw.Graph.Legend({
+                    graph: graph,
+                    element: document.querySelector(chartLegend)
+                });
+                var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                    graph: graph,
+                    legend: legend
+                });
+                //Render X Y Axes
+                var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                    {
+                        graph: graph,
+                        orientation: "bottom",
+                        //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                        pixelsPerTick: 50,
+                        tickSpacing: 6 * 60 * 60, // 6 hours
+                        timeUnit: timeUnit
+
+                    });
+                xAxis.render();
+                var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                    graph: graph,
+                    berthRate: 0.0,
+                    orientation: 'left',
+                    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    element: document.querySelector(chartY),
+                    scale: y1Scale,
+                    label: labelY1('Temperature')
+                });
+                yAxis.render();
+
+                var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                    graph: graph,
+                    berthRate: 0,
+                    orientation: 'right',
+                    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    element: document.querySelector(chartY2),
+                    scale: y2Scale,
+                    ticks: 5,
+                    label: labelY2('Command/Status')
+
+                    //tickValues: [0,20,40,60,80,100]
+                });
+                yAxis2.render();
+
+                var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                    graph: graph,
+                    element: document.querySelector(chartSlider)
+                });
+
+            }
+
+            var fTsName = 'FTimestamp';
+            //Assume data is sorted by Timestamp
+            data.forEach(function (d) {
+                //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+                var t = d[rawTsName].split('+')[0];
+                t = t.replace(' ', 'T');
+                t = Date.parse(t) / 1000;
+                d[fTsName] = t;
+                parseDataType(d, points, counts);
+            });
+            //Delete key in points that have no data
+            for (var prop in counts) {
+                if (counts[prop] == 0) {
+                    delete points[prop];
+                }
+            }
+
+            var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
+            var tArgs = {
+                Timestamp: fTsName,
+                Title: 'Time series data',
+                Container: '#temps-chart-box',
+                TimeUnit: timeUnit
+            };
+            plotTsChart(data, allPoints, points, colors, tArgs);
+
+            $(".rs-chart-container.hidden").removeClass("hidden");
+            //Fix styling of D3: when the min value is at the bottom of the Y axis, we can see only upper half of the value
+            //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
+
+        }
+
+    function hwplant_ecam(data) {
+            //console.log(data);
+            var rawTsName = 'datetime';
+
+            //object to contain definition for points
+            var allPoints = { //all points available in the output_format from backend
+                OutdoorAirTemperature: 'OutdoorAirTemperature',
+                LoopDifferentialPressure: 'LoopDifferentialPressure',
+                LoopDifferentialPressureSetPoint: 'LoopDifferentialPressureSetPoint',
+                PumpStatus: 'PumpStatus',
+                BoilerStatus: 'BoilerStatus',
+                HotWaterPumpVfd: 'HotWaterPumpVfd',
+                HotWaterSupplyTemperature: 'HotWaterSupplyTemperature',
+                HotWaterTemperatureSetPoint: 'HotWaterTemperatureSetPoint',
+                HotWaterReturnTemperature: 'HotWaterReturnTemperature'
+            };
+            counts = {};
+            points = {}; //Points actually used for visualization
+            for (var prop in allPoints) {
+                counts[prop] = 0;
+                points[prop] = allPoints[prop];
+            }
+
+            //object to contain definition for point colors
+            //http://www.w3schools.com/html/html_colornames.asp
+            var colors = {
+              OutdoorAirTemperature: 'blue',
+              HotWaterTemperatureSetPoint: 'HotPink',
+              HotWaterReturnTemperature: 'LightPink',
+              HotWaterSupplyTemperature: 'Red',
+              LoopDifferentialPressure: 'DarkMagenta',
+              LoopDifferentialPressureSetPoint: 'Magenta',
+              PumpStatus: 'Chocolate',
+              BoilerStatus: 'blueviolet',
+              HotWaterPumpVfd: 'Green'
+          };
+
+            function plotTempChart(data, allPoints, points, colors, args) {
+                //Set UI Args
+                var timeUnit = args.TimeUnit;
+                var container = args.Container;
+                var chartId = container + " .rs-chart";
+                var chartY = container + " .rs-y-axis";
+                var chartY2 = container + " .rs-y-axis2";
+                var chartLegend = container + " .rs-legend";
+                var chartTitle = container + " .title";
+                var chartSlider = container + " .rs-slider";
+                document.querySelector(chartTitle).innerHTML = args.Title;
+
+                //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+                if (!existPoint('HotWaterSupplyTemperature', points)) return false;
+
+                //TODO: Change the min max of y1Scale
+                var y1Scale = d3.scale.linear().domain([0, 200]);
+                var y2Scale = d3.scale.linear().domain([0, 100]);
+                //Set up data series: change this for different data sources
+
+                var ySeries = {};
+                if (existPoint('HotWaterSupplyTemperature', points)) {
+                    ySeries['HotWaterSupplyTemperature'] = {
+                        name: points.HotWaterSupplyTemperature,
+                        color: colors.HotWaterSupplyTemperature,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.HotWaterSupplyTemperature]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('HotWaterReturnTemperature', points)) {
+                    ySeries['HotWaterReturnTemperature'] = {
+                        name: points.HotWaterReturnTemperature,
+                        color: colors.HotWaterReturnTemperature,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.HotWaterReturnTemperature]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('HotWaterTemperatureSetPoint', points)) {
+                    ySeries['HotWaterTemperatureSetPoint'] = {
+                        name: points.HotWaterTemperatureSetPoint,
+                        color: colors.HotWaterTemperatureSetPoint,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.HotWaterTemperatureSetPoint]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('OutdoorAirTemperature', points)) {
+                    ySeries['OutdoorAirTemperature'] = {
+                        name: points.OutdoorAirTemperature,
+                        color: colors.OutdoorAirTemperature,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('ZoneSetPoint', points)) {
+                    ySeries['ZoneSetPoint'] = {
+                        name: points.ZoneSetPoint,
+                        color: colors.ZoneSetPoint,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.ZoneSetPoint]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                //Plotting
+                var plotSeries = [];
+                angular.forEach(ySeries, function (value, key) {
+                    plotSeries.push(value);
+                });
+                var graph = new Rickshaw.Graph({
+                    element: document.querySelector(chartId),
+                    renderer: 'line',
+                    series: plotSeries,
+                    interpolation: 'cardinal'
+                });
+                graph.render();
+
+                //Tooltip for hovering
+                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                    graph: graph,
+                    formatter: function (series, x, y) {
+                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                        return content;
+                    }
+                });
+                //Display & Toggle Legends
+                var legend = new Rickshaw.Graph.Legend({
+                    graph: graph,
+                    element: document.querySelector(chartLegend)
+                });
+                var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                    graph: graph,
+                    legend: legend
+                });
+                //Render X Y Axes
+                var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                    {
+                        graph: graph,
+                        orientation: "bottom",
+                        //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                        pixelsPerTick: 50,
+                        tickSpacing: 6 * 60 * 60, // 6 hours
+                        timeUnit: timeUnit
+
+                    });
+                xAxis.render();
+                var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                    graph: graph,
+                    berthRate: 0.0,
+                    orientation: 'left',
+                    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    element: document.querySelector(chartY),
+                    scale: y1Scale,
+                    label: labelY1('Temperature')
+                });
+                yAxis.render();
+
+                var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                    graph: graph,
+                    element: document.querySelector(chartSlider)
+                });
+
+            }
+
+            function plotPressureChart(data, allPoints, points, colors, args) {
+                //Set UI Args
+                var timeUnit = args.TimeUnit;
+                var container = args.Container;
+                var chartId = container + " .rs-chart";
+                var chartY = container + " .rs-y-axis";
+                var chartY2 = container + " .rs-y-axis2";
+                var chartLegend = container + " .rs-legend";
+                var chartTitle = container + " .title";
+                var chartSlider = container + " .rs-slider";
+                document.querySelector(chartTitle).innerHTML = args.Title;
+
+                //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+                if (!existPoint('LoopDifferentialPressure', points)) return false;
+
+                //TODO: Change the min max of y1Scale
+                var y1Scale = d3.scale.linear().domain([0, 200]);
+                var y2Scale = d3.scale.linear().domain([0, 100]);
+                //Set up data series: change this for different data sources
+
+                var ySeries = {};
+                if (existPoint('LoopDifferentialPressure', points)) {
+                    ySeries['LoopDifferentialPressure'] = {
+                        name: points.LoopDifferentialPressure,
+                        color: colors.LoopDifferentialPressure,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.LoopDifferentialPressure]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('LoopDifferentialPressureSetPoint', points)) {
+                    ySeries['LoopDifferentialPressureSetPoint'] = {
+                        name: points.LoopDifferentialPressureSetPoint,
+                        color: colors.LoopDifferentialPressureSetPoint,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.LoopDifferentialPressureSetPoint]};
+                        }),
+                        scale: y1Scale
+                    }
+                }
+                if (existPoint('HotWaterPumpVfd', points)) {
+                    ySeries['HotWaterPumpVfd'] = {
+                        name: points.HotWaterPumpVfd,
+                        color: colors.HotWaterPumpVfd,
+                        data: data.map(function (d) {
+                            return {x: d[args.Timestamp], y: d[points.HotWaterPumpVfd]};
+                        }),
+                        scale: y2Scale
+                    }
+                }
+                //Plotting
+                var plotSeries = [];
+                angular.forEach(ySeries, function (value, key) {
+                    plotSeries.push(value);
+                });
+                var graph = new Rickshaw.Graph({
+                    element: document.querySelector(chartId),
+                    renderer: 'line',
+                    series: plotSeries,
+                    interpolation: 'cardinal'
+                });
+                graph.render();
+
+                //Tooltip for hovering
+                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                    graph: graph,
+                    formatter: function (series, x, y) {
+                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                        return content;
+                    }
+                });
+                //Display & Toggle Legends
+                var legend = new Rickshaw.Graph.Legend({
+                    graph: graph,
+                    element: document.querySelector(chartLegend)
+                });
+                var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                    graph: graph,
+                    legend: legend
+                });
+                //Render X Y Axes
+                var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                    {
+                        graph: graph,
+                        orientation: "bottom",
+                        //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                        pixelsPerTick: 50,
+                        tickSpacing: 6 * 60 * 60, // 6 hours
+                        timeUnit: timeUnit
+                    });
+                xAxis.render();
+                var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                    graph: graph,
+                    berthRate: 0.0,
+                    orientation: 'left',
+                    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    element: document.querySelector(chartY),
+                    scale: y1Scale,
+                    label: labelY1('Pressure')
+                });
+                yAxis.render();
+
+                var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                    graph: graph,
+                    berthRate: 0,
+                    orientation: 'right',
+                    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    element: document.querySelector(chartY2),
+                    scale: y2Scale,
+                    ticks: 5,
+                    label: labelY2('Command/Status')
+                    //tickValues: [0,20,40,60,80,100]
+                });
+                yAxis2.render();
+
+                var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                    graph: graph,
+                    element: document.querySelector(chartSlider)
+                });
+            }
+
+            function plotHWS_OATChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('HotWaterSupplyTemperature', points)) return false;
+            if (!existPoint('OutdoorAirTemperature', points)) return false;
+
+            //Set up data series: change this for different data sources
+            data.sort(function (a, b) {
+                if (a[points.OutdoorAirTemperature] < b[points.OutdoorAirTemperature])
+                    return -1;
+                if (a[points.OutdoorAirTemperature] > b[points.OutdoorAirTemperature])
+                    return 1;
+                return 0;
+            });
+            var ySeries = {};
+            if (existPoint('HotWaterSupplyTemperature', points)) {
+                ySeries['HotWaterSupplyTemperature'] = {
+                    name: points.HotWaterSupplyTemperature,
+                    xName: points.OutdoorAirTemperature,
+                    color: colors.HotWaterSupplyTemperature,
+                    data: data.map(function (d) {
+                        return {x: d[points.OutdoorAirTemperature], y: d[points.HotWaterSupplyTemperature]};
+                    })
+                }
+            }
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'scatterplot',
+                series: [ySeries['HotWaterSupplyTemperature']]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                formatter: function (series, x, y) {
+                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+                    return content;
+                }
+            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Outdoor Air Temperature')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Hot Water Supply Temperature')
+            });
+            yAxis.render();
+        }
+
+            var fTsName = 'FTimestamp';
+            //Assume data is sorted by Timestamp
+            data.forEach(function (d) {
+                //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+                var t = d[rawTsName].split('+')[0];
+                t = t.replace(' ', 'T');
+                t = Date.parse(t) / 1000;
+                d[fTsName] = t;
+                parseDataType(d, points, counts);
+            });
+            //Delete key in points that have no data
+            for (var prop in counts) {
+                if (counts[prop] == 0) {
+                    delete points[prop];
+                }
+            }
+
+            var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
+            var tArgs = {
+                Timestamp: fTsName,
+                Title: 'Hot Water Temperature',
+                Container: '#temp-box',
+                TimeUnit: timeUnit
+            };
+            plotTempChart(data, allPoints, points, colors, tArgs);
+            //Plot this one last because it sorts the data in-place
+            var args = {
+              Timestamp: fTsName,
+              Title: 'Hot Water Pressure',
+              Container: '#pressure-box',
+              TimeUnit: timeUnit
+            };
+            plotPressureChart(data, allPoints, points, colors, args);
+            var args = {
+              Timestamp: fTsName,
+              Title: 'Hot Water Supply Temp and Outdoor Temp',
+              Container: '#hws-oat-box'
+            };
+            plotHWS_OATChart(data, allPoints, points, colors, args);
+
+            $(".rs-chart-container.hidden").removeClass("hidden");
+            //Fix styling of D3: when the min value is at the bottom of the Y axis, we can see only upper half of the value
+            //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
+
+        }
 });
 
 
@@ -2375,3 +3848,25 @@ angular.module('openeis-ui.directives.analysis-report', [])
 //Bug: RAT is not mapped but it is displayed as 0, should not be displayed at all
 
 
+//Changes:
+//Overcome the non-optional output data format in OpenEIS (OpenEIS uses table-like output so fields with no data are translated as null in the frontend
+//      Empty fields should not exist in the JSON output
+//Add extra sensor points for Zones
+//Rickshaw doesn't support missing data points, thus having exception when the number of points in all series is not matched
+//  -> Could insert n fake points (n=the number of missing points) where fake point is the first point (insert to the beginning)
+//                  -> or fake point is the last point (insert to the end)
+
+
+//Missing zone sensor: FanStatus
+
+
+
+//Add TerminalBoxFanAirflow, ZoneTemperatureSetPoint point to the sensor list, fix the Ecam for AHU, ask Robert how to run multiple zones
+
+//Rickshaw: there is a weird jump up or down of extra lines when there is a big change in value. Check if it's because chart type is spline (smoothing) instead of line
+//Unit on the Y axis
+//Labels on X axis should be drawn below the x-axis
+//Remove the vertical or horizontal gridlines? especially when there are 2 Y axes...
+
+//JOBS OPENEIS JENKINS
+//https://ci.pnnl.gov/jenkins/job/openeis/job/OpenEIS/job/create-setup-package/

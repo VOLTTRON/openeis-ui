@@ -63,7 +63,14 @@ angular.module('openeis-ui')
         // and compare for compatibility
         Applications.query().$promise.then(function (apps) {
             $scope.availableSensors = {};
-
+            allSensors = [
+                "TerminalBoxDamperCommand",
+                "TerminalBoxFanAirflow",
+                "TerminalBoxReheatValvePosition",
+                "OccupancyMode",
+                "ZoneTemperature",
+                "ZoneTemperatureSetPoint"
+            ];
             angular.forEach($scope.newAnalysis.dataSet.datamap.sensors, function (sensor, topic) {
                 if (!sensor.type) {
                     return;
@@ -71,9 +78,19 @@ angular.module('openeis-ui')
 
                 if (!$scope.availableSensors.hasOwnProperty(sensor.type)) {
                     $scope.availableSensors[sensor.type] = [];
+
+                    if (allSensors.indexOf(sensor.type) > -1) {
+                        $scope.availableSensors[sensor.type].push({
+                          display: "All",
+                          value: topic + "/All"
+                        });
+                    }
                 }
 
-                $scope.availableSensors[sensor.type].push(topic);
+                $scope.availableSensors[sensor.type].push({
+                  display: topic,
+                  value: topic
+                });
             });
 
             angular.forEach(apps, function (app) {
