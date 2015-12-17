@@ -55,6 +55,7 @@ module.exports = function(config) {
     files: [
       // Order of files matter (settings and libraries must be first)
       'src/settings.js',
+      'bower_components/jquery-1.11.3/index.js',
       'bower_components/d3/d3.min.js',
       'bower_components/jstzdetect/jstz.min.js',
       'bower_components/angular/angular.js',

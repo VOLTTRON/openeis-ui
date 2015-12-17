@@ -79,7 +79,7 @@
                     <label>{{input.display_name}} ({{input.sensor_type}})</label>
                     <div ng-repeat="multiInput in newAnalysis.configuration.inputs[inputName]" style="position: relative">
                         <select required
-                                ng-options="topic for topic in availableSensors[input.sensor_type]"
+                                ng-options="topic.value as topic.display for topic in availableSensors[input.sensor_type]"
                                 ng-model="newAnalysis.configuration.inputs[inputName][$index]">
                             <option value="">-- Choose sensor --</option>
                         </select>
