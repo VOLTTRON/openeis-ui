@@ -1710,14 +1710,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     scale: y1Scale
                 }
             }
-            if (existPoint('RATemp', points) &&
-                existPoint('OATemp', points) &&
-                existPoint('MATemp', points)) {
+            if (existPoint('OAF', points)) {
                 ySeries['OAF'] = {
                     name: points.OAF,
                     color: colors.OAF,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: (d[points.MATemp] - d[points.RATemp]) / (d[points.OATemp] - d[points.RATemp])};
+                        return {x: d[args.Timestamp], y: d[points.OAF]};
                     }),
                     scale: y2Scale
                 }
