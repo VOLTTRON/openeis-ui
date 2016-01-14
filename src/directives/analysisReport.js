@@ -1760,15 +1760,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -1943,15 +1943,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2044,15 +2044,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2253,15 +2253,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2380,15 +2380,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2507,15 +2507,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2634,15 +2634,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2761,15 +2761,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2863,15 +2863,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -2939,15 +2939,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -3015,15 +3015,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -3091,15 +3091,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -3322,15 +3322,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 graph.render();
 
                 //Tooltip for hovering
-                var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                    graph: graph,
-                    formatter: function (series, x, y) {
-                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                        return content;
-                    }
-                });
+//                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                    graph: graph,
+//                    formatter: function (series, x, y) {
+//                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                        return content;
+//                    }
+//                });
                 //Display & Toggle Legends
                 var legend = new Rickshaw.Graph.Legend({
                     graph: graph,
@@ -3538,15 +3538,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 graph.render();
 
                 //Tooltip for hovering
-                var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                    graph: graph,
-                    formatter: function (series, x, y) {
-                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                        return content;
-                    }
-                });
+//                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                    graph: graph,
+//                    formatter: function (series, x, y) {
+//                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                        return content;
+//                    }
+//                });
                 //Display & Toggle Legends
                 var legend = new Rickshaw.Graph.Legend({
                     graph: graph,
@@ -3651,15 +3651,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 graph.render();
 
                 //Tooltip for hovering
-                var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                    graph: graph,
-                    formatter: function (series, x, y) {
-                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-                        return content;
-                    }
-                });
+//                var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                    graph: graph,
+//                    formatter: function (series, x, y) {
+//                        var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                        var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                        var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                        return content;
+//                    }
+//                });
                 //Display & Toggle Legends
                 var legend = new Rickshaw.Graph.Legend({
                     graph: graph,
@@ -3752,15 +3752,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.renderer.dotSize = 2;
             graph.render();
             //Tooltip for hovering
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                formatter: function (series, x, y) {
-                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
-                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
-                    return content;
-                }
-            });
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
