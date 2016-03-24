@@ -203,7 +203,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     result_ele.append(tab_ele);
                     result_ele.append(tab_content);
                     element.append(result_ele);
-                    afdd_ecam(scope.arData[reportElement.table_name]);
+                    economizer_ecam(scope.arData[reportElement.table_name]);
                     //$("#ecam").tabs();
                     $compile(element.contents())(scope);
                     break;
@@ -1621,7 +1621,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return arr[c];
     }
 
-    function afdd_ecam(data) {
+    function economizer_ecam(data) {
         //console.log(data);
         var rawTsName = 'datetime';
 
@@ -1672,7 +1672,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName) && existPoint(points.OATemp)
-            if (!(existPoint('OATemp', points) && existPoint('MATemp', points))) return false;
+            if (!(existPoint('OATemp', points) && existPoint('MATemp', points)))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 100]);
@@ -1851,7 +1855,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
             //if (!(existPoint(rawTsName) && existPoint(points.OATemp)
             if (!(existPoint('OATemp', points)
-                && existPoint('DATemp', points))) return false;
+                && existPoint('DATemp', points)))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 //          if (!(existPoint(points.DATempSetPoint)
 //              || existPoint(points.CCValve)
 //              || existPoint(points.HCValve)
@@ -1862,8 +1870,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var y2Scale = d3.scale.linear().domain([0, 300]);
             //Set up data series: change this for different data sources
 
-            var ySeries = {}
-            //if (points.hasOwnProperty('OATemp')) {
+            var ySeries = {};
             if (existPoint('OATemp', points)) {
                 ySeries['OATemp'] = {
                     name: points.OATemp,
@@ -2013,7 +2020,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var chartTitle = container + " .title";
             document.querySelector(chartTitle).innerHTML = args.Title;
 
-            if (!(existPoint('MATemp', points) && existPoint('OATemp', points))) return false;
+            if (!(existPoint('MATemp', points) && existPoint('OATemp', points)))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -2189,14 +2200,18 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
             if (!existPoint('OutdoorAirTemperature', points) &&
-                !existPoint('OutdoorDamper', points)) return false;
+                !existPoint('OutdoorDamper', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 200]);
             var y2Scale = d3.scale.linear().domain([0, 100]);
             //Set up data series: change this for different data sources
 
-            var ySeries = {}
+            var ySeries = {};
             if (existPoint('OutdoorAirTemperature', points)) {
                 ySeries['OutdoorAirTemperature'] = {
                     name: points.OutdoorAirTemperature,
@@ -2246,7 +2261,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 element: document.querySelector(chartId),
                 renderer: 'line',
                 series: plotSeries,
-                interpolation: 'cardinal'
+                interpolation: 'linear'
             });
             graph.render();
 
@@ -2326,14 +2341,18 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
             if (!existPoint('DuctStaticPressure', points) &&
                 !existPoint('DuctStaticPressureSetPoint', points) &&
-                !existPoint('SupplyFanSpeed', points)) return false;
+                !existPoint('SupplyFanSpeed', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 100]);
             var y2Scale = d3.scale.linear().domain([0, 200]);
             //Set up data series: change this for different data sources
 
-            var ySeries = {}
+            var ySeries = {};
             if (existPoint('DuctStaticPressure', points)) {
                 ySeries['DuctStaticPressure'] = {
                     name: points.DuctStaticPressure,
@@ -2373,7 +2392,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 element: document.querySelector(chartId),
                 renderer: 'line',
                 series: plotSeries,
-                interpolation: 'cardinal'
+                interpolation: 'linear'
             });
             graph.render();
 
@@ -2453,7 +2472,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
             if (!existPoint('CCV', points) &&
                 !existPoint('HCV', points) &&
-                !existPoint('OutdoorAirTemperature', points)) return false;
+                !existPoint('OutdoorAirTemperature', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -2500,7 +2523,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 element: document.querySelector(chartId),
                 renderer: 'line',
                 series: plotSeries,
-                interpolation: 'cardinal'
+                interpolation: 'linear'
             });
             graph.render();
 
@@ -2580,7 +2603,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
             if (!existPoint('DischargeAirTemperature', points) &&
                 !existPoint('DischargeAirTemperatureSetPoint', points) &&
-                !existPoint('OutdoorAirTemperature', points)) return false;
+                !existPoint('OutdoorAirTemperature', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -2627,7 +2654,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 element: document.querySelector(chartId),
                 renderer: 'line',
                 series: plotSeries,
-                interpolation: 'cardinal'
+                interpolation: 'linear'
             });
             graph.render();
 
@@ -2695,7 +2722,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             if (!existPoint('SupplyFanSpeed', points) &&
                 !existPoint('SupplyFanStatus', points) &&
                 !existPoint('DuctStaticPressure', points) &&
-                !existPoint('ReturnFanSpeed', points)) return false;
+                !existPoint('ReturnFanSpeed', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //TODO: Change the min max of y1Scale
             var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -2754,7 +2785,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 element: document.querySelector(chartId),
                 renderer: 'line',
                 series: plotSeries,
-                interpolation: 'cardinal'
+                interpolation: 'linear'
             });
             graph.render();
 
@@ -2829,8 +2860,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('OutdoorAirTemperature', points)) return false;
-            if (!existPoint('OutdoorDamper', points)) return false;
+            if (!existPoint('OutdoorAirTemperature', points) ||
+                !existPoint('OutdoorDamper', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -2905,8 +2940,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('SupplyFanSpeed', points)) return false;
-            if (!existPoint('ReturnFanSpeed', points)) return false;
+            if (!existPoint('SupplyFanSpeed', points) ||
+                !existPoint('ReturnFanSpeed', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -2981,8 +3020,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('HCV', points)) return false;
-            if (!existPoint('CCV', points)) return false;
+            if (!existPoint('HCV', points) || !existPoint('CCV', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -3057,8 +3099,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('DischargeAirTemperatureSetPoint', points)) return false;
-            if (!existPoint('DischargeAirTemperature', points)) return false;
+            if (!existPoint('DischargeAirTemperatureSetPoint', points) ||
+                !existPoint('DischargeAirTemperature', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -3271,7 +3317,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 document.querySelector(chartTitle).innerHTML = args.Title;
 
                 //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-                if (!existPointStartWith(allPointsPrefix['ZoneTemp'], points)) return false;
+                if (!existPointStartWith(allPointsPrefix['ZoneTemp'], points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
                 //TODO: Change the min max of y1Scale
                 var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -3315,7 +3365,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element: document.querySelector(chartId),
                     renderer: 'line',
                     series: plotSeries,
-                    interpolation: 'cardinal'
+                    interpolation: 'linear'
                 });
                 graph.render();
 
@@ -3464,7 +3514,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 document.querySelector(chartTitle).innerHTML = args.Title;
 
                 //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-                if (!existPoint('HotWaterSupplyTemperature', points)) return false;
+                if (!existPoint('HotWaterSupplyTemperature', points))
+                {
+                    $(container).find(".rs-chart-area").toggle();
+                    return false;
+                }
 
                 //TODO: Change the min max of y1Scale
                 var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -3531,7 +3585,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element: document.querySelector(chartId),
                     renderer: 'line',
                     series: plotSeries,
-                    interpolation: 'cardinal'
+                    interpolation: 'linear'
                 });
                 graph.render();
 
@@ -3597,7 +3651,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 document.querySelector(chartTitle).innerHTML = args.Title;
 
                 //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-                if (!existPoint('LoopDifferentialPressure', points)) return false;
+                if (!existPoint('LoopDifferentialPressure', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
                 //TODO: Change the min max of y1Scale
                 var y1Scale = d3.scale.linear().domain([0, 200]);
@@ -3644,7 +3702,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element: document.querySelector(chartId),
                     renderer: 'line',
                     series: plotSeries,
-                    interpolation: 'cardinal'
+                    interpolation: 'linear'
                 });
                 graph.render();
 
@@ -3718,8 +3776,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('HotWaterSupplyTemperature', points)) return false;
-            if (!existPoint('OutdoorAirTemperature', points)) return false;
+            if (!existPoint('HotWaterSupplyTemperature', points) ||
+                !existPoint('OutdoorAirTemperature', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
 
             //Set up data series: change this for different data sources
             data.sort(function (a, b) {
@@ -3840,7 +3902,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
 //1. objects.ecam.scss, objects.rickshaw.scss
 //2. analysisReport.js, jquery-1.11.2.min.js, rickshaw.js, rickshaw_ex.js
 //Question: how to run testing w/o running the UI: ecam_config.py
-// python ./env/bin/openeis-script.py runapplication openeis/applications/economizer_ecam_rcx_config.ini
+// python ./env/bin/openeis-script.py runapplication openeis/applications/economizer_rcx_config.ini
 //  There should be no space in the inputs in the config file
 //  python ./env/bin/openeis-script.py runapplication openeis/applications/ecam_config.ini
 //Bug: RAT is not mapped but it is displayed as 0, should not be displayed at all
