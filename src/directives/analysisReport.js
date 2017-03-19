@@ -118,6 +118,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 case 'ScatterPlot':
                     // TODO: plot all datasets on a single scatterplot
                     angular.forEach(reportElement.xy_dataset_list, function (dataset) {
+                        console.log(dataset);
                         var data = [];
                         angular.forEach(scope.arData[dataset.table_name], function (row) {
                             data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
@@ -146,7 +147,46 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     break;
 
                 case 'RetroCommissioningAFDD':
-                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name])));
+                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name],0)));
+                    break;
+
+                case 'SetpointDetector':
+                    element.append(angular.element('<div class="setpoint-detector" />')
+                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    setpointDetectorSVG(scope.arData[reportElement.table_name],0);
+                    break;
+
+                case 'LoadProfile':
+                    element.append(angular.element('<div class="load-profile" />')
+                        .html("<div id='loadprofile-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    loadProfileSVG(scope.arData[reportElement.table_name],0);
+                    break;
+
+                case 'RxStaticPressure':
+                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name],1)));
+                    break;
+                case 'RxSupplyTemp':
+                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name],2)));
+                    break;
+                case 'RxOperationSchedule':
+                    element.append(angular.element('<div class="retro-commissioning-afdd" />').append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name],3)));
                     break;
 
                 case 'RetroCommissioningAFDDEcam':
@@ -196,7 +236,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                         </div>");
                     var rcx_tab = angular.element("<div id='analysis-content' class='tab-pane' style=''></div>");
                     var rcx_ele = angular.element("<div class='retro-commissioning-afdd' />")
-                        .append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name]));
+                        .append(retroCommissioningAFDDSVG(scope.arData[reportElement.table_name],0));
                     rcx_tab.append(rcx_ele);
                     tab_content.append(data_ele);
                     tab_content.append(rcx_tab);
@@ -1168,7 +1208,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return arrData;
     }
 
-    function retroCommissioningAFDDSVG(data) {
+    function retroCommissioningAFDDSVG(data,dx_type) {
         var econDiagnosticList = [
             'Temperature Sensor Dx',
             'Economizing When Unit Should Dx',
@@ -1192,7 +1232,30 @@ angular.module('openeis-ui.directives.analysis-report', [])
             'Low Supply-air Temperature Dx',
             'High Supply-air Temperature Dx',
             'No Supply-air Temperature Reset Dx',
-            'Operational Schedule Dx'];
+            'Operational Schedule Dx'
+        ];
+
+        if (dx_type==1) {
+            arDiagnosticList = [
+                'Duct Static Pressure Control Loop Dx',
+                'Low Duct Static Pressure Dx',
+                'High Duct Static Pressure Dx',
+                'No Static Pressure Reset Dx'
+            ];
+        }
+        if (dx_type==2) {
+            arDiagnosticList = [
+                'Supply-air Temperature Control Loop Dx',
+                'Low Supply-air Temperature Dx',
+                'High Supply-air Temperature Dx',
+                'No Supply-air Temperature Reset Dx'
+            ];
+        }
+        if (dx_type==3) {
+            arDiagnosticList = [
+                'Operational Schedule Dx'
+            ];
+        }
 
         var diagnosticList = null;
         var foundDiagnosticList = false;
@@ -1219,6 +1282,10 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var padding = {top: 30, right: 30, bottom: 50, left: 30}; //padding of the actual plot
         var width = containerWidth - margin.left - margin.right;
         var height = containerHeight - margin.top - margin.bottom;
+        if (height < 0) {
+            containerHeight = 250;
+            height = 80;
+        }
         var radius = 8;
         var ref_stroke_clr = "#ccc";
         var format = d3.time.format("%b %d");//d3.time.format("%m/%d/%y");
@@ -3498,8 +3565,9 @@ angular.module('openeis-ui.directives.analysis-report', [])
               LoopDifferentialPressureSetPoint: 'Magenta',
               PumpStatus: 'Chocolate',
               BoilerStatus: 'blueviolet',
-              HotWaterPumpVfd: 'Green'
-          };
+              HotWaterPumpVfd: 'Green',
+              HotWaterDeltaT: 'Brown'
+            };
 
             function plotTempChart(data, allPoints, points, colors, args) {
                 //Set UI Args
@@ -3545,6 +3613,20 @@ angular.module('openeis-ui.directives.analysis-report', [])
                         }),
                         scale: y1Scale
                     }
+                    ySeries['HotWaterDeltaT'] = {
+                        name: 'HotWaterDeltaT',
+                        color: colors['HotWaterDeltaT'],
+                        data: data.map(function (d) {
+                            return {
+                                x: d[args.Timestamp],
+                                y: d[points.HotWaterSupplyTemperature]-d[points.HotWaterReturnTemperature]
+                            };
+                        }),
+                        scale: y1Scale
+                    }
+
+
+
                 }
                 if (existPoint('HotWaterTemperatureSetPoint', points)) {
                     ySeries['HotWaterTemperatureSetPoint'] = {
@@ -3892,41 +3974,424 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //$('.rickshaw_graph .y_ticks text').attr('dy', '0');
 
         }
+
+    function setpointDetectorSVG(data) {
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points:
+        // this should match the output_format received from the server
+        var allPoints = {
+            ZoneTemperature: 'ZoneTemperature',
+            ZoneTemperatureSetPoint: 'ZoneTemperatureSetPoint',
+            FanStatus: 'FanStatus'
+        };
+
+
+        var counts = {};
+        var points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
+        }
+
+        var colors = {};
+        var i = 0;
+        for (var point in points) {
+            colors[point] = getColor(i++);
+        }
+
+        function plotSetPointChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('ZoneTemperature', points) &&
+                !existPoint('FanStatus', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([60, 80]);
+            var y2Scale = d3.scale.linear().domain([0, 5]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {};
+            var real_data = data.filter(function(d){
+                if (d['type'] == 'data') {
+                    return true;
+                }
+                return false;
+            });
+            if (existPoint('ZoneTemperature', points)) {
+                ySeries['ZoneTemperature'] = {
+                    name: points.ZoneTemperature,
+                    color: colors.ZoneTemperature,
+                    renderer: 'line',
+                    interpolation: 'linear',
+                    data: real_data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.ZoneTemperature]};
+                    }),
+                    scale: y1Scale
+                }
+            }
+            if (existPoint('FanStatus', points)) {
+                ySeries['FanStatus'] = {
+                    name: points.FanStatus,
+                    color: colors.FanStatus,
+                    renderer: 'bar',
+                    //interpolation: 'step-after',
+                    data: real_data.map(function (d) {
+                        return {x: d[args.Timestamp], y: d[points.FanStatus]};
+                    }),
+                    scale: y2Scale
+                }
+            }
+            if (existPoint('ZoneTemperatureSetPoint', points)) {
+                //Filter out setpoint values
+                setpoints = data.filter(function(d) {
+                    if (d['type'] == 'setpoint')
+                            return true;
+                        return false;
+                });
+                //Build new setpoint values (based on zone temp) for displaying
+                numSetpoints = setpoints.length;
+                if (numSetpoints > 0) {
+                    //Sort setpoints first
+                    setpoints.sort(function(a,b) {return a[args.Timestamp]-b[args.Timestamp]});
+                    //Interpolate setpoint values for visualization purpose
+                    setpoints_viz = real_data.map(function (d) {
+                        for (i=0; i<numSetpoints; i++){
+                            if (d[args.Timestamp] < setpoints[i][args.Timestamp])
+                                break;
+                        }
+                        if (i>=numSetpoints) {
+                            i = numSetpoints - 1;
+                        }
+                        return {x: d[args.Timestamp], y: setpoints[i][points.ZoneTemperatureSetPoint]};
+                    });
+                    ySeries['ZoneTemperatureSetPoint'] = {
+                        name: points.ZoneTemperatureSetPoint,
+                        color: colors.ZoneTemperatureSetPoint,
+                        renderer: 'line',
+                        interpolation: 'step-after',
+                        data: setpoints_viz,
+                        scale: y1Scale
+                    }
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                series: plotSeries,
+                renderer: 'multi'
+                //interpolation: 'linear'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
+        });
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
+        var tArgs = {
+            Timestamp: fTsName,
+            Title: 'Time series data',
+            Container: '#temps-chart-box',
+            TimeUnit: timeUnit
+        };
+        plotSetPointChart(data, allPoints, points, colors, tArgs);
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+    }
+
+    function loadProfileSVG(data) {
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points:
+        // this should match the output_format received from the server
+        var allPoints = {
+            Load: 'load'
+        };
+
+        var counts = {};
+        var points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
+        }
+
+        var colors = {};
+        var i = 0;
+        // for (var point in points) {
+        //     colors[point] = getColor(i++);
+        // }
+        for (i=0; i<5; i++)
+        {
+            colors[i] = getColor(i);
+        }
+
+        function plotLoadProfileChart(allPoints, points, colors, args,
+                                      allDays, allWeekdays, allSatdays, allSundays, allHolidays) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('Load', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
+
+            var ySeries = {};
+            ySeries['DailyLoad'] = {
+                    name: 'Daily Load',
+                    xName: 'Hour',
+                    color: colors[0],
+                    data: allDays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+            ySeries['WeekdayLoad'] = {
+                    name: 'Weekday Load',
+                    xName: 'Hour',
+                    color: colors[1],
+                    data: allWeekdays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+            ySeries['SaturdayLoad'] = {
+                    name: 'Saturday Load',
+                    xName: 'Hour',
+                    color: colors[2],
+                    data: allSatdays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+            ySeries['SundayLoad'] = {
+                    name: 'Sunday Load',
+                    xName: 'Hour',
+                    color: colors[3],
+                    data: allSundays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+            ySeries['HolidayLoad'] = {
+                    name: 'Holiday Load',
+                    xName: 'Hour',
+                    color: colors[4],
+                    data: allHolidays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: [
+                    ySeries['DailyLoad'],
+                    ySeries['WeekdayLoad'],
+                    ySeries['SaturdayLoad'],
+                    ySeries['SundayLoad'],
+                    ySeries['HolidayLoad'],
+                ]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Hour')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Energy (kWh)')
+            });
+            yAxis.render();
+        }
+
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
+        });
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        //Load profile for all data'
+        var args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - All Days',
+          Container: '#loadprofile-chart-box'
+        };
+        var allDays = parseLoadProfileAllData(data,'A');
+        var allWeekdays = parseLoadProfileAllData(data,'W');
+        var allSatdays = parseLoadProfileAllData(data,'Sat');
+        var allSundays = parseLoadProfileAllData(data,'Sun');
+        var allHolidays = parseLoadProfileAllData(data,'H');
+        plotLoadProfileChart(allPoints, points, colors, args, allDays, allWeekdays, allSatdays, allSundays, allHolidays);
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+    }
+
+    function parseLoadProfileAllData(data, filter) {
+        //filter: 'A' alldays, 'W', 'H', 'Sat', 'Sun', 'H'
+
+        sums = [];
+        counts = [];
+        avgs = [];
+        result = [];
+        for (i=0; i<24; i++)
+        {
+            sums[i] = 0;
+            counts[i] = 0;
+            avgs[i] = 0;
+        }
+
+        data.forEach(function(d) {
+            if (filter=='A' || d.daytype==filter) {
+                var dt1 = parseDate(d.datetime);
+                var dateParts = formatDate(dt1);
+                var hr = dt1.getHours(); //0-based
+                sums[hr] += d.load;
+                counts[hr] += 1;
+            }
+        });
+
+        for (i=0; i<24; i++) {
+            if (counts[i]>0)
+                avgs[i] = sums[i]/counts[i];
+            result.push({'Hour': i, 'load':avgs[i]});
+        }
+        return result;
+    }
+
 });
 
-
-//File changes for Ecam:
-//openeis:
-//0. applications/ecam.py, reports/__init__.py
-//openeis-ui:
-//1. objects.ecam.scss, objects.rickshaw.scss
-//2. analysisReport.js, jquery-1.11.2.min.js, rickshaw.js, rickshaw_ex.js
-//Question: how to run testing w/o running the UI: ecam_config.py
-// python ./env/bin/openeis-script.py runapplication openeis/applications/economizer_rcx_config.ini
-//  There should be no space in the inputs in the config file
-//  python ./env/bin/openeis-script.py runapplication openeis/applications/ecam_config.ini
-//Bug: RAT is not mapped but it is displayed as 0, should not be displayed at all
-
-
-//Changes:
-//Overcome the non-optional output data format in OpenEIS (OpenEIS uses table-like output so fields with no data are translated as null in the frontend
-//      Empty fields should not exist in the JSON output
-//Add extra sensor points for Zones
-//Rickshaw doesn't support missing data points, thus having exception when the number of points in all series is not matched
-//  -> Could insert n fake points (n=the number of missing points) where fake point is the first point (insert to the beginning)
-//                  -> or fake point is the last point (insert to the end)
-
-
-//Missing zone sensor: FanStatus
-
-
-
-//Add TerminalBoxFanAirflow, ZoneTemperatureSetPoint point to the sensor list, fix the Ecam for AHU, ask Robert how to run multiple zones
-
-//Rickshaw: there is a weird jump up or down of extra lines when there is a big change in value. Check if it's because chart type is spline (smoothing) instead of line
-//Unit on the Y axis
-//Labels on X axis should be drawn below the x-axis
-//Remove the vertical or horizontal gridlines? especially when there are 2 Y axes...
-
-//JOBS OPENEIS JENKINS
-//https://ci.pnnl.gov/jenkins/job/openeis/job/OpenEIS/job/create-setup-package/
