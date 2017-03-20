@@ -118,7 +118,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 case 'ScatterPlot':
                     // TODO: plot all datasets on a single scatterplot
                     angular.forEach(reportElement.xy_dataset_list, function (dataset) {
-                        console.log(dataset);
                         var data = [];
                         angular.forEach(scope.arData[dataset.table_name], function (row) {
                             data.push({ x: row[dataset.x_column], y: row[dataset.y_column] });
@@ -192,6 +191,56 @@ angular.module('openeis-ui.directives.analysis-report', [])
                             </div>\
                           </div>"));
                     loadProfileSVG(scope.arData[reportElement.table_name],0);
+                    break;
+
+                case 'LoadProfileRx':
+                    element.append(angular.element('<div class="load-profile-rx" />')
+                        .html("<div id='loadprofile-alldays-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='loadprofile-weekdays-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='loadprofile-sat-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='loadprofile-sun-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>\
+                          <div id='loadprofile-holidays-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    loadProfileRxSVG(scope.arData[reportElement.table_name],0);
                     break;
 
                 case 'RxStaticPressure':
@@ -849,6 +898,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function getTimeUnit(startTime, endTime, timeArr) {
+        var dow = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         //var timeUnit = defTimeUnit(d[0][fTsName],d[-1][fTsName],[d[0][fTsName],d[1][fTsName],d[2][fTsName]]);
         //Determine timestamp using timeArr: (end-start)/step
         var stepArr = [];
@@ -885,8 +935,10 @@ angular.module('openeis-ui.directives.analysis-report', [])
 			name: 'day',
 			seconds: 86400,
 			formatter: function(d) {
-                return (new Rickshaw.Fixtures.Time()).formatDate(d);
-                //return d.getMonth() + "-" + d.getDate() + "-" + d.getYear();
+                //return (new Rickshaw.Fixtures.Time()).formatDate(d);
+                return dow[d.getDay()] + ' ' +d.getMonth() +
+                    "-" + d.getDate() +
+                    "-" + d.getFullYear().toString().substr(2,2);
             }
 		}, {
 			name: '6 hour',
@@ -1768,7 +1820,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {}
             if (existPoint('OATemp', points)) {
                 ySeries['OATemp'] = {
-                    name: points.OATemp,
+                    name: 'Outdoor Air Temperature',
                     color: colors.OATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OATemp]};
@@ -1778,7 +1830,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('MATemp', points)) {
                 ySeries['MATemp'] = {
-                    name: points.MATemp,
+                    name: 'Mixed Air Temperature',
                     color: colors.MATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.MATemp]};
@@ -1788,7 +1840,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('RATemp', points)) {
                 ySeries['RATemp'] = {
-                    name: points.RATemp,
+                    name: 'Return Air Temperature',
                     color: colors.RATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.RATemp]};
@@ -1798,7 +1850,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('OAF', points)) {
                 ySeries['OAF'] = {
-                    name: points.OAF,
+                    name: 'Outdoor Air Fraction',
                     color: colors.OAF,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OAF]};
@@ -1809,7 +1861,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
             if (existPoint('DATemp', points)) {
                 ySeries['DATemp'] = {
-                    name: points.DATemp,
+                    name: 'Discharge Air Temperature',
                     color: colors.DATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DATemp]};
@@ -1819,7 +1871,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('OADamper', points)) {
                 ySeries['OADamper'] = {
-                    name: points.OADamper,
+                    name: 'Outdoor Damper Signal',
                     color: colors.OADamper,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OADamper]};
@@ -1955,7 +2007,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('OATemp', points)) {
                 ySeries['OATemp'] = {
-                    name: points.OATemp,
+                    name: 'Outdoor Air Temperature',
                     color: colors.OATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OATemp]};
@@ -1965,7 +2017,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('DATemp', points)) {
                 ySeries['DATemp'] = {
-                    name: points.DATemp,
+                    name: 'Discharge Air Temperature',
                     color: colors.DATemp,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DATemp]};
@@ -1975,7 +2027,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('DATempSetPoint', points)) {
                 ySeries['DATempSetPoint'] = {
-                    name: points.DATempSetPoint,
+                    name: 'Discharge Air Temperature Set Point',
                     color: colors.DATempSetPoint,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DATempSetPoint]};
@@ -1985,7 +2037,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('OADamper', points)) {
                 ySeries['OADamper'] = {
-                    name: points.OADamper,
+                    name: 'Outdoor Damper Signal',
                     color: colors.OADamper,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OADamper]};
@@ -1995,7 +2047,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('CCValve', points)) {
                 ySeries['CCValve'] = {
-                    name: points.CCValve,
+                    name: 'Cooling Coil Valve Position',
                     color: colors.CCValve,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.CCValve]};
@@ -2005,7 +2057,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('HCValve', points)) {
                 ySeries['HCValve'] = {
-                    name: points.HCValve,
+                    name: 'Heating Coil Valve Position',
                     color: colors.HCValve,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.HCValve]};
@@ -2192,14 +2244,14 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
         var tArgs = {
             Timestamp: fTsName,
-            Title: 'Temperatures',
+            Title: 'AHU Economizer Performance Evaluation',
             Container: '#temps-chart-box',
             TimeUnit: timeUnit
         };
         plotTempsChart(data, allPoints, points, colors, tArgs);
         var hcvArgs = {
             Timestamp: fTsName,
-            Title: 'DATSP, DAT, OAT, OAD, CCV, HCV vs. Time',
+            Title: 'AHU Discharge Cooling and Economizer Performance Analysis',
             Container: '#hcv-box',
             TimeUnit: timeUnit
         };
@@ -2207,7 +2259,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         //Plot this one last because it sorts the data in-place
         var motArgs = {
             Timestamp: fTsName,
-            Title: 'Mixed Air vs. Outdoor Air',
+            Title: 'Seasonal AHU Mixed Air Temperature Response Analysis',
             Container: '#mat-oat-box'
         };
         plotMaOaTempChart(data, allPoints, points, colors, motArgs);
@@ -2220,7 +2272,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function ahu_ecam(data) {
-        console.log(data);
+        //console.log(data);
         var rawTsName = 'datetime';
 
         //object to contain definition for points
@@ -2296,7 +2348,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('OutdoorAirTemperature', points)) {
                 ySeries['OutdoorAirTemperature'] = {
-                    name: points.OutdoorAirTemperature,
+                    name: 'Outdoor Air Temperature',
                     color: colors.OutdoorAirTemperature,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
@@ -2316,7 +2368,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('OutdoorDamper', points)) {
                 ySeries['OutdoorDamper'] = {
-                    name: points.OutdoorDamper,
+                    name: 'Outdoor Damper Signal',
                     color: colors.OutdoorDamper,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OutdoorDamper]};
@@ -2326,7 +2378,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('OccupancyMode', points)) {
                 ySeries['OccupancyMode'] = {
-                    name: points.OccupancyMode,
+                    name: 'Occupancy Mode',
                     color: colors.OccupancyMode,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OccupancyMode]};
@@ -2437,7 +2489,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('DuctStaticPressure', points)) {
                 ySeries['DuctStaticPressure'] = {
-                    name: points.DuctStaticPressure,
+                    name: 'Duct Static Pressure',
                     color: colors.DuctStaticPressure,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DuctStaticPressure]};
@@ -2447,7 +2499,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('DuctStaticPressureSetPoint', points)) {
                 ySeries['DuctStaticPressureSetPoint'] = {
-                    name: points.DuctStaticPressureSetPoint,
+                    name: 'Duct Static Pressure Set Point',
                     color: colors.DuctStaticPressureSetPoint,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DuctStaticPressureSetPoint]};
@@ -2457,7 +2509,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('SupplyFanSpeed', points)) {
                 ySeries['SupplyFanSpeed'] = {
-                    name: points.SupplyFanSpeed,
+                    name: 'Supply Fan Speed',
                     color: colors.SupplyFanSpeed,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.SupplyFanSpeed]};
@@ -2568,7 +2620,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('OutdoorAirTemperature', points)) {
                 ySeries['OutdoorAirTemperature'] = {
-                    name: points.OutdoorAirTemperature,
+                    name: 'Outdoor Air Temperature',
                     color: colors.OutdoorAirTemperature,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
@@ -2578,7 +2630,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('CCV', points)) {
                 ySeries['CCV'] = {
-                    name: points.CCV,
+                    name: 'Cooling Coil Valve Position',
                     color: colors.CCV,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.CCV]};
@@ -2588,7 +2640,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('HCV', points)) {
                 ySeries['HCV'] = {
-                    name: points.HCV,
+                    name: 'Heating Coil Valve Position',
                     color: colors.HCV,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.HCV]};
@@ -2699,7 +2751,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('OutdoorAirTemperature', points)) {
                 ySeries['OutdoorAirTemperature'] = {
-                    name: points.OutdoorAirTemperature,
+                    name: 'Outdoor Air Temperature',
                     color: colors.OutdoorAirTemperature,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
@@ -2709,7 +2761,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('DischargeAirTemperature', points)) {
                 ySeries['DischargeAirTemperature'] = {
-                    name: points.DischargeAirTemperature,
+                    name: 'Discharge Air Temperature',
                     color: colors.DischargeAirTemperature,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DischargeAirTemperature]};
@@ -2719,7 +2771,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('DischargeAirTemperatureSetPoint', points)) {
                 ySeries['DischargeAirTemperatureSetPoint'] = {
-                    name: points.DischargeAirTemperatureSetPoint,
+                    name: 'Discharge Air Temperature Set Point',
                     color: colors.DischargeAirTemperatureSetPoint,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DischargeAirTemperatureSetPoint]};
@@ -2819,7 +2871,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
             if (existPoint('DuctStaticPressure', points)) {
                 ySeries['DuctStaticPressure'] = {
-                    name: points.DuctStaticPressure,
+                    name: 'Duct Static Pressure',
                     color: colors.DuctStaticPressure,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.DuctStaticPressure]};
@@ -2829,7 +2881,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('SupplyFanSpeed', points)) {
                 ySeries['SupplyFanSpeed'] = {
-                    name: points.SupplyFanSpeed,
+                    name: 'Supply Fan Speed',
                     color: colors.SupplyFanSpeed,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.SupplyFanSpeed]};
@@ -2839,7 +2891,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('SupplyFanStatus', points)) {
                 ySeries['SupplyFanStatus'] = {
-                    name: points.SupplyFanStatus,
+                    name: 'Supply Fan Status',
                     color: colors.SupplyFanStatus,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.SupplyFanStatus]};
@@ -2849,7 +2901,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('ReturnFanSpeed', points)) {
                 ySeries['ReturnFanSpeed'] = {
-                    name: points.ReturnFanSpeed,
+                    name: 'Return Fan Speed',
                     color: colors.ReturnFanSpeed,
                     data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.ReturnFanSpeed]};
@@ -2960,7 +3012,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('OutdoorDamper', points)) {
                 ySeries['OutdoorDamper'] = {
-                    name: points.OutdoorDamper,
+                    name: 'Outdoor Damper Signal',
                     xName: points.OutdoorAirTemperature,
                     color: colors.OutdoorDamper,
                     data: data.map(function (d) {
@@ -3040,7 +3092,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('SupplyFanSpeed', points)) {
                 ySeries['SupplyFanSpeed'] = {
-                    name: points.SupplyFanSpeed,
+                    name: 'Supply Fan Speed',
                     xName: points.ReturnFanSpeed,
                     color: colors.SupplyFanSpeed,
                     data: data.map(function (d) {
@@ -3119,7 +3171,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('HCV', points)) {
                 ySeries['HCV'] = {
-                    name: points.HCV,
+                    name: 'Heating Coil Valve Position',
                     xName: points.CCV,
                     color: colors.HCV,
                     data: data.map(function (d) {
@@ -3199,7 +3251,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('DischargeAirTemperature', points)) {
                 ySeries['DischargeAirTemperature'] = {
-                    name: points.DischargeAirTemperature,
+                    name: 'Discharge Air Temperature',
                     xName: points.DischargeAirTemperatureSetPoint,
                     color: colors.DischargeAirTemperature,
                     data: data.map(function (d) {
@@ -3271,7 +3323,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
         var tArgs = {
             Timestamp: fTsName,
-            Title: 'Time series data',
+            Title: 'AHU Economizer Response Analysis',
             Container: '#oa-chart-box1',
             TimeUnit: timeUnit
         };
@@ -3280,28 +3332,28 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Pressure vs Time',
+          Title: 'AHU Discharge Static Pressure Control Performance Analysis',
           Container: '#sp-chart-box1'
         };
         plotSPChart1(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Heating and Cooling Coils vs Time',
+          Title: 'AHU Simultaneous Heating and Cooling Performance Analysis',
           Container: '#coil-chart-box1'
         };
         plotCoilChart1(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Discharge Air Temperature vs Time',
+          Title: 'Discharge Air Temperature Set Point Performance Analysis',
           Container: '#discharge-chart-box1'
         };
         plotDischargeTempChart1(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Fan vs Time',
+          Title: 'AHU Operational Day, Night and Weekend Operations Analysis',
           Container: '#fan-chart-box1'
         };
         plotFanChart1(data, allPoints, points, colors, args);
@@ -3309,28 +3361,28 @@ angular.module('openeis-ui.directives.analysis-report', [])
         //All scatter charts need to be after this point
         var args = {
           Timestamp: fTsName,
-          Title: 'Outdoor Damper Position vs Outdoor Air Temperature',
+          Title: 'Seasonal AHU Economizer Damper Command Response Analysis',
           Container: '#oa-chart-box2'
         };
         plotOAChart2(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Supply Fan Speed vs Return Fan Speed',
+          Title: 'AHU VFD-Driven Fan Tracking (Supply and Return) Performance Analysis',
           Container: '#sp-chart-box2'
         };
         plotSPChart2(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Heating Coil Valve vs Cooling Coil Valve',
+          Title: 'AHU Heating and Cooling Coil Performance Analysis',
           Container: '#coil-chart-box2'
         };
         plotCoilChart2(data, allPoints, points, colors, args);
 
         var args = {
           Timestamp: fTsName,
-          Title: 'Discharge Air Temperature vs Discharge Air Temperature SetPoint',
+          Title: 'Discharge Air Temperature Control Performance Analysis',
           Container: '#discharge-chart-box2'
         };
         plotDischargeTempChart2(data, allPoints, points, colors, args);
@@ -3501,7 +3553,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element: document.querySelector(chartY2),
                     scale: y2Scale,
                     ticks: 5,
-                    label: labelY2('Command/Status')
+                    label: labelY2('Command Signal')
 
                     //tickValues: [0,20,40,60,80,100]
                 });
@@ -3534,7 +3586,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
             var tArgs = {
                 Timestamp: fTsName,
-                Title: 'Time series data',
+                Title: 'Zone Terminal Box Performance Analysis',
                 Container: '#temps-chart-box',
                 TimeUnit: timeUnit
             };
@@ -3611,7 +3663,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 var ySeries = {};
                 if (existPoint('HotWaterSupplyTemperature', points)) {
                     ySeries['HotWaterSupplyTemperature'] = {
-                        name: points.HotWaterSupplyTemperature,
+                        name: 'Hot Water Supply Temperature',
                         color: colors.HotWaterSupplyTemperature,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.HotWaterSupplyTemperature]};
@@ -3645,7 +3697,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
                 if (existPoint('HotWaterTemperatureSetPoint', points)) {
                     ySeries['HotWaterTemperatureSetPoint'] = {
-                        name: points.HotWaterTemperatureSetPoint,
+                        name: 'Hot Water Temperature Set Point',
                         color: colors.HotWaterTemperatureSetPoint,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.HotWaterTemperatureSetPoint]};
@@ -3655,7 +3707,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
                 if (existPoint('OutdoorAirTemperature', points)) {
                     ySeries['OutdoorAirTemperature'] = {
-                        name: points.OutdoorAirTemperature,
+                        name: 'Outdoor Air Temperature',
                         color: colors.OutdoorAirTemperature,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.OutdoorAirTemperature]};
@@ -3665,7 +3717,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
                 if (existPoint('ZoneSetPoint', points)) {
                     ySeries['ZoneSetPoint'] = {
-                        name: points.ZoneSetPoint,
+                        name: 'Zone Temperature Set Point',
                         color: colors.ZoneSetPoint,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.ZoneSetPoint]};
@@ -3762,7 +3814,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 var ySeries = {};
                 if (existPoint('LoopDifferentialPressure', points)) {
                     ySeries['LoopDifferentialPressure'] = {
-                        name: points.LoopDifferentialPressure,
+                        name: 'Loop Differential Pressure',
                         color: colors.LoopDifferentialPressure,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.LoopDifferentialPressure]};
@@ -3772,7 +3824,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
                 if (existPoint('LoopDifferentialPressureSetPoint', points)) {
                     ySeries['LoopDifferentialPressureSetPoint'] = {
-                        name: points.LoopDifferentialPressureSetPoint,
+                        name: 'Loop Differential Pressure SetPoint',
                         color: colors.LoopDifferentialPressureSetPoint,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.LoopDifferentialPressureSetPoint]};
@@ -3782,7 +3834,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
                 if (existPoint('HotWaterPumpVfd', points)) {
                     ySeries['HotWaterPumpVfd'] = {
-                        name: points.HotWaterPumpVfd,
+                        name: 'Hot Water Pump Vfd',
                         color: colors.HotWaterPumpVfd,
                         data: data.map(function (d) {
                             return {x: d[args.Timestamp], y: d[points.HotWaterPumpVfd]};
@@ -3852,7 +3904,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     element: document.querySelector(chartY2),
                     scale: y2Scale,
                     ticks: 5,
-                    label: labelY2('Command/Status')
+                    label: labelY2('Command Signal')
                     //tickValues: [0,20,40,60,80,100]
                 });
                 yAxis2.render();
@@ -3891,7 +3943,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var ySeries = {};
             if (existPoint('HotWaterSupplyTemperature', points)) {
                 ySeries['HotWaterSupplyTemperature'] = {
-                    name: points.HotWaterSupplyTemperature,
+                    name: 'Hot Water Supply Temperature',
                     xName: points.OutdoorAirTemperature,
                     color: colors.HotWaterSupplyTemperature,
                     data: data.map(function (d) {
@@ -3964,7 +4016,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
             var tArgs = {
                 Timestamp: fTsName,
-                Title: 'Hot Water Temperature',
+                Title: 'Hot Water Plant Set Point Performance Analysis',
                 Container: '#temp-box',
                 TimeUnit: timeUnit
             };
@@ -3972,14 +4024,14 @@ angular.module('openeis-ui.directives.analysis-report', [])
             //Plot this one last because it sorts the data in-place
             var args = {
               Timestamp: fTsName,
-              Title: 'Hot Water Pressure',
+              Title: 'Hot Water Plant Loop Differential Pressure Set Point Performance Analysis',
               Container: '#pressure-box',
               TimeUnit: timeUnit
             };
             plotPressureChart(data, allPoints, points, colors, args);
             var args = {
               Timestamp: fTsName,
-              Title: 'Hot Water Supply Temp and Outdoor Temp',
+              Title: 'Seasonal Hot Water Temperature Response Analysis',
               Container: '#hws-oat-box'
             };
             plotHWS_OATChart(data, allPoints, points, colors, args);
@@ -4016,6 +4068,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 }
             }
         }
+
 
         var counts = {};
         var points = {}; //Points actually used for visualization
@@ -4109,7 +4162,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                         return {x: d[args.Timestamp], y: setpoints[i][points.ZoneTemperatureSetPoint]};
                     });
                     ySeries['ZoneTemperatureSetPoint'] = {
-                        name: points.ZoneTemperatureSetPoint,
+                        name: 'Zone Temperature Set Point',
                         color: colors.ZoneTemperatureSetPoint,
                         renderer: 'line',
                         interpolation: 'step-after',
@@ -4640,6 +4693,175 @@ angular.module('openeis-ui.directives.analysis-report', [])
         $(".rs-chart-container.hidden").removeClass("hidden");
     }
 
+    function loadProfileRxSVG(data) {
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points:
+        // this should match the output_format received from the server
+        var allPoints = {
+            Load: 'load'
+        };
+
+        var counts = {};
+        var points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
+        }
+
+        var colors = {};
+        var i = 0;
+        // for (var point in points) {
+        //     colors[point] = getColor(i++);
+        // }
+        for (i=0; i<5; i++)
+        {
+            colors[i] = getColor(i);
+        }
+
+        function plotLoadProfileRxChart(allPoints, points, colors, args, predays, postdays) {
+            //Set UI Args
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('Load', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
+
+            var ySeries = {};
+            ySeries['PreLoad'] = {
+                    name: 'Pre Rx Load',
+                    xName: 'Hour',
+                    color: colors[0],
+                    data: predays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+            ySeries['PostLoad'] = {
+                    name: 'Post Rx Load',
+                    xName: 'Hour',
+                    color: colors[1],
+                    data: postdays.map(function (d) {
+                        return {x: d['Hour'], y: d[points.Load]};
+                    })
+                };
+
+            //Plotting
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                renderer: 'line',
+                series: [
+                    ySeries['PreLoad'],
+                    ySeries['PostLoad']
+                ]
+            });
+            graph.renderer.dotSize = 2;
+            graph.render();
+            //Tooltip for hovering
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var xValue = '<span style="padding-right:50px;">' + series.xName + ": " + parseFloat(x) + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y) + '<br>' + xValue;
+//                    return content;
+//                }
+//            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.X({
+                graph: graph,
+                label: labelX('Hour')
+            });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                label: labelY1('Energy (kWh)')
+            });
+            yAxis.render();
+        }
+
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
+        });
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        //Load profile for all data'
+        var alldays_args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - All Days',
+          Container: '#loadprofile-alldays-chart-box'
+        };
+        var weekdays_args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - Week Days',
+          Container: '#loadprofile-weekdays-chart-box'
+        };
+        var sat_args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - Saturday',
+          Container: '#loadprofile-sat-chart-box'
+        };
+        var sun_args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - Sunday',
+          Container: '#loadprofile-sun-chart-box'
+        };
+        var holidays_args = {
+          Timestamp: fTsName,
+          Title: 'Daily Load Profile - Holidays',
+          Container: '#loadprofile-holidays-chart-box'
+        };
+        var pre_allDays = parseLoadProfileAllDataRx(data,'A','pre');
+        var pre_allWeekdays = parseLoadProfileAllDataRx(data,'W','pre');
+        var pre_allSatdays = parseLoadProfileAllDataRx(data,'Sat','pre');
+        var pre_allSundays = parseLoadProfileAllDataRx(data,'Sun','pre');
+        var pre_allHolidays = parseLoadProfileAllDataRx(data,'H','pre');
+        var post_allDays = parseLoadProfileAllDataRx(data,'A','post');
+        var post_allWeekdays = parseLoadProfileAllDataRx(data,'W','post');
+        var post_allSatdays = parseLoadProfileAllDataRx(data,'Sat','post');
+        var post_allSundays = parseLoadProfileAllDataRx(data,'Sun','post');
+        var post_allHolidays = parseLoadProfileAllDataRx(data,'H','post');
+        plotLoadProfileRxChart(allPoints, points, colors, alldays_args, pre_allDays, post_allDays);
+        plotLoadProfileRxChart(allPoints, points, colors, weekdays_args, pre_allWeekdays, post_allWeekdays);
+        plotLoadProfileRxChart(allPoints, points, colors, sat_args, pre_allSatdays, post_allSatdays);
+        plotLoadProfileRxChart(allPoints, points, colors, sun_args, pre_allSundays, post_allSundays);
+        plotLoadProfileRxChart(allPoints, points, colors, holidays_args, pre_allHolidays, post_allHolidays);
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+    }
+
     function parseLoadProfileAllData(data, filter) {
         //filter: 'A' alldays, 'W', 'H', 'Sat', 'Sun', 'H'
 
@@ -4656,6 +4878,38 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         data.forEach(function(d) {
             if (filter=='A' || d.daytype==filter) {
+                var dt1 = parseDate(d.datetime);
+                var dateParts = formatDate(dt1);
+                var hr = dt1.getHours(); //0-based
+                sums[hr] += d.load;
+                counts[hr] += 1;
+            }
+        });
+
+        for (i=0; i<24; i++) {
+            if (counts[i]>0)
+                avgs[i] = sums[i]/counts[i];
+            result.push({'Hour': i, 'load':avgs[i]});
+        }
+        return result;
+    }
+
+    function parseLoadProfileAllDataRx(data, daytype_filter, rx_filter) {
+        //daytype_filter: 'A' alldays, 'W', 'H', 'Sat', 'Sun', 'H'
+
+        sums = [];
+        counts = [];
+        avgs = [];
+        result = [];
+        for (i=0; i<24; i++)
+        {
+            sums[i] = 0;
+            counts[i] = 0;
+            avgs[i] = 0;
+        }
+
+        data.forEach(function(d) {
+            if ((daytype_filter=='A' || d.daytype==daytype_filter) && d.rxtype==rx_filter) {
                 var dt1 = parseDate(d.datetime);
                 var dateParts = formatDate(dt1);
                 var hr = dt1.getHours(); //0-based
