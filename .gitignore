@@ -5,3 +5,4 @@ __pycache__
 /bower_components/
 /node_modules/
 /openeis/ui/static/
+.idea/
