@@ -165,6 +165,21 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     setpointDetectorSVG(scope.arData[reportElement.table_name],0);
                     break;
 
+                case 'CyclingDetector':
+                    element.append(angular.element('<div class="cycling-detector" />')
+                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
+                            <div class='title noselect'></div>\
+                            <div class='rs-chart-area time-series'>\
+                              <div class='rs-y-axis'></div>\
+                              <div class='rs-chart'></div>\
+                              <div class='rs-y-axis2'></div>\
+                              <div class='rs-legend'></div>\
+                              <div class='rs-slider'></div>\
+                            </div>\
+                          </div>"));
+                    cyclingDetectorSVG(scope.arData[reportElement.table_name],0);
+                    break;
+
                 case 'LoadProfile':
                     element.append(angular.element('<div class="load-profile" />')
                         .html("<div id='loadprofile-chart-box' class='rs-chart-container hidden'>\
@@ -3980,12 +3995,27 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         //object to contain definition for points:
         // this should match the output_format received from the server
-        var allPoints = {
+        var allPointsPrefix = {
             ZoneTemperature: 'ZoneTemperature',
             ZoneTemperatureSetPoint: 'ZoneTemperatureSetPoint',
             FanStatus: 'FanStatus'
         };
 
+        var allPoints = {};
+        if (data.length > 0) {
+            d = data[0];
+            for (var k in d){ //k is input data point name
+                if (d.hasOwnProperty(k)) {
+                    for (var point in allPointsPrefix) {
+                        if (allPointsPrefix.hasOwnProperty(point)) {
+                            if (k == allPointsPrefix[point]) {
+                                allPoints[k] = k;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         var counts = {};
         var points = {}; //Points actually used for visualization
@@ -4013,8 +4043,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             document.querySelector(chartTitle).innerHTML = args.Title;
 
             //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
-            if (!existPoint('ZoneTemperature', points) &&
-                !existPoint('FanStatus', points))
+            if (!existPoint('ZoneTemperature', points))
             {
                 $(container).find(".rs-chart-area").toggle();
                 return false;
@@ -4034,7 +4063,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             });
             if (existPoint('ZoneTemperature', points)) {
                 ySeries['ZoneTemperature'] = {
-                    name: points.ZoneTemperature,
+                    name: 'Zone Temperature',
                     color: colors.ZoneTemperature,
                     renderer: 'line',
                     interpolation: 'linear',
@@ -4046,7 +4075,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             if (existPoint('FanStatus', points)) {
                 ySeries['FanStatus'] = {
-                    name: points.FanStatus,
+                    name: 'Fan Status',
                     color: colors.FanStatus,
                     renderer: 'bar',
                     //interpolation: 'step-after',
@@ -4184,11 +4213,261 @@ angular.module('openeis-ui.directives.analysis-report', [])
         var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
         var tArgs = {
             Timestamp: fTsName,
-            Title: 'Time series data',
+            Title: 'Temperature Set Point Detection',
             Container: '#temps-chart-box',
             TimeUnit: timeUnit
         };
         plotSetPointChart(data, allPoints, points, colors, tArgs);
+
+        $(".rs-chart-container.hidden").removeClass("hidden");
+    }
+
+    function filterAndMapData(data, ts, pointName) {
+        var real_data = data.filter(function(d){
+            if (d[pointName] > -9999) {
+                return true;
+            }
+            return false;
+        }).map(function (d) {
+            return {x: d[ts], y: d[pointName]};
+        });
+        return real_data;
+    }
+
+    function cyclingDetectorSVG(data) {
+        var rawTsName = 'datetime';
+
+        //object to contain definition for points:
+        // this should match the output_format received from the server
+        var allPointsPrefix = {
+            ZoneTemperature: 'ZoneTemperature',
+            ZoneTemperatureSetPoint: 'ZoneTemperatureSetPoint',
+            FanStatus: 'FanStatus',
+            ComprStatus: 'ComprStatus',
+            cycling: 'cycling'
+        };
+
+        var allPoints = {};
+        if (data.length > 0) {
+            d = data[0];
+            for (var k in d){ //k is input data point name
+                if (d.hasOwnProperty(k)) {
+                    for (var point in allPointsPrefix) {
+                        if (allPointsPrefix.hasOwnProperty(point)) {
+                            if (k == allPointsPrefix[point]) {
+                                allPoints[k] = k;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        var counts = {};
+        var points = {}; //Points actually used for visualization
+        for (var prop in allPoints) {
+            counts[prop] = 0;
+            points[prop] = allPoints[prop];
+        }
+
+        var colors = {};
+        var i = 0;
+        for (var point in points) {
+            colors[point] = getColor(i++);
+        }
+
+        function plotCyclingChart(data, allPoints, points, colors, args) {
+            //Set UI Args
+            var timeUnit = args.TimeUnit;
+            var container = args.Container;
+            var chartId = container + " .rs-chart";
+            var chartY = container + " .rs-y-axis";
+            var chartY2 = container + " .rs-y-axis2";
+            var chartLegend = container + " .rs-legend";
+            var chartTitle = container + " .title";
+            var chartSlider = container + " .rs-slider";
+            document.querySelector(chartTitle).innerHTML = args.Title;
+
+            //if (!(existPoint(rawTsName, points) && existPoint(allPoints.ZoneTemp, points))) return false;
+            if (!existPoint('ZoneTemperature', points) &&
+                !existPoint('FanStatus', points))
+            {
+                $(container).find(".rs-chart-area").toggle();
+                return false;
+            }
+
+            //TODO: Change the min max of y1Scale
+            var y1Scale = d3.scale.linear().domain([60, 80]);
+            var y2Scale = d3.scale.linear().domain([0, 15]);
+            //Set up data series: change this for different data sources
+
+            var ySeries = {};
+            if (existPoint('ZoneTemperature', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.ZoneTemperature);
+                if (filteredData.length > 0) {
+                    ySeries['ZoneTemperature'] = {
+                        name: 'Zone Temperature',
+                        color: colors.ZoneTemperature,
+                        renderer: 'line',
+                        interpolation: 'linear',
+                        data: filteredData,
+                        scale: y1Scale
+                    }
+                }
+            }
+            if (existPoint('FanStatus', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.FanStatus);
+                if (filteredData.length > 0) {
+                    ySeries['FanStatus'] = {
+                        name: 'Fan Status',
+                        color: colors.FanStatus,
+                        //renderer: 'bar',
+                        renderer: 'line',
+                        interpolation: 'step-after',
+                        data: filteredData,
+                        scale: y2Scale
+                    }
+                }
+            }
+            if (existPoint('ZoneTemperatureSetPoint', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.ZoneTemperatureSetPoint);
+                if (filteredData.length > 0) {
+                    ySeries['ZoneTemperatureSetPoint'] = {
+                        name: 'Zone Temperature SetPoint',
+                        color: colors.ZoneTemperatureSetPoint,
+                        renderer: 'line',
+                        interpolation: 'linear',
+                        data: filteredData,
+                        scale: y1Scale
+                    }
+                }
+            }
+            if (existPoint('ComprStatus', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.ComprStatus);
+                if (filteredData.length > 0) {
+                    ySeries['ComprStatus'] = {
+                        name: 'Compressor Status',
+                        color: colors.ComprStatus,
+                        renderer: 'bar',
+                        //interpolation: 'step-after',
+                        data: filteredData,
+                        scale: y2Scale
+                    }
+                }
+            }
+            if (existPoint('cycling', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.cycling);
+                if (filteredData.length > 0) {
+                    ySeries['cycling'] = {
+                        name: 'Cycling',
+                        color: colors.cycling,
+                        renderer: 'bar',
+                        //interpolation: 'step-after',
+                        data: filteredData,
+                        scale: y2Scale
+                    }
+                }
+            }
+            //Plotting
+            var plotSeries = [];
+            angular.forEach(ySeries, function (value, key) {
+                plotSeries.push(value);
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector(chartId),
+                series: plotSeries,
+                renderer: 'multi'
+                //interpolation: 'linear'
+            });
+            graph.render();
+
+            //Tooltip for hovering
+//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+//                graph: graph,
+//                formatter: function (series, x, y) {
+//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+//                    return content;
+//                }
+//            });
+            //Display & Toggle Legends
+            var legend = new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.querySelector(chartLegend)
+            });
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+            //Render X Y Axes
+            var xAxis = new Rickshaw.Graph.Axis.ExtendedTime(
+                {
+                    graph: graph,
+                    orientation: "bottom",
+                    //tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                    pixelsPerTick: 50,
+                    tickSpacing: 6 * 60 * 60, // 6 hours
+                    timeUnit: timeUnit
+
+                });
+            xAxis.render();
+            var yAxis = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0.0,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY),
+                scale: y1Scale,
+                label: labelY1()
+            });
+            yAxis.render();
+
+            var yAxis2 = new Rickshaw.Graph.Axis.Y.Scaled({
+                graph: graph,
+                berthRate: 0,
+                orientation: 'right',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.querySelector(chartY2),
+                scale: y2Scale,
+                ticks: 5,
+                label: labelY2()
+                //tickValues: [0,20,40,60,80,100]
+            });
+            yAxis2.render();
+
+            var slider = new Rickshaw.Graph.RangeSlider.Preview({
+                graph: graph,
+                element: document.querySelector(chartSlider)
+            });
+
+        }
+
+        var fTsName = 'FTimestamp';
+        //Assume data is sorted by Timestamp
+        data.forEach(function (d) {
+            //Output from OpenEIS in the format of YYYY-MM-DD HH:mm:ss+xx:xx
+            var t = d[rawTsName].split('+')[0];
+            t = t.replace(' ', 'T');
+            t = Date.parse(t) / 1000;
+            d[fTsName] = t;
+            parseDataType(d, points, counts);
+        });
+        //Delete key in points that have no data
+        for (var prop in counts) {
+            if (counts[prop] == 0) {
+                delete points[prop];
+            }
+        }
+
+        var timeUnit = getTimeUnit(data[0][fTsName], data[data.length - 1][fTsName], [data[0][fTsName], data[1][fTsName], data[2][fTsName]]);
+        var tArgs = {
+            Timestamp: fTsName,
+            Title: 'Compressor Cycling Diagnostics',
+            Container: '#temps-chart-box',
+            TimeUnit: timeUnit
+        };
+        plotCyclingChart(data, allPoints, points, colors, tArgs);
 
         $(".rs-chart-container.hidden").removeClass("hidden");
     }
