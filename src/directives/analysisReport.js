@@ -437,7 +437,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     break;
 
                 case 'HWPlantViz':
-                  element.append(angular.element('<div class="ecam" />')
+                    element.append(angular.element('<div class="ecam" />')
                     .html("<div id='temp-box' class='rs-chart-container hidden'>\
                         <div class='title noselect'></div>\
                         <div class='rs-chart-area time-series'>\
@@ -468,8 +468,8 @@ angular.module('openeis-ui.directives.analysis-report', [])
                           <div class='rs-slider'></div>\
                         </div>\
                       </div>"));
-                  hwplant_ecam(scope.arData[reportElement.table_name]);
-                  break;
+                    hwplant_ecam(scope.arData[reportElement.table_name]);
+                    break;
                 }
 
 
@@ -4531,7 +4531,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
         }
 
-
         var counts = {};
         var points = {}; //Points actually used for visualization
         for (var prop in allPoints) {
@@ -4575,8 +4574,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Zone Temperature',
                     color: colors.ZoneTemperature,
                     renderer: 'line',
-                    interpolation: 'linear',
-                    data: real_data.map(function (d) {
+                    data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.ZoneTemperature]};
                     }),
                     scale: y1Scale
@@ -4586,9 +4584,8 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 ySeries['schedule'] = {
                     name: 'Schedule Status',
                     color: colors.schedule,
-                    renderer: 'line',
-                    interpolation: 'step-after',
-                    data: real_data.map(function (d) {
+                    renderer: 'stack',
+                    data: data.map(function (d) {
                         return {x: d[args.Timestamp], y: d[points.schedule]};
                     }),
                     scale: y2Scale
@@ -4603,8 +4600,9 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var graph = new Rickshaw.Graph({
                 element: document.querySelector(chartId),
                 series: plotSeries,
-                renderer: 'multi'
-                //interpolation: 'linear'
+                renderer: 'multi',
+                interpolation: 'linear'
+                //interpolation: 'step-after'
             });
             graph.render();
 
