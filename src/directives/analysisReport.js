@@ -165,19 +165,43 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     break;
 
                 case 'CyclingDetector':
-                    element.append(angular.element('<div class="cycling-detector" />')
-                        .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
-                            <div class='title noselect'></div>\
-                            <div class='rs-chart-area time-series'>\
-                              <div class='rs-y-axis'></div>\
-                              <div class='rs-chart'></div>\
-                              <div class='rs-y-axis2'></div>\
-                              <div class='rs-legend'></div>\
-                              <div class='rs-slider'></div>\
+                    var result_ele = angular.element("<div id='result' class='result' />");
+                    var tab_ele = angular.element("\
+                        <ul class='nav nav-tabs'>\
+                            <li heading='data' id='data' class='active' style=''>\
+                                <a href=''>data</a>\
+                            </li>\
+                            <li heading='analysis' id='analysis' class='' style=''>\
+                                <a href=''>analysis</a>\
+                            </li>\
+                        </ul>");
+                    var tab_content = angular.element("<div class='tab-content'></div>");
+                    var data_ele = angular.element("\
+                        <div id='data-content' class='tab-pane active' style=''>\
+                            <div id='temps-chart-box' class='rs-chart-container hidden'>\
+                                <div class='title noselect'></div>\
+                                <div class='rs-chart-area time-series'>\
+                                  <div class='rs-y-axis'></div>\
+                                  <div class='rs-chart'></div>\
+                                  <div class='rs-y-axis2'></div>\
+                                  <div class='rs-legend'></div>\
+                                  <div class='rs-slider'></div>\
+                                </div>\
                             </div>\
-                          </div>"));
-                    cyclingDetectorSVG(scope.arData[reportElement.table_name],0);
+                        </div>");
+                    var rcx_tab = angular.element("<div id='analysis-content' class='tab-pane' style=''></div>");
+                    var rcx_ele = angular.element("<div id='cycling-result' class='cycling-result' />");
+                    rcx_tab.append(rcx_ele);
+                    tab_content.append(data_ele);
+                    tab_content.append(rcx_tab);
+                    result_ele.append(tab_ele);
+                    result_ele.append(tab_content);
+                    element.append(result_ele);
+                    cyclingDetectorSVG_Data(scope.arData[reportElement.table_name],0);
+                    $compile(element.contents())(scope);
                     break;
+
+
                 case 'ScheduleDetector':
                     element.append(angular.element('<div class="schedule-detector" />')
                         .html("<div id='temps-chart-box' class='rs-chart-container hidden'>\
@@ -4275,7 +4299,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return real_data;
     }
 
-    function cyclingDetectorSVG(data) {
+    function cyclingDetectorSVG_Data(data) {
         var rawTsName = 'datetime';
 
         //object to contain definition for points:
@@ -4317,7 +4341,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             colors[point] = getColor(i++);
         }
 
-        function plotCyclingChart(data, allPoints, points, colors, args) {
+        function plotCyclingData(data, allPoints, points, colors, args) {
             //Set UI Args
             var timeUnit = args.TimeUnit;
             var container = args.Container;
@@ -4389,19 +4413,6 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     ySeries['ComprStatus'] = {
                         name: 'Compressor Status',
                         color: colors.ComprStatus,
-                        renderer: 'bar',
-                        //interpolation: 'step-after',
-                        data: filteredData,
-                        scale: y2Scale
-                    }
-                }
-            }
-            if (existPoint('cycling', points)) {
-                var filteredData = filterAndMapData(data, args.Timestamp, points.cycling);
-                if (filteredData.length > 0) {
-                    ySeries['cycling'] = {
-                        name: 'Cycling',
-                        color: colors.cycling,
                         renderer: 'bar',
                         //interpolation: 'step-after',
                         data: filteredData,
@@ -4484,6 +4495,51 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         }
 
+        function plotCyclingResult(data, points, args) {
+            var cycling_data = [];
+            if (existPoint('cycling', points)) {
+                var filteredData = filterAndMapData(data, args.Timestamp, points.cycling);
+                var real_data = filteredData.filter(function(d){
+                   if (d.y > 0) return true;
+                   return false;
+                }).map(function (d) {
+                    return {x: new Date(1000*d.x), y: d.y};
+                });
+                if (real_data.length > 0) {
+                    //Sum cycles per data
+                    real_data.sort(function(a,b) { return a.x-b.x; });
+
+                    var prevDatePart = null;
+                    var curDatePart = null;
+                    var curSum = 0;
+                    real_data.forEach(function(d) {
+                        curDatePart = formatDate(d.x);
+                        if (prevDatePart == null || curDatePart == prevDatePart) {
+                            curSum += d.y;
+                            prevDatePart = curDatePart;
+                        }
+                        if (curDatePart != prevDatePart) {
+                            cycling_data.push({x: prevDatePart, y: curSum});
+                            curSum = d.y;
+                            prevDatePart = curDatePart;
+                        }
+                    });
+                    //push the last one
+                    cycling_data.push({x: prevDatePart, y: curSum});
+                }
+            }
+            //Output HTML result
+            var html = '<div><ul>';
+            if (cycling_data.length > 0 )
+            {
+                cycling_data.forEach(function(d){
+                    html += '<li>' + d.x + ': ' + d.y + ' cycles detected</li>'
+                });
+            }
+            html += '</ul></div>';
+            document.querySelector(args.Container).innerHTML = html;
+        }
+
         var fTsName = 'FTimestamp';
         data = parseSortByTimestamp(data, rawTsName, fTsName, points, counts);
         //Delete key in points that have no data
@@ -4500,7 +4556,14 @@ angular.module('openeis-ui.directives.analysis-report', [])
             Container: '#temps-chart-box',
             TimeUnit: timeUnit
         };
-        plotCyclingChart(data, allPoints, points, colors, tArgs);
+        plotCyclingData(data, allPoints, points, colors, tArgs);
+
+        tArgs = {
+            Timestamp: fTsName,
+            Title: 'Compressor Cycling Diagnostics',
+            Container: '#cycling-result'
+        };
+        plotCyclingResult(data, points, tArgs);
 
         $(".rs-chart-container.hidden").removeClass("hidden");
     }
