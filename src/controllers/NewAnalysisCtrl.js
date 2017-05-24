@@ -125,6 +125,7 @@ angular.module('openeis-ui')
                     $scope.availableApps.push({
                         name: app.name,
                         description: app.description,
+                        note: app.note,
                         missingInputs: missingInputs,
                     });
                     return;
