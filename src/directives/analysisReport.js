@@ -1603,7 +1603,16 @@ angular.module('openeis-ui.directives.analysis-report', [])
             .attr("opacity", 1)
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on('click', function(d) {
+            .on('mousedown', function(d) {
+                d3.select("#hrData").remove();
+                if (d.diagnostic === "No Supply-air Temperature Reset Dx" ||
+                    d.diagnostic === "No Static Pressure Reset Dx" ||
+                    (d.diagnostic === "Operational Schedule Dx"
+                        && d.diagnostic_message === "Supply fan is operating excessively during unoccupied times.") ||
+                    d.diagnostic === "") {
+                    return;
+                }
+
                 var rectWidth = 24;
                 var yDomainData = makeArray(1,24);
                 var hrScale = d3.scale.ordinal()
@@ -1613,7 +1622,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                         .scale(hrScale)
                         .orient("bottom");
                 var drawPosition = margin.left + 40;
-                d3.select("#hrData").remove();
+
                 var hrDataArea = svg
                     .append("g")
                     .attr("id", "hrData")
