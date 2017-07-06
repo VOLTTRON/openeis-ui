@@ -345,7 +345,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     result_ele.append(tab_ele);
                     result_ele.append(tab_content);
                     element.append(result_ele);
-                    economizer_ecam(scope.arData[reportElement.table_name]);
+                    economizer_rcx(scope.arData[reportElement.table_name]);
                     //$("#ecam").tabs();
                     $compile(element.contents())(scope);
                     break;
@@ -1316,7 +1316,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     function retroCommissioningAFDDSVG(data,dx_type) {
         var econDiagnosticList = [
             'Temperature Sensor Dx',
-            'Economizing When Unit Should Dx',
+            'Not Economizing When Unit Should Dx',
             'Economizing When Unit Should Not Dx',
             'Excess Outdoor-air Intake Dx',
             'Insufficient Outdoor-air Intake Dx'];
@@ -1329,11 +1329,11 @@ angular.module('openeis-ui.directives.analysis-report', [])
             'HW loop Supply Temperature Reset Dx',
             'HW loop Low Delta-T Dx'];
         var arDiagnosticList = [
-            'Duct Static Pressure Control Loop Dx',
+            'Duct Static Pressure Set Point Control Loop Dx',
             'Low Duct Static Pressure Dx',
             'High Duct Static Pressure Dx',
             'No Static Pressure Reset Dx',
-            'Supply-air Temperature Control Loop Dx',
+            'Supply-air Temperature Set Point Control Dx',
             'Low Supply-air Temperature Dx',
             'High Supply-air Temperature Dx',
             'No Supply-air Temperature Reset Dx',
@@ -1342,7 +1342,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
 
         if (dx_type==1) {
             arDiagnosticList = [
-                'Duct Static Pressure Control Loop Dx',
+                'Duct Static Pressure Set Point Control Loop Dx',
                 'Low Duct Static Pressure Dx',
                 'High Duct Static Pressure Dx',
                 'No Static Pressure Reset Dx'
@@ -1350,7 +1350,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
         }
         if (dx_type==2) {
             arDiagnosticList = [
-                'Supply-air Temperature Control Loop Dx',
+                'Supply-air Temperature Set Point Control Dx',
                 'Low Supply-air Temperature Dx',
                 'High Supply-air Temperature Dx',
                 'No Supply-air Temperature Reset Dx'
@@ -1802,7 +1802,12 @@ angular.module('openeis-ui.directives.analysis-report', [])
         return arr[c];
     }
 
-    function economizer_ecam(data) {
+    function setUndefinedToNull(val)
+    {
+        return (typeof val === 'undefined') ? null : val;
+    }
+
+    function economizer_rcx(data) {
         //console.log(data);
         var rawTsName = 'datetime';
 
@@ -1864,13 +1869,13 @@ angular.module('openeis-ui.directives.analysis-report', [])
             var y2Scale = d3.scale.linear().domain([0, 300]);
             //Set up data series: change this for different data sources
 
-            var ySeries = {}
+            var ySeries = {};
             if (existPoint('OATemp', points)) {
                 ySeries['OATemp'] = {
                     name: 'Outdoor Air Temperature',
                     color: colors.OATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.OATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.OATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -1880,7 +1885,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Mixed Air Temperature',
                     color: colors.MATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.MATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.MATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -1890,7 +1895,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Return Air Temperature',
                     color: colors.RATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.RATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.RATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -1900,7 +1905,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Outdoor Air Fraction',
                     color: colors.OAF,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.OAF]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.OAF])};
                     }),
                     scale: y2Scale
                 }
@@ -1911,7 +1916,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Discharge Air Temperature',
                     color: colors.DATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.DATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.DATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -1921,7 +1926,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Outdoor Damper Signal',
                     color: colors.OADamper,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.OADamper]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.OADamper])};
                     }),
                     scale: y2Scale
                 }
@@ -2057,7 +2062,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Outdoor Air Temperature',
                     color: colors.OATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.OATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.OATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -2067,7 +2072,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Discharge Air Temperature',
                     color: colors.DATemp,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.DATemp]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.DATemp])};
                     }),
                     scale: y1Scale
                 }
@@ -2077,7 +2082,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Discharge Air Temperature Set Point',
                     color: colors.DATempSetPoint,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.DATempSetPoint]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.DATempSetPoint])};
                     }),
                     scale: y1Scale
                 }
@@ -2087,7 +2092,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Outdoor Damper Signal',
                     color: colors.OADamper,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.OADamper]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.OADamper])};
                     }),
                     scale: y2Scale
                 }
@@ -2097,7 +2102,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Cooling Coil Valve Position',
                     color: colors.CCValve,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.CCValve]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.CCValve])};
                     }),
                     scale: y2Scale
                 }
@@ -2107,7 +2112,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     name: 'Heating Coil Valve Position',
                     color: colors.HCValve,
                     data: data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.HCValve]};
+                        return {x: d[args.Timestamp], y: setUndefinedToNull(d[points.HCValve])};
                     }),
                     scale: y2Scale
                 }
@@ -2221,7 +2226,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                     xName: allPoints.OATemp,
                     color: colors.MATemp,
                     data: data.map(function (d) {
-                        return {x: d[points.OATemp], y: d[points.MATemp]};
+                        return {x: d[points.OATemp], y: setUndefinedToNull(d[points.MATemp])};
                     })
                 }
             }
@@ -4131,27 +4136,29 @@ angular.module('openeis-ui.directives.analysis-report', [])
                 return false;
             });
             if (existPoint('ZoneTemperature', points)) {
-                ySeries['ZoneTemperature'] = {
-                    name: 'Zone Temperature',
-                    color: colors.ZoneTemperature,
-                    renderer: 'line',
-                    interpolation: 'linear',
-                    data: real_data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.ZoneTemperature]};
-                    }),
-                    scale: y1Scale
+                var filteredData = filterAndMapData(real_data, args.Timestamp, points.ZoneTemperature);
+                if (filteredData.length > 0) {
+                    ySeries['ZoneTemperature'] = {
+                        name: 'Zone Temperature',
+                        color: colors.ZoneTemperature,
+                        renderer: 'line',
+                        //interpolation: 'linear',
+                        data: filteredData,
+                        scale: y1Scale
+                    }
                 }
             }
             if (existPoint('FanStatus', points)) {
-                ySeries['FanStatus'] = {
-                    name: 'Fan Status',
-                    color: colors.FanStatus,
-                    renderer: 'bar',
-                    //interpolation: 'step-after',
-                    data: real_data.map(function (d) {
-                        return {x: d[args.Timestamp], y: d[points.FanStatus]};
-                    }),
-                    scale: y2Scale
+                var filteredData = filterAndMapData(real_data, args.Timestamp, points.FanStatus);
+                if (filteredData.length > 0) {
+                    ySeries['FanStatus'] = {
+                        name: 'Fan Status',
+                        color: colors.FanStatus,
+                        renderer: 'bar',
+                        //interpolation: 'linear',
+                        data: filteredData,
+                        scale: y2Scale
+                    }
                 }
             }
             if (existPoint('ZoneTemperatureSetPoint', points)) {
@@ -4181,7 +4188,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
                         name: 'Zone Temperature Set Point',
                         color: colors.ZoneTemperatureSetPoint,
                         renderer: 'line',
-                        interpolation: 'step-after',
+                        //interpolation: 'step-after',
                         data: setpoints_viz,
                         scale: y1Scale
                     }
@@ -4201,15 +4208,15 @@ angular.module('openeis-ui.directives.analysis-report', [])
             graph.render();
 
             //Tooltip for hovering
-//            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-//                graph: graph,
-//                formatter: function (series, x, y) {
-//                    var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-//                    var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-//                    var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
-//                    return content;
-//                }
-//            });
+           var hoverDetail = new Rickshaw.Graph.HoverDetail({
+               graph: graph,
+               formatter: function (series, x, y) {
+                   var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                   var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                   var content = swatch + series.name + ": " + parseFloat(y).toFixed(2) + '<br>' + date;
+                   return content;
+               }
+           });
             //Display & Toggle Legends
             var legend = new Rickshaw.Graph.Legend({
                 graph: graph,
@@ -4303,7 +4310,23 @@ angular.module('openeis-ui.directives.analysis-report', [])
             }
             return false;
         }).map(function (d) {
-            return {x: d[ts], y: d[pointName]};
+            return {x: d[ts], y: setUndefinedToNull(d[pointName])};
+        });
+        return real_data;
+    }
+
+    function filterAndMapDataEx(data, ts, pointName, exArr) {
+        var real_data = data.filter(function(d){
+            if (d[pointName] > -9999) {
+                return true;
+            }
+            return false;
+        }).map(function (d) {
+            var res = {x: d[ts], y: d[pointName]};
+            for (var i = 0; i < exArr.length; ++i) {
+                res[exArr[i]] = d[exArr[i]];
+            }
+            return res;
         });
         return real_data;
     }
@@ -4507,34 +4530,43 @@ angular.module('openeis-ui.directives.analysis-report', [])
         function plotCyclingResult(data, points, args) {
             var cycling_data = [];
             if (existPoint('cycling', points)) {
-                var filteredData = filterAndMapData(data, args.Timestamp, points.cycling);
+                var penalty_point = 'penalty';
+                var exArr = [penalty_point];
+                var filteredData = filterAndMapDataEx(data, args.Timestamp, points.cycling, exArr);
                 var real_data = filteredData.filter(function(d){
                    if (d.y > 0) return true;
                    return false;
                 }).map(function (d) {
-                    return {x: new Date(1000*d.x), y: d.y};
+                    var res = {x: new Date(1000*d.x), y: d.y, };
+                    for (var i = 0; i < exArr.length; ++i) {
+                        res[exArr[i]] = d[exArr[i]];
+                    }
+                    return res;
                 });
                 if (real_data.length > 0) {
-                    //Sum cycles per data
+                    //Sum cycles per day
                     real_data.sort(function(a,b) { return a.x-b.x; });
 
                     var prevDatePart = null;
                     var curDatePart = null;
                     var curSum = 0;
+                    var curPenalty = 0;
                     real_data.forEach(function(d) {
                         curDatePart = formatDate(d.x);
                         if (prevDatePart == null || curDatePart == prevDatePart) {
                             curSum += d.y;
+                            curPenalty += d[penalty_point];
                             prevDatePart = curDatePart;
                         }
                         if (curDatePart != prevDatePart) {
-                            cycling_data.push({x: prevDatePart, y: curSum});
+                            cycling_data.push({x: prevDatePart, y: curSum, ex1: curPenalty});
                             curSum = d.y;
+                            curPenalty = d[penalty_point];
                             prevDatePart = curDatePart;
                         }
                     });
                     //push the last one
-                    cycling_data.push({x: prevDatePart, y: curSum});
+                    cycling_data.push({x: prevDatePart, y: curSum, ex1: curPenalty});
                 }
             }
             //Output HTML result
@@ -4542,7 +4574,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             if (cycling_data.length > 0 )
             {
                 cycling_data.forEach(function(d){
-                    html += '<li>' + d.x + ': ' + d.y + ' cycles detected</li>'
+                    html += '<li>' + d.x + ': ' + d.y + ' cycles detected. Energy penalty (%): ' + d.ex1 + '</li>'
                 });
             }
             html += '</ul></div>';
