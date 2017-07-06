@@ -4064,6 +4064,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function setpointDetectorSVG(data) {
+        if (data.length == 0) return;
         var rawTsName = 'datetime';
 
         //object to contain definition for points:
@@ -4343,6 +4344,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
             ComprStatus: 'ComprStatus',
             cycling: 'cycling'
         };
+        if (data.length == 0) return;
 
         var allPoints = {};
         if (data.length > 0) {
@@ -4610,6 +4612,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function scheduleDetectorSVG(data) {
+        if (data.length == 0) return;
         var rawTsName = 'datetime';
 
         //object to contain definition for points:
@@ -4794,6 +4797,7 @@ angular.module('openeis-ui.directives.analysis-report', [])
     }
 
     function loadProfileSVG(data) {
+        if (data.length == 0) return;
         var rawTsName = 'datetime';
 
         //object to contain definition for points:
